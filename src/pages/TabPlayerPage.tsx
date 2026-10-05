@@ -100,11 +100,24 @@ export default function TabPlayerPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab?.id])
 
+  const loopRange = state.loopRange ?? [0, totalBeats]
+  // Both recomputed a fresh array (and fresh event objects) on every call;
+  // without memoizing, every animation-frame re-render during playback
+  // handed all 8 highway copies brand-new props, defeating React.memo on
+  // NoteHighway and forcing a full note-list reconcile ~60 times a second —
+  // the likely cause of the choppy, "blurry" scroll at fast tempos. Must
+  // stay above the early return below: hooks can't be called conditionally.
+  const loopStart = loopRange[0]
+  const loopEnd = loopRange[1]
+  const flatEvents = useMemo(() => (tab ? flattenTabEvents(tab, BEATS_PER_MEASURE) : []), [tab])
+  const loopEvents = useMemo(
+    () => eventsInRange(flatEvents, loopStart, loopEnd),
+    [flatEvents, loopStart, loopEnd],
+  )
+
   if (!tab) {
     return <p>Tab introuvable.</p>
   }
-
-  const loopRange = state.loopRange ?? [0, totalBeats]
   // elapsedBeats can run a couple of beats negative during the lead-in before
   // the loop's first note (see LEAD_IN_BEATS) — clamp the measure index so
   // that stays "nothing active yet" instead of indexing before measure 0.
@@ -123,8 +136,6 @@ export default function TabPlayerPage() {
     Math.min(100, ((measureIndex + localBeat / BEATS_PER_MEASURE) / measureCount) * 100),
   )
 
-  const flatEvents = flattenTabEvents(tab, BEATS_PER_MEASURE)
-  const loopEvents = eventsInRange(flatEvents, loopRange[0], loopRange[1])
   const loopLength = loopRange[1] - loopRange[0]
   const rawScrollPos = Math.min(loopLength, Math.max(-LEAD_IN_BEATS, state.elapsedBeats - loopRange[0]))
   // In practice mode the clock keeps ticking (so the approach still

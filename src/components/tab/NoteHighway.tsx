@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { motion } from 'motion/react'
 import type { TabEvent } from '../../lib/content/types'
 import { TECHNIQUE_LABEL, isNoteActive, eventKey, NOTE_HIGHWAY_SIZES } from '../../lib/tab/noteLayout'
@@ -17,7 +18,13 @@ export interface NoteHighwayProps {
 
 const STRING_COUNT = 6
 
-export default function NoteHighway({
+// The performance view renders 8 copies of this side by side so the loop
+// scroll wraps seamlessly; only the one at the cursor (activeBeat set) ever
+// changes between frames. Memoizing lets the other 7 skip re-rendering
+// their whole note list ~60 times a second during playback — the previous
+// unmemoized cost of that was a real source of dropped frames ("flou") at
+// fast tempos. Requires callers to pass stable (memoized) `events`.
+function NoteHighway({
   events,
   totalBeats,
   activeBeat,
@@ -107,3 +114,5 @@ export default function NoteHighway({
     </div>
   )
 }
+
+export default memo(NoteHighway)
