@@ -3,14 +3,11 @@ import { aggregateXpByDay, skillBreakdown } from '../lib/progression/charts'
 import { currentStreak, longestStreak } from '../lib/progression/streak'
 import { BADGES } from '../lib/progression/badges'
 import BarChart from '../components/charts/BarChart'
-
-function todayString(): string {
-  return new Date().toISOString().slice(0, 10)
-}
+import { localDateString } from '../lib/date'
 
 export default function ProgressionPage() {
   const { state } = useProgression()
-  const today = todayString()
+  const today = localDateString()
 
   const xpByDay = aggregateXpByDay(state.xpLog)
   const skills = skillBreakdown(state.skillXp)

@@ -2,10 +2,7 @@ import { useParams } from 'react-router-dom'
 import { loadAllExercises } from '../lib/content/loadExercises'
 import TabStaticView from '../components/tab/TabStaticView'
 import { useProgression } from '../lib/progression/ProgressionContext'
-
-function todayString(): string {
-  return new Date().toISOString().slice(0, 10)
-}
+import { localDateString } from '../lib/date'
 
 export default function ExerciseDetailPage() {
   const { id } = useParams()
@@ -28,7 +25,7 @@ export default function ExerciseDetailPage() {
 
       <button
         className="text-accent font-semibold"
-        onClick={() => completeExercise(exercise, todayString())}
+        onClick={() => completeExercise(exercise, localDateString())}
       >
         Marquer comme fait
       </button>

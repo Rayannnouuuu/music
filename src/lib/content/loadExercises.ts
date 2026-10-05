@@ -1,4 +1,4 @@
-import { validateExercise, ContentValidationError } from './validate'
+import { validateExercise } from './validate'
 import type { Category, Exercise } from './types'
 
 export function loadAllExercises(): Exercise[] {
@@ -18,11 +18,9 @@ export function loadAllExercises(): Exercise[] {
       try {
         exercises.push(validateExercise(item))
       } catch (err) {
-        if (err instanceof ContentValidationError) {
-          console.warn(`loadAllExercises: skipping invalid exercise at "${path}"[${index}]: ${err.message}`)
-        } else {
-          throw err
-        }
+        // Never let one bad content file blank the whole app — skip and
+        // warn, regardless of what validateExercise happened to throw.
+        console.warn(`loadAllExercises: skipping invalid exercise at "${path}"[${index}]:`, err)
       }
     })
   }

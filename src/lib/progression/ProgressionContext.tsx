@@ -1,56 +1,15 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { loadJSON, saveJSON } from '../storage'
 import { levelFromXp } from './xp'
-import {
-  isGoalMet,
-  recordCompletion,
-  currentStreak,
-  type DailyGoal,
-  type DailyProgress,
-} from './streak'
+import { isGoalMet, recordCompletion, currentStreak, type DailyGoal, type DailyProgress } from './streak'
 import { evaluateBadges, type BadgeCheckInput } from './badges'
+import { hydrateProgressState, type ProgressState } from './progressState'
 import type { Category, Exercise, Tab } from '../content/types'
+
+export type { ProgressState } from './progressState'
 
 const STORAGE_KEY = 'guitar-progress'
 const XP_PER_MINUTE = 5
-
-export interface ProgressState {
-  xpTotal: number
-  skillXp: Record<Category, number>
-  xpLog: { date: string; xpGained: number }[]
-  dailyGoal: DailyGoal
-  streakHistory: Record<string, boolean>
-  badgesUnlocked: string[]
-  customTempoByTabId: Record<string, number>
-  importedTabs: Tab[]
-  // Beyond the plan's literal field list: completeExercise/completeTabPractice
-  // need a running tab-practice count (for badges) and per-day progress (for
-  // the daily-goal check) — see Task 16 ledger ruling.
-  tabsCompletedCount: number
-  dailyProgress: Record<string, DailyProgress>
-}
-
-const defaultProgressState: ProgressState = {
-  xpTotal: 0,
-  skillXp: {
-    scales: 0,
-    legato: 0,
-    picking: 0,
-    bends: 0,
-    palmMuting: 0,
-    sweep: 0,
-    rhythm: 0,
-    arpeggios: 0,
-  },
-  xpLog: [],
-  dailyGoal: { type: 'exercises', amount: 1 },
-  streakHistory: {},
-  badgesUnlocked: [],
-  customTempoByTabId: {},
-  importedTabs: [],
-  tabsCompletedCount: 0,
-  dailyProgress: {},
-}
 
 function skillLevels(skillXp: Record<Category, number>): Record<string, number> {
   return Object.fromEntries(
@@ -71,7 +30,7 @@ const ProgressionContext = createContext<ProgressionContextValue | null>(null)
 
 export function ProgressionProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ProgressState>(() =>
-    loadJSON(STORAGE_KEY, defaultProgressState),
+    hydrateProgressState(loadJSON<unknown>(STORAGE_KEY, null)),
   )
 
   useEffect(() => {

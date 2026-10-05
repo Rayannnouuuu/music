@@ -8,14 +8,11 @@ import { loadAllExercises } from '../lib/content/loadExercises'
 import { loadAllTabs } from '../lib/content/loadTabs'
 import MetronomeWidget from '../components/audio/MetronomeWidget'
 import type { DailyGoal } from '../lib/progression/streak'
-
-function todayString(): string {
-  return new Date().toISOString().slice(0, 10)
-}
+import { localDateString } from '../lib/date'
 
 export default function DashboardPage() {
   const { state, setDailyGoal } = useProgression()
-  const today = todayString()
+  const today = localDateString()
 
   const allExercises = useMemo(() => loadAllExercises(), [])
   const allTabs = useMemo(() => loadAllTabs(), [])

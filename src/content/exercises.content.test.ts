@@ -45,4 +45,25 @@ describe('exercise content', () => {
       ).toBe(true)
     }
   })
+
+  test('no two exercises in the same category share an identical pattern', () => {
+    for (const category of Object.keys(EXPECTED_COUNTS)) {
+      const patterns = exercises
+        .filter((e) => e.category === category)
+        .map((e) => JSON.stringify(e.pattern))
+      const unique = new Set(patterns)
+      expect(unique.size, `category ${category} has duplicate patterns`).toBe(patterns.length)
+    }
+  })
+
+  test('titles within a category are not all identical to each other', () => {
+    // Catches a generator that produces N near-duplicate items differing
+    // only by a trailing number, while still allowing a handful of title
+    // templates to repeat across a 10-15 item category.
+    for (const category of Object.keys(EXPECTED_COUNTS)) {
+      const inCategory = exercises.filter((e) => e.category === category)
+      const baseTitles = new Set(inCategory.map((e) => e.title.replace(/\s*\d+$/, '')))
+      expect(baseTitles.size, `category ${category} should use more than one title template`).toBeGreaterThan(1)
+    }
+  })
 })

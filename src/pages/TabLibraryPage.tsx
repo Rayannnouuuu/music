@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { loadAllTabs, filterTabs } from '../lib/content/loadTabs'
 import { parseAsciiTab } from '../lib/tab/asciiImport'
+import { validateTab, ContentValidationError } from '../lib/content/validate'
 import { useProgression } from '../lib/progression/ProgressionContext'
 import type { Measure, Tab } from '../lib/content/types'
 
@@ -52,7 +53,7 @@ export default function TabLibraryPage() {
 
   function handleConfirmImport() {
     if (!parsedMeasures) return
-    const tab: Tab = {
+    const candidate: Tab = {
       id: `imported-${Date.now()}`,
       title: metadata.title || 'Tab importée',
       artist: metadata.artist || 'Inconnu',
@@ -62,6 +63,19 @@ export default function TabLibraryPage() {
       difficulty: metadata.difficulty,
       measures: parsedMeasures,
     }
+
+    let tab: Tab
+    try {
+      tab = validateTab(candidate)
+    } catch (err) {
+      setImportError(
+        err instanceof ContentValidationError
+          ? `Métadonnées invalides : ${err.message}`
+          : 'Métadonnées invalides.',
+      )
+      return
+    }
+
     importTab(tab)
     setShowImport(false)
     setImportText('')

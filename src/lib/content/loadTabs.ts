@@ -1,4 +1,4 @@
-import { validateTab, ContentValidationError } from './validate'
+import { validateTab } from './validate'
 import type { Tab } from './types'
 
 export function loadAllTabs(): Tab[] {
@@ -12,11 +12,9 @@ export function loadAllTabs(): Tab[] {
     try {
       tabs.push(validateTab(mod.default))
     } catch (err) {
-      if (err instanceof ContentValidationError) {
-        console.warn(`loadAllTabs: skipping invalid tab at "${path}": ${err.message}`)
-      } else {
-        throw err
-      }
+      // Never let one bad content file blank the whole app — skip and warn,
+      // regardless of what validateTab happened to throw.
+      console.warn(`loadAllTabs: skipping invalid tab at "${path}":`, err)
     }
   }
   return tabs

@@ -1,48 +1,48 @@
 [
   {
     "id": "legato-1",
-    "title": "Legato ligné 1",
+    "title": "Legato 1",
     "category": "legato",
     "difficulty": 1,
-    "description": "Enchaîne les notes en legato (hammer-on) sans repicker, pour un son fluide et rapide.",
+    "description": "Enchaîne hammer-ons et pull-offs sans repicker, pour un son fluide.",
     "targetBpm": 66,
     "xpReward": 10,
     "pattern": [
       {
         "string": 6,
-        "fret": 1,
+        "fret": 0,
         "startBeat": 0,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 3,
+        "fret": 2,
         "startBeat": 1,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 6,
-        "fret": 3,
+        "fret": 2,
         "startBeat": 2,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 5,
+        "fret": 4,
         "startBeat": 3,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 6,
-        "fret": 5,
+        "fret": 4,
         "startBeat": 4,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 6,
+        "fret": 5,
         "startBeat": 5,
         "duration": 1,
         "technique": "hammer"
@@ -54,45 +54,45 @@
     "title": "Hammer-on enchaînés 2",
     "category": "legato",
     "difficulty": 2,
-    "description": "Enchaîne les notes en legato (hammer-on) sans repicker, pour un son fluide et rapide.",
+    "description": "Travaille la régularité du volume entre la note attaquée et la note en legato.",
     "targetBpm": 72,
     "xpReward": 20,
     "pattern": [
       {
         "string": 5,
-        "fret": 2,
+        "fret": 1,
         "startBeat": 0,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 4,
+        "fret": 3,
         "startBeat": 1,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 5,
-        "fret": 4,
+        "fret": 3,
         "startBeat": 2,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 6,
+        "fret": 5,
         "startBeat": 3,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 5,
-        "fret": 6,
+        "fret": 5,
         "startBeat": 4,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 7,
+        "fret": 6,
         "startBeat": 5,
         "duration": 1,
         "technique": "hammer"
@@ -104,45 +104,45 @@
     "title": "Legato sur une corde 3",
     "category": "legato",
     "difficulty": 3,
-    "description": "Enchaîne les notes en legato (hammer-on) sans repicker, pour un son fluide et rapide.",
+    "description": "Legato rapide : laisse les doigts retomber fort sur la touche pour un son clair.",
     "targetBpm": 78,
     "xpReward": 30,
     "pattern": [
       {
         "string": 6,
-        "fret": 3,
+        "fret": 2,
         "startBeat": 0,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 5,
+        "fret": 4,
         "startBeat": 1,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 6,
-        "fret": 5,
+        "fret": 4,
         "startBeat": 2,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 7,
+        "fret": 6,
         "startBeat": 3,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 6,
-        "fret": 7,
+        "fret": 6,
         "startBeat": 4,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 8,
+        "fret": 7,
         "startBeat": 5,
         "duration": 1,
         "technique": "hammer"
@@ -151,48 +151,48 @@
   },
   {
     "id": "legato-4",
-    "title": "Legato ligné 4",
+    "title": "Legato 4",
     "category": "legato",
     "difficulty": 4,
-    "description": "Enchaîne les notes en legato (hammer-on) sans repicker, pour un son fluide et rapide.",
+    "description": "Enchaîne hammer-ons et pull-offs sans repicker, pour un son fluide.",
     "targetBpm": 84,
     "xpReward": 40,
     "pattern": [
       {
         "string": 5,
-        "fret": 4,
+        "fret": 3,
         "startBeat": 0,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 6,
+        "fret": 5,
         "startBeat": 1,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 5,
-        "fret": 6,
+        "fret": 5,
         "startBeat": 2,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 8,
+        "fret": 7,
         "startBeat": 3,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 5,
-        "fret": 8,
+        "fret": 7,
         "startBeat": 4,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 9,
+        "fret": 8,
         "startBeat": 5,
         "duration": 1,
         "technique": "hammer"
@@ -204,45 +204,45 @@
     "title": "Hammer-on enchaînés 5",
     "category": "legato",
     "difficulty": 5,
-    "description": "Enchaîne les notes en legato (hammer-on) sans repicker, pour un son fluide et rapide.",
+    "description": "Travaille la régularité du volume entre la note attaquée et la note en legato.",
     "targetBpm": 90,
     "xpReward": 50,
     "pattern": [
       {
         "string": 6,
-        "fret": 5,
+        "fret": 4,
         "startBeat": 0,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 7,
+        "fret": 6,
         "startBeat": 1,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 6,
-        "fret": 7,
+        "fret": 6,
         "startBeat": 2,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 9,
+        "fret": 8,
         "startBeat": 3,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 6,
-        "fret": 9,
+        "fret": 8,
         "startBeat": 4,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 10,
+        "fret": 9,
         "startBeat": 5,
         "duration": 1,
         "technique": "hammer"
@@ -254,45 +254,45 @@
     "title": "Legato sur une corde 6",
     "category": "legato",
     "difficulty": 6,
-    "description": "Enchaîne les notes en legato (hammer-on) sans repicker, pour un son fluide et rapide.",
+    "description": "Legato rapide : laisse les doigts retomber fort sur la touche pour un son clair.",
     "targetBpm": 96,
     "xpReward": 60,
     "pattern": [
       {
         "string": 5,
-        "fret": 6,
+        "fret": 5,
         "startBeat": 0,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 8,
+        "fret": 7,
         "startBeat": 1,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 5,
-        "fret": 8,
+        "fret": 7,
         "startBeat": 2,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 10,
+        "fret": 9,
         "startBeat": 3,
         "duration": 1,
         "technique": "hammer"
       },
       {
         "string": 5,
-        "fret": 10,
+        "fret": 9,
         "startBeat": 4,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 11,
+        "fret": 10,
         "startBeat": 5,
         "duration": 1,
         "technique": "hammer"
@@ -301,50 +301,50 @@
   },
   {
     "id": "legato-7",
-    "title": "Legato ligné 7",
+    "title": "Legato 7",
     "category": "legato",
     "difficulty": 7,
-    "description": "Enchaîne les notes en legato (hammer-on) sans repicker, pour un son fluide et rapide.",
+    "description": "Enchaîne hammer-ons et pull-offs sans repicker, pour un son fluide.",
     "targetBpm": 102,
     "xpReward": 70,
     "pattern": [
       {
         "string": 6,
-        "fret": 7,
+        "fret": 6,
         "startBeat": 0,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 6,
-        "fret": 9,
+        "fret": 8,
+        "startBeat": 0.5,
+        "duration": 0.5,
+        "technique": "hammer"
+      },
+      {
+        "string": 6,
+        "fret": 8,
         "startBeat": 1,
-        "duration": 1,
+        "duration": 0.5
+      },
+      {
+        "string": 6,
+        "fret": 10,
+        "startBeat": 1.5,
+        "duration": 0.5,
         "technique": "hammer"
       },
       {
         "string": 6,
-        "fret": 9,
+        "fret": 10,
         "startBeat": 2,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 6,
         "fret": 11,
-        "startBeat": 3,
-        "duration": 1,
-        "technique": "hammer"
-      },
-      {
-        "string": 6,
-        "fret": 11,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 6,
-        "fret": 12,
-        "startBeat": 5,
-        "duration": 1,
+        "startBeat": 2.5,
+        "duration": 0.5,
         "technique": "hammer"
       }
     ]
@@ -354,47 +354,47 @@
     "title": "Hammer-on enchaînés 8",
     "category": "legato",
     "difficulty": 8,
-    "description": "Enchaîne les notes en legato (hammer-on) sans repicker, pour un son fluide et rapide.",
+    "description": "Travaille la régularité du volume entre la note attaquée et la note en legato.",
     "targetBpm": 108,
     "xpReward": 80,
     "pattern": [
       {
         "string": 5,
-        "fret": 8,
+        "fret": 7,
         "startBeat": 0,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 5,
-        "fret": 10,
+        "fret": 9,
+        "startBeat": 0.5,
+        "duration": 0.5,
+        "technique": "hammer"
+      },
+      {
+        "string": 5,
+        "fret": 9,
         "startBeat": 1,
-        "duration": 1,
+        "duration": 0.5
+      },
+      {
+        "string": 5,
+        "fret": 11,
+        "startBeat": 1.5,
+        "duration": 0.5,
         "technique": "hammer"
       },
       {
         "string": 5,
-        "fret": 10,
+        "fret": 11,
         "startBeat": 2,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 5,
         "fret": 12,
-        "startBeat": 3,
-        "duration": 1,
-        "technique": "hammer"
-      },
-      {
-        "string": 5,
-        "fret": 12,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 5,
-        "fret": 13,
-        "startBeat": 5,
-        "duration": 1,
+        "startBeat": 2.5,
+        "duration": 0.5,
         "technique": "hammer"
       }
     ]
@@ -404,97 +404,97 @@
     "title": "Legato sur une corde 9",
     "category": "legato",
     "difficulty": 9,
-    "description": "Enchaîne les notes en legato (hammer-on) sans repicker, pour un son fluide et rapide.",
+    "description": "Legato rapide : laisse les doigts retomber fort sur la touche pour un son clair.",
     "targetBpm": 114,
     "xpReward": 90,
     "pattern": [
       {
         "string": 6,
-        "fret": 9,
+        "fret": 8,
         "startBeat": 0,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 6,
-        "fret": 11,
+        "fret": 10,
+        "startBeat": 0.5,
+        "duration": 0.5,
+        "technique": "hammer"
+      },
+      {
+        "string": 6,
+        "fret": 10,
         "startBeat": 1,
-        "duration": 1,
+        "duration": 0.5
+      },
+      {
+        "string": 6,
+        "fret": 12,
+        "startBeat": 1.5,
+        "duration": 0.5,
         "technique": "hammer"
       },
       {
         "string": 6,
-        "fret": 11,
+        "fret": 12,
         "startBeat": 2,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 6,
         "fret": 13,
-        "startBeat": 3,
-        "duration": 1,
-        "technique": "hammer"
-      },
-      {
-        "string": 6,
-        "fret": 13,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 6,
-        "fret": 14,
-        "startBeat": 5,
-        "duration": 1,
+        "startBeat": 2.5,
+        "duration": 0.5,
         "technique": "hammer"
       }
     ]
   },
   {
     "id": "legato-10",
-    "title": "Legato ligné 10",
+    "title": "Legato 10",
     "category": "legato",
     "difficulty": 10,
-    "description": "Enchaîne les notes en legato (hammer-on) sans repicker, pour un son fluide et rapide.",
+    "description": "Enchaîne hammer-ons et pull-offs sans repicker, pour un son fluide.",
     "targetBpm": 120,
     "xpReward": 100,
     "pattern": [
       {
         "string": 5,
-        "fret": 10,
+        "fret": 9,
         "startBeat": 0,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 5,
-        "fret": 12,
+        "fret": 11,
+        "startBeat": 0.5,
+        "duration": 0.5,
+        "technique": "hammer"
+      },
+      {
+        "string": 5,
+        "fret": 11,
         "startBeat": 1,
-        "duration": 1,
+        "duration": 0.5
+      },
+      {
+        "string": 5,
+        "fret": 13,
+        "startBeat": 1.5,
+        "duration": 0.5,
         "technique": "hammer"
       },
       {
         "string": 5,
-        "fret": 12,
+        "fret": 13,
         "startBeat": 2,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 5,
         "fret": 14,
-        "startBeat": 3,
-        "duration": 1,
-        "technique": "hammer"
-      },
-      {
-        "string": 5,
-        "fret": 14,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 5,
-        "fret": 15,
-        "startBeat": 5,
-        "duration": 1,
+        "startBeat": 2.5,
+        "duration": 0.5,
         "technique": "hammer"
       }
     ]

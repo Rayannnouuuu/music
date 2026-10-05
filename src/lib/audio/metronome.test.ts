@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { computeScheduledTicks } from './metronome'
+import { computeScheduledTicks, clampBpm } from './metronome'
 
 describe('computeScheduledTicks', () => {
   test('only schedules ticks within the look-ahead window, first tick accented', () => {
@@ -61,5 +61,49 @@ describe('computeScheduledTicks', () => {
     ])
     expect(result.nextTickTime).toBe(1.5)
     expect(result.nextBeatIndexInBar).toBe(2)
+  })
+
+  test('does not hang when secondsPerBeat is zero or negative (invalid BPM)', () => {
+    const resultZero = computeScheduledTicks({
+      currentTime: 0,
+      nextTickTime: 0,
+      scheduleAheadTime: 0.1,
+      secondsPerBeat: 0,
+      beatsPerBar: 4,
+      nextBeatIndexInBar: 0,
+    })
+    expect(resultZero.ticks).toEqual([])
+    expect(resultZero.nextTickTime).toBe(0)
+
+    const resultNegative = computeScheduledTicks({
+      currentTime: 0,
+      nextTickTime: 0,
+      scheduleAheadTime: 0.1,
+      secondsPerBeat: -0.5,
+      beatsPerBar: 4,
+      nextBeatIndexInBar: 0,
+    })
+    expect(resultNegative.ticks).toEqual([])
+    expect(resultNegative.nextTickTime).toBe(0)
+  })
+})
+
+describe('clampBpm', () => {
+  test('passes a normal BPM through unchanged', () => {
+    expect(clampBpm(120)).toBe(120)
+  })
+
+  test('clamps a negative or zero BPM up to the minimum', () => {
+    expect(clampBpm(-50)).toBe(20)
+    expect(clampBpm(0)).toBe(20)
+  })
+
+  test('clamps an unreasonably high BPM down to the maximum', () => {
+    expect(clampBpm(10000)).toBe(400)
+  })
+
+  test('falls back to the minimum for NaN or Infinity', () => {
+    expect(clampBpm(NaN)).toBe(20)
+    expect(clampBpm(Infinity)).toBe(20)
   })
 })

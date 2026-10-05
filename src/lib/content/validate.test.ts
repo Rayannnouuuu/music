@@ -72,6 +72,48 @@ describe('validateTab', () => {
     delete tab.title
     expect(() => validateTab(tab)).toThrow(/title/i)
   })
+
+  test('throws on null input instead of crashing', () => {
+    expect(() => validateTab(null)).toThrow(ContentValidationError)
+  })
+
+  test('throws when measures is not an array', () => {
+    const tab = makeValidTab() as unknown as Record<string, unknown>
+    tab.measures = 'not an array'
+    expect(() => validateTab(tab)).toThrow(ContentValidationError)
+  })
+
+  test('throws when measures is an empty array', () => {
+    const tab = makeValidTab()
+    tab.measures = []
+    expect(() => validateTab(tab)).toThrow(/measures/i)
+  })
+
+  test('throws when a measure has no events array', () => {
+    const tab = makeValidTab() as unknown as { measures: unknown[] }
+    tab.measures = [{}]
+    expect(() => validateTab(tab)).toThrow(ContentValidationError)
+  })
+
+  test('throws when an event is missing fields instead of silently passing', () => {
+    const tab = makeValidTab()
+    // @ts-expect-error intentionally incomplete for the test
+    tab.measures[0].events = [{ fret: 0 }]
+    expect(() => validateTab(tab)).toThrow(ContentValidationError)
+  })
+
+  test('throws when an event field is a non-integer instead of silently passing', () => {
+    const tab = makeValidTab()
+    // @ts-expect-error intentionally invalid for the test
+    tab.measures[0].events[0].string = 2.5
+    expect(() => validateTab(tab)).toThrow(ContentValidationError)
+  })
+
+  test('throws when originalTempo is not a positive number', () => {
+    const tab = makeValidTab()
+    tab.originalTempo = -120
+    expect(() => validateTab(tab)).toThrow(/tempo/i)
+  })
 })
 
 describe('validateExercise', () => {
@@ -96,5 +138,21 @@ describe('validateExercise', () => {
     const exercise = makeValidExercise()
     exercise.difficulty = 11
     expect(() => validateExercise(exercise)).toThrow(/difficulty/i)
+  })
+
+  test('throws on null input instead of crashing', () => {
+    expect(() => validateExercise(null)).toThrow(ContentValidationError)
+  })
+
+  test('throws when category is not a known category', () => {
+    const exercise = makeValidExercise() as unknown as Record<string, unknown>
+    exercise.category = 'nope'
+    expect(() => validateExercise(exercise)).toThrow(/category/i)
+  })
+
+  test('throws when pattern is not an array', () => {
+    const exercise = makeValidExercise() as unknown as Record<string, unknown>
+    exercise.pattern = {}
+    expect(() => validateExercise(exercise)).toThrow(ContentValidationError)
   })
 })

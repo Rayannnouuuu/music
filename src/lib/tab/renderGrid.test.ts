@@ -21,4 +21,28 @@ describe('renderMeasureToLines', () => {
       expect(line).toMatch(/^-+$/)
     }
   })
+
+  test('renders a technique suffix character right after the fret number', () => {
+    const measure: Measure = {
+      events: [{ string: 6, fret: 5, startBeat: 0, duration: 1, technique: 'hammer' }],
+    }
+
+    const lines = renderMeasureToLines(measure)
+
+    expect(lines[5]).toMatch(/^5h-+$/)
+  })
+
+  test.each([
+    ['hammer', 'h'],
+    ['pull', 'p'],
+    ['bend', 'b'],
+    ['slide', '/'],
+    ['vibrato', '~'],
+  ] as const)('maps technique %s to suffix %s', (technique, suffix) => {
+    const measure: Measure = {
+      events: [{ string: 6, fret: 3, startBeat: 0, duration: 1, technique }],
+    }
+    const lines = renderMeasureToLines(measure)
+    expect(lines[5][1]).toBe(suffix)
+  })
 })

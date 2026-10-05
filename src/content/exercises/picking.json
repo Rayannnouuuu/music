@@ -4,55 +4,55 @@
     "title": "Alternate picking 1",
     "category": "picking",
     "difficulty": 1,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Alterne coup de médiator vers le bas et vers le haut, sans sauter de mouvement.",
     "targetBpm": 66,
     "xpReward": 10,
     "pattern": [
       {
         "string": 6,
-        "fret": 1,
+        "fret": 0,
         "startBeat": 0,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 1,
+        "fret": 0,
         "startBeat": 1,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 2,
+        "fret": 1,
         "startBeat": 2,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 2,
+        "fret": 1,
         "startBeat": 3,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 3,
+        "fret": 2,
         "startBeat": 4,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 3,
+        "fret": 2,
         "startBeat": 5,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 4,
+        "fret": 3,
         "startBeat": 6,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 4,
+        "fret": 3,
         "startBeat": 7,
         "duration": 1
       }
@@ -63,55 +63,55 @@
     "title": "Picking croisé 2",
     "category": "picking",
     "difficulty": 2,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Garde le poignet détendu : c'est lui qui bouge, pas tout le bras.",
     "targetBpm": 72,
     "xpReward": 20,
     "pattern": [
       {
-        "string": 6,
-        "fret": 2,
+        "string": 5,
+        "fret": 1,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 2,
+        "string": 4,
+        "fret": 1,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 3,
+        "string": 5,
+        "fret": 2,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 3,
+        "string": 4,
+        "fret": 2,
         "startBeat": 3,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 4,
+        "string": 5,
+        "fret": 3,
         "startBeat": 4,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 4,
+        "string": 4,
+        "fret": 3,
         "startBeat": 5,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 5,
+        "string": 5,
+        "fret": 4,
         "startBeat": 6,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 5,
+        "string": 4,
+        "fret": 4,
         "startBeat": 7,
         "duration": 1
       }
@@ -122,55 +122,55 @@
     "title": "Médiator alterné 3",
     "category": "picking",
     "difficulty": 3,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Picking croisé entre deux cordes : vise la régularité avant la vitesse.",
     "targetBpm": 78,
     "xpReward": 30,
     "pattern": [
       {
-        "string": 6,
-        "fret": 3,
+        "string": 4,
+        "fret": 2,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 3,
+        "string": 3,
+        "fret": 2,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 4,
+        "string": 4,
+        "fret": 3,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 4,
+        "string": 3,
+        "fret": 3,
         "startBeat": 3,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 5,
+        "string": 4,
+        "fret": 4,
         "startBeat": 4,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 5,
+        "string": 3,
+        "fret": 4,
         "startBeat": 5,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 6,
+        "string": 4,
+        "fret": 5,
         "startBeat": 6,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 6,
+        "string": 3,
+        "fret": 5,
         "startBeat": 7,
         "duration": 1
       }
@@ -181,55 +181,55 @@
     "title": "Alternate picking 4",
     "category": "picking",
     "difficulty": 4,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Alterne coup de médiator vers le bas et vers le haut, sans sauter de mouvement.",
     "targetBpm": 84,
     "xpReward": 40,
     "pattern": [
       {
         "string": 6,
-        "fret": 4,
+        "fret": 3,
         "startBeat": 0,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 4,
+        "fret": 3,
         "startBeat": 1,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 5,
+        "fret": 4,
         "startBeat": 2,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 5,
+        "fret": 4,
         "startBeat": 3,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 6,
+        "fret": 5,
         "startBeat": 4,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 6,
+        "fret": 5,
         "startBeat": 5,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 7,
+        "fret": 6,
         "startBeat": 6,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 7,
+        "fret": 6,
         "startBeat": 7,
         "duration": 1
       }
@@ -240,55 +240,55 @@
     "title": "Picking croisé 5",
     "category": "picking",
     "difficulty": 5,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Garde le poignet détendu : c'est lui qui bouge, pas tout le bras.",
     "targetBpm": 90,
     "xpReward": 50,
     "pattern": [
       {
-        "string": 6,
-        "fret": 5,
+        "string": 5,
+        "fret": 4,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 5,
+        "string": 4,
+        "fret": 4,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 6,
+        "string": 5,
+        "fret": 5,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 6,
+        "string": 4,
+        "fret": 5,
         "startBeat": 3,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 7,
+        "string": 5,
+        "fret": 6,
         "startBeat": 4,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 7,
+        "string": 4,
+        "fret": 6,
         "startBeat": 5,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 8,
+        "string": 5,
+        "fret": 7,
         "startBeat": 6,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 8,
+        "string": 4,
+        "fret": 7,
         "startBeat": 7,
         "duration": 1
       }
@@ -299,55 +299,55 @@
     "title": "Médiator alterné 6",
     "category": "picking",
     "difficulty": 6,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Picking croisé entre deux cordes : vise la régularité avant la vitesse.",
     "targetBpm": 96,
     "xpReward": 60,
     "pattern": [
       {
-        "string": 6,
-        "fret": 6,
+        "string": 4,
+        "fret": 5,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 6,
+        "string": 3,
+        "fret": 5,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 7,
+        "string": 4,
+        "fret": 6,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 7,
+        "string": 3,
+        "fret": 6,
         "startBeat": 3,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 8,
+        "string": 4,
+        "fret": 7,
         "startBeat": 4,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 8,
+        "string": 3,
+        "fret": 7,
         "startBeat": 5,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 9,
+        "string": 4,
+        "fret": 8,
         "startBeat": 6,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 9,
+        "string": 3,
+        "fret": 8,
         "startBeat": 7,
         "duration": 1
       }
@@ -358,57 +358,57 @@
     "title": "Alternate picking 7",
     "category": "picking",
     "difficulty": 7,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Alterne coup de médiator vers le bas et vers le haut, sans sauter de mouvement.",
     "targetBpm": 102,
     "xpReward": 70,
     "pattern": [
       {
         "string": 6,
-        "fret": 7,
+        "fret": 6,
         "startBeat": 0,
-        "duration": 1
+        "duration": 0.5
+      },
+      {
+        "string": 5,
+        "fret": 6,
+        "startBeat": 0.5,
+        "duration": 0.5
+      },
+      {
+        "string": 6,
+        "fret": 7,
+        "startBeat": 1,
+        "duration": 0.5
       },
       {
         "string": 5,
         "fret": 7,
-        "startBeat": 1,
-        "duration": 1
+        "startBeat": 1.5,
+        "duration": 0.5
       },
       {
         "string": 6,
         "fret": 8,
         "startBeat": 2,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 5,
         "fret": 8,
+        "startBeat": 2.5,
+        "duration": 0.5
+      },
+      {
+        "string": 6,
+        "fret": 9,
         "startBeat": 3,
-        "duration": 1
-      },
-      {
-        "string": 6,
-        "fret": 9,
-        "startBeat": 4,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 5,
         "fret": 9,
-        "startBeat": 5,
-        "duration": 1
-      },
-      {
-        "string": 6,
-        "fret": 10,
-        "startBeat": 6,
-        "duration": 1
-      },
-      {
-        "string": 5,
-        "fret": 10,
-        "startBeat": 7,
-        "duration": 1
+        "startBeat": 3.5,
+        "duration": 0.5
       }
     ]
   },
@@ -417,57 +417,57 @@
     "title": "Picking croisé 8",
     "category": "picking",
     "difficulty": 8,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Garde le poignet détendu : c'est lui qui bouge, pas tout le bras.",
     "targetBpm": 108,
     "xpReward": 80,
     "pattern": [
       {
-        "string": 6,
-        "fret": 8,
+        "string": 5,
+        "fret": 7,
         "startBeat": 0,
-        "duration": 1
+        "duration": 0.5
+      },
+      {
+        "string": 4,
+        "fret": 7,
+        "startBeat": 0.5,
+        "duration": 0.5
       },
       {
         "string": 5,
         "fret": 8,
         "startBeat": 1,
-        "duration": 1
+        "duration": 0.5
       },
       {
-        "string": 6,
+        "string": 4,
+        "fret": 8,
+        "startBeat": 1.5,
+        "duration": 0.5
+      },
+      {
+        "string": 5,
         "fret": 9,
         "startBeat": 2,
-        "duration": 1
+        "duration": 0.5
       },
       {
-        "string": 5,
+        "string": 4,
         "fret": 9,
+        "startBeat": 2.5,
+        "duration": 0.5
+      },
+      {
+        "string": 5,
+        "fret": 10,
         "startBeat": 3,
-        "duration": 1
+        "duration": 0.5
       },
       {
-        "string": 6,
+        "string": 4,
         "fret": 10,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 5,
-        "fret": 10,
-        "startBeat": 5,
-        "duration": 1
-      },
-      {
-        "string": 6,
-        "fret": 11,
-        "startBeat": 6,
-        "duration": 1
-      },
-      {
-        "string": 5,
-        "fret": 11,
-        "startBeat": 7,
-        "duration": 1
+        "startBeat": 3.5,
+        "duration": 0.5
       }
     ]
   },
@@ -476,57 +476,57 @@
     "title": "Médiator alterné 9",
     "category": "picking",
     "difficulty": 9,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Picking croisé entre deux cordes : vise la régularité avant la vitesse.",
     "targetBpm": 114,
     "xpReward": 90,
     "pattern": [
       {
-        "string": 6,
-        "fret": 9,
+        "string": 4,
+        "fret": 8,
         "startBeat": 0,
-        "duration": 1
+        "duration": 0.5
       },
       {
-        "string": 5,
+        "string": 3,
+        "fret": 8,
+        "startBeat": 0.5,
+        "duration": 0.5
+      },
+      {
+        "string": 4,
         "fret": 9,
         "startBeat": 1,
-        "duration": 1
+        "duration": 0.5
       },
       {
-        "string": 6,
+        "string": 3,
+        "fret": 9,
+        "startBeat": 1.5,
+        "duration": 0.5
+      },
+      {
+        "string": 4,
         "fret": 10,
         "startBeat": 2,
-        "duration": 1
+        "duration": 0.5
       },
       {
-        "string": 5,
+        "string": 3,
         "fret": 10,
+        "startBeat": 2.5,
+        "duration": 0.5
+      },
+      {
+        "string": 4,
+        "fret": 11,
         "startBeat": 3,
-        "duration": 1
+        "duration": 0.5
       },
       {
-        "string": 6,
+        "string": 3,
         "fret": 11,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 5,
-        "fret": 11,
-        "startBeat": 5,
-        "duration": 1
-      },
-      {
-        "string": 6,
-        "fret": 12,
-        "startBeat": 6,
-        "duration": 1
-      },
-      {
-        "string": 5,
-        "fret": 12,
-        "startBeat": 7,
-        "duration": 1
+        "startBeat": 3.5,
+        "duration": 0.5
       }
     ]
   },
@@ -535,57 +535,57 @@
     "title": "Alternate picking 10",
     "category": "picking",
     "difficulty": 10,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Alterne coup de médiator vers le bas et vers le haut, sans sauter de mouvement.",
     "targetBpm": 120,
     "xpReward": 100,
     "pattern": [
       {
         "string": 6,
-        "fret": 10,
+        "fret": 9,
         "startBeat": 0,
-        "duration": 1
+        "duration": 0.5
+      },
+      {
+        "string": 5,
+        "fret": 9,
+        "startBeat": 0.5,
+        "duration": 0.5
+      },
+      {
+        "string": 6,
+        "fret": 10,
+        "startBeat": 1,
+        "duration": 0.5
       },
       {
         "string": 5,
         "fret": 10,
-        "startBeat": 1,
-        "duration": 1
+        "startBeat": 1.5,
+        "duration": 0.5
       },
       {
         "string": 6,
         "fret": 11,
         "startBeat": 2,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 5,
         "fret": 11,
+        "startBeat": 2.5,
+        "duration": 0.5
+      },
+      {
+        "string": 6,
+        "fret": 12,
         "startBeat": 3,
-        "duration": 1
-      },
-      {
-        "string": 6,
-        "fret": 12,
-        "startBeat": 4,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 5,
         "fret": 12,
-        "startBeat": 5,
-        "duration": 1
-      },
-      {
-        "string": 6,
-        "fret": 13,
-        "startBeat": 6,
-        "duration": 1
-      },
-      {
-        "string": 5,
-        "fret": 13,
-        "startBeat": 7,
-        "duration": 1
+        "startBeat": 3.5,
+        "duration": 0.5
       }
     ]
   },
@@ -594,55 +594,55 @@
     "title": "Picking croisé 11",
     "category": "picking",
     "difficulty": 1,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Garde le poignet détendu : c'est lui qui bouge, pas tout le bras.",
     "targetBpm": 66,
     "xpReward": 10,
     "pattern": [
       {
-        "string": 6,
-        "fret": 1,
+        "string": 5,
+        "fret": 10,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 1,
+        "string": 4,
+        "fret": 10,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 2,
+        "string": 5,
+        "fret": 11,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 2,
+        "string": 4,
+        "fret": 11,
         "startBeat": 3,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 3,
+        "string": 5,
+        "fret": 12,
         "startBeat": 4,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 3,
+        "string": 4,
+        "fret": 12,
         "startBeat": 5,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 4,
+        "string": 5,
+        "fret": 13,
         "startBeat": 6,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 4,
+        "string": 4,
+        "fret": 13,
         "startBeat": 7,
         "duration": 1
       }
@@ -653,55 +653,55 @@
     "title": "Médiator alterné 12",
     "category": "picking",
     "difficulty": 2,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Picking croisé entre deux cordes : vise la régularité avant la vitesse.",
     "targetBpm": 72,
     "xpReward": 20,
     "pattern": [
       {
-        "string": 6,
-        "fret": 2,
+        "string": 4,
+        "fret": 11,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 2,
+        "string": 3,
+        "fret": 11,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 3,
+        "string": 4,
+        "fret": 12,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 3,
+        "string": 3,
+        "fret": 12,
         "startBeat": 3,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 4,
+        "string": 4,
+        "fret": 13,
         "startBeat": 4,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 4,
+        "string": 3,
+        "fret": 13,
         "startBeat": 5,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 5,
+        "string": 4,
+        "fret": 14,
         "startBeat": 6,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 5,
+        "string": 3,
+        "fret": 14,
         "startBeat": 7,
         "duration": 1
       }
@@ -712,55 +712,55 @@
     "title": "Alternate picking 13",
     "category": "picking",
     "difficulty": 3,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Alterne coup de médiator vers le bas et vers le haut, sans sauter de mouvement.",
     "targetBpm": 78,
     "xpReward": 30,
     "pattern": [
       {
         "string": 6,
-        "fret": 3,
+        "fret": 12,
         "startBeat": 0,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 3,
+        "fret": 12,
         "startBeat": 1,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 4,
+        "fret": 13,
         "startBeat": 2,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 4,
+        "fret": 13,
         "startBeat": 3,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 5,
+        "fret": 14,
         "startBeat": 4,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 5,
+        "fret": 14,
         "startBeat": 5,
         "duration": 1
       },
       {
         "string": 6,
-        "fret": 6,
+        "fret": 15,
         "startBeat": 6,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 6,
+        "fret": 15,
         "startBeat": 7,
         "duration": 1
       }
@@ -771,55 +771,55 @@
     "title": "Picking croisé 14",
     "category": "picking",
     "difficulty": 4,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Garde le poignet détendu : c'est lui qui bouge, pas tout le bras.",
     "targetBpm": 84,
     "xpReward": 40,
     "pattern": [
       {
-        "string": 6,
-        "fret": 4,
+        "string": 5,
+        "fret": 13,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 4,
+        "string": 4,
+        "fret": 13,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 5,
+        "string": 5,
+        "fret": 14,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 5,
+        "string": 4,
+        "fret": 14,
         "startBeat": 3,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 6,
+        "string": 5,
+        "fret": 15,
         "startBeat": 4,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 6,
+        "string": 4,
+        "fret": 15,
         "startBeat": 5,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 7,
+        "string": 5,
+        "fret": 16,
         "startBeat": 6,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 7,
+        "string": 4,
+        "fret": 16,
         "startBeat": 7,
         "duration": 1
       }
@@ -830,55 +830,55 @@
     "title": "Médiator alterné 15",
     "category": "picking",
     "difficulty": 5,
-    "description": "Alterne coup de médiator vers le bas et vers le haut en changeant de corde régulièrement.",
+    "description": "Picking croisé entre deux cordes : vise la régularité avant la vitesse.",
     "targetBpm": 90,
     "xpReward": 50,
     "pattern": [
       {
-        "string": 6,
-        "fret": 5,
+        "string": 4,
+        "fret": 14,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 5,
+        "string": 3,
+        "fret": 14,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 6,
+        "string": 4,
+        "fret": 15,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 6,
+        "string": 3,
+        "fret": 15,
         "startBeat": 3,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 7,
+        "string": 4,
+        "fret": 16,
         "startBeat": 4,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 7,
+        "string": 3,
+        "fret": 16,
         "startBeat": 5,
         "duration": 1
       },
       {
-        "string": 6,
-        "fret": 8,
+        "string": 4,
+        "fret": 17,
         "startBeat": 6,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 8,
+        "string": 3,
+        "fret": 17,
         "startBeat": 7,
         "duration": 1
       }

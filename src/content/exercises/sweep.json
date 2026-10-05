@@ -1,47 +1,35 @@
 [
   {
     "id": "sweep-1",
-    "title": "Sweep picking 3 cordes 1",
+    "title": "Sweep picking 1",
     "category": "sweep",
     "difficulty": 1,
-    "description": "Balaye le médiator dans un seul mouvement continu à travers les cordes, une note par corde.",
+    "description": "Un seul mouvement de médiator continu à travers les cordes, une note par corde.",
     "targetBpm": 66,
     "xpReward": 10,
     "pattern": [
       {
         "string": 6,
-        "fret": 1,
+        "fret": 0,
         "startBeat": 0,
         "duration": 1
       },
       {
         "string": 5,
-        "fret": 2,
+        "fret": 1,
         "startBeat": 1,
         "duration": 1
       },
       {
         "string": 4,
-        "fret": 3,
+        "fret": 2,
         "startBeat": 2,
         "duration": 1
       },
       {
         "string": 3,
-        "fret": 4,
+        "fret": 3,
         "startBeat": 3,
-        "duration": 1
-      },
-      {
-        "string": 2,
-        "fret": 5,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 1,
-        "fret": 6,
-        "startBeat": 5,
         "duration": 1
       }
     ]
@@ -51,44 +39,32 @@
     "title": "Sweep arpégé 2",
     "category": "sweep",
     "difficulty": 2,
-    "description": "Balaye le médiator dans un seul mouvement continu à travers les cordes, une note par corde.",
+    "description": "Synchronise la main gauche avec le médiator : chaque doigt se lève juste avant la corde suivante.",
     "targetBpm": 72,
     "xpReward": 20,
     "pattern": [
       {
-        "string": 6,
-        "fret": 2,
+        "string": 5,
+        "fret": 1,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 3,
+        "string": 4,
+        "fret": 2,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 4,
-        "fret": 4,
+        "string": 3,
+        "fret": 3,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 3,
-        "fret": 5,
-        "startBeat": 3,
-        "duration": 1
-      },
-      {
         "string": 2,
-        "fret": 6,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 1,
-        "fret": 7,
-        "startBeat": 5,
+        "fret": 4,
+        "startBeat": 3,
         "duration": 1
       }
     ]
@@ -98,9 +74,44 @@
     "title": "Sweep picking ascendant 3",
     "category": "sweep",
     "difficulty": 3,
-    "description": "Balaye le médiator dans un seul mouvement continu à travers les cordes, une note par corde.",
+    "description": "Sweep descendant : même geste que la montée, mais dans le sens inverse.",
     "targetBpm": 78,
     "xpReward": 30,
+    "pattern": [
+      {
+        "string": 4,
+        "fret": 2,
+        "startBeat": 0,
+        "duration": 1
+      },
+      {
+        "string": 3,
+        "fret": 3,
+        "startBeat": 1,
+        "duration": 1
+      },
+      {
+        "string": 2,
+        "fret": 4,
+        "startBeat": 2,
+        "duration": 1
+      },
+      {
+        "string": 1,
+        "fret": 5,
+        "startBeat": 3,
+        "duration": 1
+      }
+    ]
+  },
+  {
+    "id": "sweep-4",
+    "title": "Sweep picking 4",
+    "category": "sweep",
+    "difficulty": 4,
+    "description": "Un seul mouvement de médiator continu à travers les cordes, une note par corde.",
+    "targetBpm": 84,
+    "xpReward": 40,
     "pattern": [
       {
         "string": 6,
@@ -125,65 +136,6 @@
         "fret": 6,
         "startBeat": 3,
         "duration": 1
-      },
-      {
-        "string": 2,
-        "fret": 7,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 1,
-        "fret": 8,
-        "startBeat": 5,
-        "duration": 1
-      }
-    ]
-  },
-  {
-    "id": "sweep-4",
-    "title": "Sweep picking 3 cordes 4",
-    "category": "sweep",
-    "difficulty": 4,
-    "description": "Balaye le médiator dans un seul mouvement continu à travers les cordes, une note par corde.",
-    "targetBpm": 84,
-    "xpReward": 40,
-    "pattern": [
-      {
-        "string": 6,
-        "fret": 4,
-        "startBeat": 0,
-        "duration": 1
-      },
-      {
-        "string": 5,
-        "fret": 5,
-        "startBeat": 1,
-        "duration": 1
-      },
-      {
-        "string": 4,
-        "fret": 6,
-        "startBeat": 2,
-        "duration": 1
-      },
-      {
-        "string": 3,
-        "fret": 7,
-        "startBeat": 3,
-        "duration": 1
-      },
-      {
-        "string": 2,
-        "fret": 8,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 1,
-        "fret": 9,
-        "startBeat": 5,
-        "duration": 1
       }
     ]
   },
@@ -192,44 +144,32 @@
     "title": "Sweep arpégé 5",
     "category": "sweep",
     "difficulty": 5,
-    "description": "Balaye le médiator dans un seul mouvement continu à travers les cordes, une note par corde.",
+    "description": "Synchronise la main gauche avec le médiator : chaque doigt se lève juste avant la corde suivante.",
     "targetBpm": 90,
     "xpReward": 50,
     "pattern": [
       {
-        "string": 6,
-        "fret": 5,
+        "string": 5,
+        "fret": 4,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 6,
+        "string": 4,
+        "fret": 5,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 4,
-        "fret": 7,
+        "string": 3,
+        "fret": 6,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 3,
-        "fret": 8,
-        "startBeat": 3,
-        "duration": 1
-      },
-      {
         "string": 2,
-        "fret": 9,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 1,
-        "fret": 10,
-        "startBeat": 5,
+        "fret": 7,
+        "startBeat": 3,
         "duration": 1
       }
     ]
@@ -239,92 +179,68 @@
     "title": "Sweep picking ascendant 6",
     "category": "sweep",
     "difficulty": 6,
-    "description": "Balaye le médiator dans un seul mouvement continu à travers les cordes, une note par corde.",
+    "description": "Sweep descendant : même geste que la montée, mais dans le sens inverse.",
     "targetBpm": 96,
     "xpReward": 60,
     "pattern": [
       {
-        "string": 6,
-        "fret": 6,
+        "string": 4,
+        "fret": 5,
         "startBeat": 0,
         "duration": 1
       },
       {
-        "string": 5,
-        "fret": 7,
+        "string": 3,
+        "fret": 6,
         "startBeat": 1,
         "duration": 1
       },
       {
-        "string": 4,
-        "fret": 8,
+        "string": 2,
+        "fret": 7,
         "startBeat": 2,
         "duration": 1
       },
       {
-        "string": 3,
-        "fret": 9,
-        "startBeat": 3,
-        "duration": 1
-      },
-      {
-        "string": 2,
-        "fret": 10,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
         "string": 1,
-        "fret": 11,
-        "startBeat": 5,
+        "fret": 8,
+        "startBeat": 3,
         "duration": 1
       }
     ]
   },
   {
     "id": "sweep-7",
-    "title": "Sweep picking 3 cordes 7",
+    "title": "Sweep picking 7",
     "category": "sweep",
     "difficulty": 7,
-    "description": "Balaye le médiator dans un seul mouvement continu à travers les cordes, une note par corde.",
+    "description": "Un seul mouvement de médiator continu à travers les cordes, une note par corde.",
     "targetBpm": 102,
     "xpReward": 70,
     "pattern": [
       {
         "string": 6,
-        "fret": 7,
+        "fret": 6,
         "startBeat": 0,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 5,
-        "fret": 8,
-        "startBeat": 1,
-        "duration": 1
+        "fret": 7,
+        "startBeat": 0.5,
+        "duration": 0.5
       },
       {
         "string": 4,
-        "fret": 9,
-        "startBeat": 2,
-        "duration": 1
+        "fret": 8,
+        "startBeat": 1,
+        "duration": 0.5
       },
       {
         "string": 3,
-        "fret": 10,
-        "startBeat": 3,
-        "duration": 1
-      },
-      {
-        "string": 2,
-        "fret": 11,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 1,
-        "fret": 12,
-        "startBeat": 5,
-        "duration": 1
+        "fret": 9,
+        "startBeat": 1.5,
+        "duration": 0.5
       }
     ]
   },
@@ -333,45 +249,33 @@
     "title": "Sweep arpégé 8",
     "category": "sweep",
     "difficulty": 8,
-    "description": "Balaye le médiator dans un seul mouvement continu à travers les cordes, une note par corde.",
+    "description": "Synchronise la main gauche avec le médiator : chaque doigt se lève juste avant la corde suivante.",
     "targetBpm": 108,
     "xpReward": 80,
     "pattern": [
       {
-        "string": 6,
-        "fret": 8,
-        "startBeat": 0,
-        "duration": 1
-      },
-      {
         "string": 5,
-        "fret": 9,
-        "startBeat": 1,
-        "duration": 1
+        "fret": 7,
+        "startBeat": 0,
+        "duration": 0.5
       },
       {
         "string": 4,
-        "fret": 10,
-        "startBeat": 2,
-        "duration": 1
+        "fret": 8,
+        "startBeat": 0.5,
+        "duration": 0.5
       },
       {
         "string": 3,
-        "fret": 11,
-        "startBeat": 3,
-        "duration": 1
+        "fret": 9,
+        "startBeat": 1,
+        "duration": 0.5
       },
       {
         "string": 2,
-        "fret": 12,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 1,
-        "fret": 13,
-        "startBeat": 5,
-        "duration": 1
+        "fret": 10,
+        "startBeat": 1.5,
+        "duration": 0.5
       }
     ]
   },
@@ -380,92 +284,68 @@
     "title": "Sweep picking ascendant 9",
     "category": "sweep",
     "difficulty": 9,
-    "description": "Balaye le médiator dans un seul mouvement continu à travers les cordes, une note par corde.",
+    "description": "Sweep descendant : même geste que la montée, mais dans le sens inverse.",
     "targetBpm": 114,
     "xpReward": 90,
     "pattern": [
       {
-        "string": 6,
-        "fret": 9,
-        "startBeat": 0,
-        "duration": 1
-      },
-      {
-        "string": 5,
-        "fret": 10,
-        "startBeat": 1,
-        "duration": 1
-      },
-      {
         "string": 4,
-        "fret": 11,
-        "startBeat": 2,
-        "duration": 1
+        "fret": 8,
+        "startBeat": 0,
+        "duration": 0.5
       },
       {
         "string": 3,
-        "fret": 12,
-        "startBeat": 3,
-        "duration": 1
+        "fret": 9,
+        "startBeat": 0.5,
+        "duration": 0.5
       },
       {
         "string": 2,
-        "fret": 13,
-        "startBeat": 4,
-        "duration": 1
+        "fret": 10,
+        "startBeat": 1,
+        "duration": 0.5
       },
       {
         "string": 1,
-        "fret": 14,
-        "startBeat": 5,
-        "duration": 1
+        "fret": 11,
+        "startBeat": 1.5,
+        "duration": 0.5
       }
     ]
   },
   {
     "id": "sweep-10",
-    "title": "Sweep picking 3 cordes 10",
+    "title": "Sweep picking 10",
     "category": "sweep",
     "difficulty": 10,
-    "description": "Balaye le médiator dans un seul mouvement continu à travers les cordes, une note par corde.",
+    "description": "Un seul mouvement de médiator continu à travers les cordes, une note par corde.",
     "targetBpm": 120,
     "xpReward": 100,
     "pattern": [
       {
         "string": 6,
-        "fret": 10,
+        "fret": 9,
         "startBeat": 0,
-        "duration": 1
+        "duration": 0.5
       },
       {
         "string": 5,
-        "fret": 11,
-        "startBeat": 1,
-        "duration": 1
+        "fret": 10,
+        "startBeat": 0.5,
+        "duration": 0.5
       },
       {
         "string": 4,
-        "fret": 12,
-        "startBeat": 2,
-        "duration": 1
+        "fret": 11,
+        "startBeat": 1,
+        "duration": 0.5
       },
       {
         "string": 3,
-        "fret": 13,
-        "startBeat": 3,
-        "duration": 1
-      },
-      {
-        "string": 2,
-        "fret": 14,
-        "startBeat": 4,
-        "duration": 1
-      },
-      {
-        "string": 1,
-        "fret": 15,
-        "startBeat": 5,
-        "duration": 1
+        "fret": 12,
+        "startBeat": 1.5,
+        "duration": 0.5
       }
     ]
   }

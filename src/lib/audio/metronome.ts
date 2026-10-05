@@ -18,6 +18,13 @@ export function computeScheduledTicks(input: ScheduleInput): ScheduleResult {
   const { currentTime, scheduleAheadTime, secondsPerBeat, beatsPerBar } = input
   const ticks: ScheduleResult['ticks'] = []
 
+  // A non-positive beat length can never advance nextTickTime: scheduling
+  // against it would loop forever (or backwards). Treat it as "nothing to
+  // schedule yet" rather than crashing.
+  if (secondsPerBeat <= 0) {
+    return { ticks, nextTickTime, nextBeatIndexInBar }
+  }
+
   while (nextTickTime < currentTime + scheduleAheadTime) {
     ticks.push({ time: nextTickTime, accent: nextBeatIndexInBar === 0 })
     nextTickTime += secondsPerBeat
@@ -30,6 +37,13 @@ export function computeScheduledTicks(input: ScheduleInput): ScheduleResult {
 const SCHEDULE_AHEAD_TIME = 0.1
 const LOOKAHEAD_INTERVAL_MS = 25
 const BEATS_PER_BAR = 4
+const MIN_BPM = 20
+const MAX_BPM = 400
+
+export function clampBpm(bpm: number): number {
+  if (!Number.isFinite(bpm)) return MIN_BPM
+  return Math.min(MAX_BPM, Math.max(MIN_BPM, bpm))
+}
 
 export class MetronomeEngine {
   private audioContext: AudioContext | null = null
@@ -41,7 +55,7 @@ export class MetronomeEngine {
 
   start(bpm: number): void {
     if (this.intervalId !== null) return
-    this.secondsPerBeat = 60 / bpm
+    this.secondsPerBeat = 60 / clampBpm(bpm)
     this.audioContext = new AudioContext()
     this.nextTickTime = this.audioContext.currentTime
     this.nextBeatIndexInBar = 0
@@ -74,7 +88,7 @@ export class MetronomeEngine {
   }
 
   setBpm(bpm: number): void {
-    this.secondsPerBeat = 60 / bpm
+    this.secondsPerBeat = 60 / clampBpm(bpm)
   }
 
   setVolume(v: number): void {

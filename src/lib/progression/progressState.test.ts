@@ -1,0 +1,60 @@
+import { describe, test, expect } from 'vitest'
+import { hydrateProgressState, defaultProgressState } from './progressState'
+import type { Tab } from '../content/types'
+
+function validTab(id: string): Tab {
+  return {
+    id,
+    title: 'T',
+    artist: 'A',
+    subgenre: 'thrash',
+    tuning: 'Standard',
+    originalTempo: 120,
+    difficulty: 5,
+    measures: [{ events: [{ string: 6, fret: 0, startBeat: 0, duration: 1 }] }],
+  }
+}
+
+describe('hydrateProgressState', () => {
+  test('null returns the default state', () => {
+    expect(hydrateProgressState(null)).toEqual(defaultProgressState)
+  })
+
+  test('a non-object (e.g. a stray string) returns the default state', () => {
+    expect(hydrateProgressState('not an object')).toEqual(defaultProgressState)
+  })
+
+  test('an empty object fills in every field with its default', () => {
+    expect(hydrateProgressState({})).toEqual(defaultProgressState)
+  })
+
+  test('valid top-level fields are kept as-is', () => {
+    const result = hydrateProgressState({ xpTotal: 250, tabsCompletedCount: 3 })
+    expect(result.xpTotal).toBe(250)
+    expect(result.tabsCompletedCount).toBe(3)
+  })
+
+  test('a wrong-type top-level field falls back to its default instead of propagating', () => {
+    const result = hydrateProgressState({ xpTotal: 'not a number' })
+    expect(result.xpTotal).toBe(0)
+  })
+
+  test('skillXp is merged per-category, filling in missing or wrong-type categories', () => {
+    const result = hydrateProgressState({ skillXp: { scales: 100, legato: 'bad' } })
+    expect(result.skillXp.scales).toBe(100)
+    expect(result.skillXp.legato).toBe(0)
+    expect(result.skillXp.rhythm).toBe(0)
+  })
+
+  test('importedTabs keeps valid tabs and drops invalid ones instead of crashing', () => {
+    const malformed = { id: 'bad', measures: 'not an array' }
+    const result = hydrateProgressState({ importedTabs: [validTab('ok'), malformed] })
+    expect(result.importedTabs).toHaveLength(1)
+    expect(result.importedTabs[0].id).toBe('ok')
+  })
+
+  test('a non-array importedTabs falls back to an empty array', () => {
+    const result = hydrateProgressState({ importedTabs: 'not an array' })
+    expect(result.importedTabs).toEqual([])
+  })
+})

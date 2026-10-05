@@ -1,6 +1,15 @@
-import type { Measure } from '../content/types'
+import type { Measure, Technique } from '../content/types'
 
 const COLUMNS_PER_BEAT = 4
+
+export const TECHNIQUE_SUFFIX: Record<Technique, string> = {
+  hammer: 'h',
+  pull: 'p',
+  bend: 'b',
+  slide: '/',
+  vibrato: '~',
+  palmMute: '',
+}
 
 export function columnForBeat(startBeat: number): number {
   return Math.round(startBeat * COLUMNS_PER_BEAT)
@@ -15,10 +24,11 @@ export function renderMeasureToLines(measure: Measure): string[] {
   for (const event of measure.events) {
     const col = columnForBeat(event.startBeat)
     const lineIndex = event.string - 1 // string 1 (high e) -> line 0
-    const digits = String(event.fret).split('')
-    digits.forEach((digit, offset) => {
+    const suffix = event.technique ? TECHNIQUE_SUFFIX[event.technique] : ''
+    const chars = (String(event.fret) + suffix).split('')
+    chars.forEach((char, offset) => {
       if (col + offset < length) {
-        lines[lineIndex][col + offset] = digit
+        lines[lineIndex][col + offset] = char
       }
     })
   }
