@@ -2,7 +2,7 @@ import { describe, test, expect } from 'vitest'
 import { playerReducer, type PlayerState } from './playerState'
 
 function baseState(overrides: Partial<PlayerState> = {}): PlayerState {
-  return { status: 'idle', speedPercent: 100, elapsedBeats: 0, ...overrides }
+  return { status: 'idle', mode: 'tempo', speedPercent: 100, elapsedBeats: 0, ...overrides }
 }
 
 describe('playerReducer', () => {
@@ -56,5 +56,23 @@ describe('playerReducer', () => {
     const next = playerReducer(state, { type: 'tick', deltaSeconds: 1, bpm: 120 })
     // advance = 2 beats -> raw 9, overshoot past loopRange[1]=8 is 1 -> wraps to 0+1
     expect(next.elapsedBeats).toBe(1)
+  })
+
+  test('setMode switches the mode field', () => {
+    const state = baseState({ mode: 'tempo' })
+    const next = playerReducer(state, { type: 'setMode', mode: 'practice' })
+    expect(next.mode).toBe('practice')
+  })
+
+  test('advance sets elapsedBeats directly, like seek', () => {
+    const state = baseState({ elapsedBeats: 0 })
+    const next = playerReducer(state, { type: 'advance', beat: 6 })
+    expect(next.elapsedBeats).toBe(6)
+  })
+
+  test('tick in practice mode does not advance elapsedBeats even while playing', () => {
+    const state = baseState({ status: 'playing', mode: 'practice', elapsedBeats: 3 })
+    const next = playerReducer(state, { type: 'tick', deltaSeconds: 1, bpm: 120 })
+    expect(next.elapsedBeats).toBe(3)
   })
 })

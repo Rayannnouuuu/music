@@ -21,6 +21,7 @@ function skillLevels(skillXp: Record<Category, number>): Record<string, number> 
 interface ProgressionContextValue {
   state: ProgressState
   completeExercise(exercise: Exercise, today: string): void
+  uncompleteExerciseToday(exercise: Exercise, today: string): void
   completeExercisePractice(exercise: Exercise, minutesSpent: number, today: string): void
   completeTabPractice(tab: Tab, minutesSpent: number, today: string): void
   setDailyGoal(goal: DailyGoal): void
@@ -115,6 +116,44 @@ export function ProgressionProvider({ children }: { children: ReactNode }) {
           { exercisesCount: 1 },
           0,
         )
+      })
+    },
+    // Undoes exactly what completeExercise added today — the daily flag,
+    // its XP, and its daily-progress count — so the exercise becomes
+    // retryable again. Deliberately leaves completedExerciseIds (permanent
+    // path-unlock progress) and any badges already earned untouched: an
+    // accidental-click undo shouldn't re-lock the rest of the path.
+    uncompleteExerciseToday(exercise, today) {
+      setState((prev) => {
+        if (!hasCompletedExerciseToday(prev.completedExerciseIdsByDay, today, exercise.id)) return prev
+        const dayList = prev.completedExerciseIdsByDay[today] ?? []
+        const completedExerciseIdsByDay = {
+          ...prev.completedExerciseIdsByDay,
+          [today]: dayList.filter((id) => id !== exercise.id),
+        }
+        const xpGained = exercise.xpReward
+        const xpTotal = Math.max(0, prev.xpTotal - xpGained)
+        const skillXp = {
+          ...prev.skillXp,
+          [exercise.category]: Math.max(0, prev.skillXp[exercise.category] - xpGained),
+        }
+        const reversedOne = { reversed: false }
+        const xpLog = prev.xpLog.filter((entry) => {
+          if (!reversedOne.reversed && entry.date === today && entry.xpGained === xpGained) {
+            reversedOne.reversed = true
+            return false
+          }
+          return true
+        })
+        const previousTodayProgress = prev.dailyProgress[today] ?? { minutes: 0, exercisesCount: 0 }
+        const dailyProgress = {
+          ...prev.dailyProgress,
+          [today]: {
+            ...previousTodayProgress,
+            exercisesCount: Math.max(0, previousTodayProgress.exercisesCount - 1),
+          },
+        }
+        return { ...prev, completedExerciseIdsByDay, xpTotal, skillXp, xpLog, dailyProgress }
       })
     },
     completeExercisePractice(exercise, minutesSpent, today) {

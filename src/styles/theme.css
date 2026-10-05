@@ -33,6 +33,8 @@
   --color-success-soft: #4ade8026;
   --color-warning: #fb923c;
   --color-warning-soft: #fb923c26;
+  --color-danger: #f87171;
+  --color-danger-soft: #f8717126;
 
   --font-sans: "Geist Sans", "Geist", system-ui, -apple-system, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", monospace;

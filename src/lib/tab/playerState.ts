@@ -2,6 +2,10 @@ import { beatsAtTime } from './playback'
 
 export interface PlayerState {
   status: 'idle' | 'playing' | 'paused'
+  // 'tempo': the metronome clock drives the cursor forward automatically.
+  // 'practice': the cursor only moves when the current note is matched
+  // (via 'advance'), so a beginner can take as long as they need per note.
+  mode: 'tempo' | 'practice'
   speedPercent: number
   elapsedBeats: number
   loopRange?: [number, number]
@@ -13,6 +17,8 @@ export type PlayerAction =
   | { type: 'seek'; beat: number }
   | { type: 'setSpeed'; percent: number }
   | { type: 'setLoop'; range: [number, number] | undefined }
+  | { type: 'setMode'; mode: PlayerState['mode'] }
+  | { type: 'advance'; beat: number }
   | { type: 'tick'; deltaSeconds: number; bpm: number }
 
 export function playerReducer(state: PlayerState, action: PlayerAction): PlayerState {
@@ -27,8 +33,12 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
       return { ...state, speedPercent: action.percent }
     case 'setLoop':
       return { ...state, loopRange: action.range }
+    case 'setMode':
+      return { ...state, mode: action.mode }
+    case 'advance':
+      return { ...state, elapsedBeats: action.beat }
     case 'tick': {
-      if (state.status !== 'playing') return state
+      if (state.status !== 'playing' || state.mode === 'practice') return state
       const advance = beatsAtTime((action.deltaSeconds * state.speedPercent) / 100, action.bpm)
       let elapsedBeats = state.elapsedBeats + advance
       if (state.loopRange && elapsedBeats > state.loopRange[1]) {

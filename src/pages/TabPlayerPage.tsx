@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowLeft, Play, Pause, Gauge, Repeat, Guitar, Minus, Plus, type Icon } from '@phosphor-icons/react'
+import { ArrowLeft, Play, Gauge, Repeat, Guitar, Minus, Plus, type Icon } from '@phosphor-icons/react'
 import NoteHighway from '../components/tab/NoteHighway'
 import FretboardDiagram from '../components/tab/FretboardDiagram'
 import TabPerformanceView from '../components/tab/TabPerformanceView'
@@ -57,10 +57,32 @@ export default function TabPlayerPage() {
   const baseBpm = tab ? (progressState.customTempoByTabId[tab.id] ?? tab.originalTempo) : 0
   const tuning = findTuningByLabel(tab?.tuning ?? 'Standard')
 
-  const { state, dispatch, effectiveBpm, togglePlayback, metronome, practiceSecondsRef } = useLoopPlayback({
+  const {
+    state,
+    dispatch,
+    effectiveBpm,
+    togglePlayback,
+    metronome,
+    practiceSecondsRef,
+    performanceOpen,
+    countdown,
+    misses,
+    maxMisses,
+    hitKeys,
+    missedKeys,
+    justFailed,
+    enterPerformance,
+    exitPerformance,
+    restartPerformance,
+    setMode,
+    advanceBeat,
+    handleNoteResult,
+  } = useLoopPlayback({
     loopKey: tab?.id ?? '',
     totalBeats,
     baseBpm,
+    // Songs get a bit more slack than exercises before an attempt resets.
+    maxMisses: 5,
     onStop: (minutesSpent) => {
       if (tab) completeTabPractice(tab, minutesSpent, localDateString())
     },
@@ -120,7 +142,7 @@ export default function TabPlayerPage() {
   return (
     <div className="space-y-6">
       <AnimatePresence>
-        {state.status === 'playing' && (
+        {performanceOpen && (
           <TabPerformanceView
             title={tab.title}
             artist={tab.artist}
@@ -132,8 +154,21 @@ export default function TabPlayerPage() {
             effectiveBpm={effectiveBpm}
             speedPercent={state.speedPercent}
             onSpeedChange={handleSpeedChange}
-            onExit={togglePlayback}
+            isPlaying={state.status === 'playing'}
+            onTogglePause={togglePlayback}
+            onExit={exitPerformance}
             xpSoFar={xpSoFar}
+            countdown={countdown}
+            mode={state.mode}
+            onModeChange={setMode}
+            misses={misses}
+            maxMisses={maxMisses}
+            justFailed={justFailed}
+            onRestart={restartPerformance}
+            hitKeys={hitKeys}
+            missedKeys={missedKeys}
+            onNoteResult={handleNoteResult}
+            onAdvanceBeat={advanceBeat}
           />
         )}
       </AnimatePresence>
@@ -165,17 +200,11 @@ export default function TabPlayerPage() {
         <div className="flex flex-wrap items-center gap-5">
           <motion.button
             whileTap={{ scale: 0.88 }}
-            onClick={togglePlayback}
-            aria-label={state.status === 'playing' ? 'Pause' : 'Lecture'}
-            className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent text-text transition-shadow ${
-              state.status === 'playing' ? 'shadow-[0_0_0_6px_var(--color-accent-soft)]' : ''
-            }`}
+            onClick={enterPerformance}
+            aria-label="Lecture"
+            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent text-text transition-shadow"
           >
-            {state.status === 'playing' ? (
-              <Pause size={28} weight="fill" />
-            ) : (
-              <Play size={28} weight="fill" />
-            )}
+            <Play size={28} weight="fill" />
           </motion.button>
 
           <div className="min-w-[160px] flex-1 space-y-1.5">

@@ -7,10 +7,10 @@ import {
   CheckCircle,
   Gauge,
   Play,
-  Pause,
   Lightbulb,
   Lock,
   Trophy,
+  ArrowCounterClockwise,
 } from '@phosphor-icons/react'
 import { loadAllExercises } from '../lib/content/loadExercises'
 import NoteHighway from '../components/tab/NoteHighway'
@@ -38,8 +38,13 @@ export default function ExerciseDetailPage() {
   const navigate = useNavigate()
   const allExercises = useMemo(() => loadAllExercises(), [])
   const exercise = allExercises.find((e) => e.id === id)
-  const { state: progressState, completeExercise, completeExercisePractice, isExerciseCompletedToday } =
-    useProgression()
+  const {
+    state: progressState,
+    completeExercise,
+    completeExercisePractice,
+    isExerciseCompletedToday,
+    uncompleteExerciseToday,
+  } = useProgression()
   const [justCompleted, setJustCompleted] = useState(false)
   const [autoAdvancing, setAutoAdvancing] = useState(false)
   const today = localDateString()
@@ -53,11 +58,53 @@ export default function ExerciseDetailPage() {
   const nextId = exercise ? exerciseAfter(orderedIds, exercise.id) : undefined
   const nextExercise = nextId ? allExercises.find((e) => e.id === nextId) : undefined
 
+  const doneToday = exercise ? isExerciseCompletedToday(exercise.id, today) : false
+
+  // Shared by the manual button, the 90%-note-accuracy validation, and the
+  // "play a full clean pass" mastery check below: whichever happens first
+  // grants the XP and kicks off the "flow into the next step" sequence.
+  function handleNewCompletion() {
+    setJustCompleted(true)
+    setTimeout(() => setJustCompleted(false), 2500)
+    if (nextId) setAutoAdvancing(true)
+  }
+
+  function handlePieceValidated() {
+    if (doneToday || !exercise) return
+    completeExercise(exercise, today)
+    handleNewCompletion()
+  }
+
   const totalBeats = exercise ? totalBeatsForEvents(exercise.pattern) : 4
-  const { state, dispatch, togglePlayback, effectiveBpm, practiceSecondsRef } = useLoopPlayback({
+  const {
+    state,
+    dispatch,
+    togglePlayback,
+    effectiveBpm,
+    practiceSecondsRef,
+    performanceOpen,
+    countdown,
+    misses,
+    maxMisses,
+    hitKeys,
+    missedKeys,
+    justFailed,
+    enterPerformance,
+    exitPerformance,
+    restartPerformance,
+    setMode,
+    advanceBeat,
+    handleNoteResult,
+  } = useLoopPlayback({
     loopKey: exercise?.id ?? '',
     totalBeats,
     baseBpm: exercise?.targetBpm ?? 0,
+    // Exercises are short riffs — a single wrong note during a real attempt
+    // sends it back to the start, and a clean 45s pass counts as mastered
+    // rather than looping forever.
+    maxMisses: 1,
+    targetCleanSeconds: 45,
+    onMastered: handlePieceValidated,
     onStop: (minutesSpent) => {
       if (exercise) completeExercisePractice(exercise, minutesSpent, localDateString())
     },
@@ -105,7 +152,6 @@ export default function ExerciseDetailPage() {
     )
   }
 
-  const doneToday = isExerciseCompletedToday(exercise.id, today)
   const scrollPos = Math.min(totalBeats, Math.max(0, state.elapsedBeats))
   const candidateIndex = activeEventIndex(exercise.pattern, scrollPos)
   const activeEvent =
@@ -115,26 +161,16 @@ export default function ExerciseDetailPage() {
   const xpSoFar = Math.round((practiceSecondsRef.current / 60) * XP_PER_MINUTE)
   const tips = tipsFor(exercise.category, exercise.difficulty)
 
-  // Shared by the manual button and the 90%-note-accuracy auto-validation:
-  // whichever happens first grants the XP and kicks off the "flow into the
-  // next step" sequence — the point is a continuous path, not two
-  // disconnected ways to finish an exercise.
-  function handleNewCompletion() {
-    setJustCompleted(true)
-    setTimeout(() => setJustCompleted(false), 2500)
-    if (nextId) setAutoAdvancing(true)
-  }
-
   function handleComplete() {
     if (doneToday) return
     completeExercise(exercise!, today)
     handleNewCompletion()
   }
 
-  function handlePieceValidated() {
-    if (doneToday) return
-    completeExercise(exercise!, today)
-    handleNewCompletion()
+  function handleUndo() {
+    uncompleteExerciseToday(exercise!, today)
+    setJustCompleted(false)
+    setAutoAdvancing(false)
   }
 
   function handleSpeedChange(percent: number) {
@@ -144,7 +180,7 @@ export default function ExerciseDetailPage() {
   return (
     <div className="space-y-6">
       <AnimatePresence>
-        {state.status === 'playing' && (
+        {performanceOpen && (
           <TabPerformanceView
             title={exercise.title}
             artist={`${CATEGORY_LABELS[exercise.category] ?? exercise.category} · niveau ${
@@ -158,9 +194,22 @@ export default function ExerciseDetailPage() {
             effectiveBpm={effectiveBpm}
             speedPercent={state.speedPercent}
             onSpeedChange={handleSpeedChange}
-            onExit={togglePlayback}
+            isPlaying={state.status === 'playing'}
+            onTogglePause={togglePlayback}
+            onExit={exitPerformance}
             xpSoFar={xpSoFar}
             onPieceValidated={handlePieceValidated}
+            countdown={countdown}
+            mode={state.mode}
+            onModeChange={setMode}
+            misses={misses}
+            maxMisses={maxMisses}
+            justFailed={justFailed}
+            onRestart={restartPerformance}
+            hitKeys={hitKeys}
+            missedKeys={missedKeys}
+            onNoteResult={handleNoteResult}
+            onAdvanceBeat={advanceBeat}
           />
         )}
       </AnimatePresence>
@@ -198,23 +247,18 @@ export default function ExerciseDetailPage() {
         <div className="flex flex-wrap items-center gap-5">
           <motion.button
             whileTap={{ scale: 0.88 }}
-            onClick={togglePlayback}
-            aria-label={state.status === 'playing' ? 'Pause' : 'Lecture'}
-            className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent text-text transition-shadow ${
-              state.status === 'playing' ? 'shadow-[0_0_0_6px_var(--color-accent-soft)]' : ''
-            }`}
+            onClick={enterPerformance}
+            aria-label="Lecture"
+            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent text-text transition-shadow"
           >
-            {state.status === 'playing' ? (
-              <Pause size={28} weight="fill" />
-            ) : (
-              <Play size={28} weight="fill" />
-            )}
+            <Play size={28} weight="fill" />
           </motion.button>
           <div className="space-y-1">
             <p className="font-semibold text-text">Jouer avec le métronome</p>
             <p className="text-xs text-text-muted">
-              Lecture démarre le métronome à {exercise.targetBpm} BPM et boucle l'exercice en plein écran.
-              Joue 90% des notes justes (au micro ou via le bouton Valider) pour valider le morceau.
+              Un compte à rebours lance l'exercice en plein écran à {exercise.targetBpm} BPM. Une seule
+              fausse note repart du début — tiens 45 secondes sans erreur pour le valider. Le mode
+              entraînement (dans la vue plein écran) enlève la pression du tempo pour répéter à ton rythme.
             </p>
           </div>
         </div>
@@ -244,6 +288,16 @@ export default function ExerciseDetailPage() {
           <CheckCircle size={18} weight="fill" />
           {doneToday ? 'Fait aujourd’hui' : 'Marquer comme fait'}
         </Button>
+
+        {doneToday && (
+          <button
+            onClick={handleUndo}
+            className="flex items-center gap-1.5 rounded-[var(--radius-control)] border border-border px-3.5 py-2 text-sm font-medium text-text-muted transition-colors hover:border-accent-soft hover:text-text"
+          >
+            <ArrowCounterClockwise size={15} />
+            Annuler
+          </button>
+        )}
 
         <AnimatePresence>
           {justCompleted && (

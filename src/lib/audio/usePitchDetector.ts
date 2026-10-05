@@ -11,6 +11,12 @@ export interface PitchReading {
   cents: number
 }
 
+// The raw analyser samples ~60 times a second, far faster than anyone can
+// actually read a note name — tiny pitch jitter made the display flicker
+// between notes before there was time to tell if the right one was heard.
+// Holding each displayed reading for this long smooths that out.
+const DISPLAY_HOLD_MS = 350
+
 // Shared microphone pitch-detection engine behind the tuner and the
 // exercise/tab practice validator. `active` gates the microphone request
 // entirely — set it false and nothing is requested or listened to, so a
@@ -49,10 +55,15 @@ export function usePitchDetector(active: boolean) {
 
         setMicState('granted')
 
+        let lastDisplayUpdate = 0
         function tick() {
           analyser.getFloatTimeDomainData(buffer)
           const freq = detectPitch(buffer, audioContext!.sampleRate)
-          setReading(freq !== null ? { freq, ...frequencyToNote(freq) } : null)
+          const now = performance.now()
+          if (now - lastDisplayUpdate >= DISPLAY_HOLD_MS) {
+            lastDisplayUpdate = now
+            setReading(freq !== null ? { freq, ...frequencyToNote(freq) } : null)
+          }
           rafId = requestAnimationFrame(tick)
         }
         rafId = requestAnimationFrame(tick)

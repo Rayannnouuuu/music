@@ -58,4 +58,20 @@ describe('ExerciseDetailPage completion', () => {
     // Still only ever shows the single xpReward grant, never a multiple of it.
     expect(screen.getAllByText(`+${exercise.xpReward} XP`)).toHaveLength(1)
   })
+
+  test('"Annuler" undoes today\'s completion so the exercise can be redone', () => {
+    renderPage(exercise.id)
+    fireEvent.click(screen.getByRole('button', { name: /marquer comme fait/i }))
+    expect(screen.getByRole('button', { name: /fait aujourd.hui/i })).toBeDisabled()
+
+    fireEvent.click(screen.getByRole('button', { name: /annuler/i }))
+
+    const button = screen.getByRole('button', { name: /marquer comme fait/i })
+    expect(button).not.toBeDisabled()
+    expect(screen.queryByRole('button', { name: /annuler/i })).not.toBeInTheDocument()
+
+    // And it can be completed again for a fresh XP grant.
+    fireEvent.click(button)
+    expect(screen.getByText(`+${exercise.xpReward} XP`)).toBeInTheDocument()
+  })
 })

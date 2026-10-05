@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CheckCircle, Microphone, MicrophoneSlash, Trophy } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { TabEvent } from '../../lib/content/types'
 import type { Tuning } from '../../lib/audio/tunings'
 import { usePitchDetector } from '../../lib/audio/usePitchDetector'
 import { expectedFrequency, matchPercent } from '../../lib/audio/pitchMatch'
+import { eventKey } from '../../lib/tab/noteLayout'
 
 const NOTE_VALIDATION_THRESHOLD = 90
 const PIECE_VALIDATION_THRESHOLD = 90
@@ -16,16 +17,23 @@ interface PracticeValidatorProps {
   // decides when the whole piece, not just one note, counts as mastered.
   totalNotes: number
   onValidated?: () => void
+  // Fired once per note, right when it's matched (hit) or its window closes
+  // unmatched (miss) — drives both the tempo-mode miss counter and
+  // practice-mode's "advance only on a correct note" stepping.
+  onNoteResult?: (key: string, hit: boolean) => void
 }
 
-function eventKey(event: TabEvent | undefined): string | undefined {
-  return event ? `${event.string}-${event.fret}-${event.startBeat}` : undefined
-}
-
-export default function PracticeValidator({ activeEvent, tuning, totalNotes, onValidated }: PracticeValidatorProps) {
+export default function PracticeValidator({
+  activeEvent,
+  tuning,
+  totalNotes,
+  onValidated,
+  onNoteResult,
+}: PracticeValidatorProps) {
   const { micState, reading } = usePitchDetector(true)
   const [validatedKeys, setValidatedKeys] = useState<Set<string>>(new Set())
   const [hasFiredValidated, setHasFiredValidated] = useState(false)
+  const prevKeyRef = useRef<string | undefined>(undefined)
 
   const currentKey = eventKey(activeEvent)
   const justValidated = currentKey !== undefined && validatedKeys.has(currentKey)
@@ -34,14 +42,30 @@ export default function PracticeValidator({ activeEvent, tuning, totalNotes, onV
   const percent = reading && expectedFreq ? matchPercent(reading.freq, expectedFreq) : null
 
   function markValidated(key: string) {
-    setValidatedKeys((prev) => (prev.has(key) ? prev : new Set(prev).add(key)))
+    setValidatedKeys((prev) => {
+      if (prev.has(key)) return prev
+      onNoteResult?.(key, true)
+      return new Set(prev).add(key)
+    })
   }
 
   useEffect(() => {
     if (percent !== null && percent >= NOTE_VALIDATION_THRESHOLD && currentKey !== undefined) {
       markValidated(currentKey)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [percent, currentKey])
+
+  // Detect a miss: the active note changed away from a previous one that
+  // was never validated while it was current.
+  useEffect(() => {
+    const prevKey = prevKeyRef.current
+    if (prevKey !== undefined && prevKey !== currentKey && !validatedKeys.has(prevKey)) {
+      onNoteResult?.(prevKey, false)
+    }
+    prevKeyRef.current = currentKey
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentKey])
 
   function handleManualValidate() {
     if (currentKey !== undefined) markValidated(currentKey)

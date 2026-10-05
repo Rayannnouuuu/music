@@ -30,4 +30,17 @@ describe('NoteHighway', () => {
     render(<NoteHighway events={events} totalBeats={4} />)
     expect(screen.getByTestId('note-1-5').className).not.toContain('border-accent')
   })
+
+  test('colors a hit note green even if it is also the active one', () => {
+    render(
+      <NoteHighway events={events} totalBeats={4} activeBeat={0.5} hitKeys={new Set(['1-5-0'])} />,
+    )
+    expect(screen.getByTestId('note-1-5').className).toContain('border-success')
+    expect(screen.getByTestId('note-1-5').className).not.toContain('border-accent')
+  })
+
+  test('colors a missed note red', () => {
+    render(<NoteHighway events={events} totalBeats={4} missedKeys={new Set(['6-3-1'])} />)
+    expect(screen.getByTestId('note-6-3').className).toContain('border-danger')
+  })
 })

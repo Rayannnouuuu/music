@@ -103,4 +103,58 @@ describe('PracticeValidator', () => {
     render(<PracticeValidator activeEvent={event()} tuning={standard} totalNotes={4} />)
     expect(await screen.findByText(/micro indisponible/i)).toBeInTheDocument()
   })
+
+  test('onNoteResult fires a hit the moment a note is validated', async () => {
+    const onNoteResult = vi.fn()
+    render(
+      <PracticeValidator activeEvent={event({ fret: 0 })} tuning={standard} totalNotes={4} onNoteResult={onNoteResult} />,
+    )
+    fireEvent.click(await screen.findByRole('button', { name: /valider/i }))
+    expect(onNoteResult).toHaveBeenCalledWith('6-0-0', true)
+    expect(onNoteResult).toHaveBeenCalledTimes(1)
+  })
+
+  test('onNoteResult fires a miss when the note changes before being validated', async () => {
+    const onNoteResult = vi.fn()
+    const { rerender } = render(
+      <PracticeValidator
+        activeEvent={event({ fret: 0, startBeat: 0 })}
+        tuning={standard}
+        totalNotes={4}
+        onNoteResult={onNoteResult}
+      />,
+    )
+    rerender(
+      <PracticeValidator
+        activeEvent={event({ fret: 3, startBeat: 1 })}
+        tuning={standard}
+        totalNotes={4}
+        onNoteResult={onNoteResult}
+      />,
+    )
+    expect(onNoteResult).toHaveBeenCalledWith('6-0-0', false)
+  })
+
+  test('onNoteResult does not report a miss for a note that was validated before moving on', async () => {
+    const onNoteResult = vi.fn()
+    const { rerender } = render(
+      <PracticeValidator
+        activeEvent={event({ fret: 0, startBeat: 0 })}
+        tuning={standard}
+        totalNotes={4}
+        onNoteResult={onNoteResult}
+      />,
+    )
+    fireEvent.click(await screen.findByRole('button', { name: /valider/i }))
+    rerender(
+      <PracticeValidator
+        activeEvent={event({ fret: 3, startBeat: 1 })}
+        tuning={standard}
+        totalNotes={4}
+        onNoteResult={onNoteResult}
+      />,
+    )
+    expect(onNoteResult).toHaveBeenCalledWith('6-0-0', true)
+    expect(onNoteResult).not.toHaveBeenCalledWith('6-0-0', false)
+  })
 })
