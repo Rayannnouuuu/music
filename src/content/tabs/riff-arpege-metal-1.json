@@ -1,0 +1,39 @@
+{
+  "id": "riff-arpege-metal-1",
+  "title": "Riff arpégé metal",
+  "artist": "Composition originale",
+  "subgenre": "power metal",
+  "tuning": "Standard",
+  "originalTempo": 140,
+  "difficulty": 5,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 1
+        },
+        {
+          "string": 4,
+          "fret": 2,
+          "startBeat": 1,
+          "duration": 1
+        },
+        {
+          "string": 3,
+          "fret": 2,
+          "startBeat": 2,
+          "duration": 1
+        },
+        {
+          "string": 2,
+          "fret": 3,
+          "startBeat": 3,
+          "duration": 1
+        }
+      ]
+    }
+  ]
+}

@@ -5,8 +5,8 @@ import { validateTab } from '../lib/content/validate'
 describe('tab content', () => {
   const tabs = loadAllTabs()
 
-  test('loads exactly 20 tabs', () => {
-    expect(tabs).toHaveLength(20)
+  test('loads exactly 40 tabs', () => {
+    expect(tabs).toHaveLength(40)
   })
 
   test('every tab passes validateTab', () => {

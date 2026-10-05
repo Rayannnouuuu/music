@@ -1,0 +1,50 @@
+{
+  "id": "riff-groove-dropd-2",
+  "title": "Riff groove en Drop D (avancé)",
+  "artist": "Composition originale",
+  "subgenre": "groove metal",
+  "tuning": "Drop D",
+  "originalTempo": 104,
+  "difficulty": 7,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 2,
+          "startBeat": 0,
+          "duration": 0.75,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 2,
+          "startBeat": 1,
+          "duration": 0.5,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 4,
+          "startBeat": 1.75,
+          "duration": 0.75,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 2,
+          "startBeat": 2.75,
+          "duration": 0.5,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 2,
+          "startBeat": 3.25,
+          "duration": 0.75,
+          "technique": "palmMute"
+        }
+      ]
+    }
+  ]
+}

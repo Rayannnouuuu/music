@@ -1,0 +1,49 @@
+{
+  "id": "riff-legato-metal-2",
+  "title": "Run legato metal (rapide)",
+  "artist": "Composition originale",
+  "subgenre": "melodic metal",
+  "tuning": "Standard",
+  "originalTempo": 160,
+  "difficulty": 8,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 2,
+          "fret": 7,
+          "startBeat": 0,
+          "duration": 0.5
+        },
+        {
+          "string": 2,
+          "fret": 9,
+          "startBeat": 0.5,
+          "duration": 0.5,
+          "technique": "hammer"
+        },
+        {
+          "string": 2,
+          "fret": 11,
+          "startBeat": 1,
+          "duration": 0.5,
+          "technique": "hammer"
+        },
+        {
+          "string": 2,
+          "fret": 9,
+          "startBeat": 1.5,
+          "duration": 0.5,
+          "technique": "pull"
+        },
+        {
+          "string": 2,
+          "fret": 7,
+          "startBeat": 2,
+          "duration": 1,
+          "technique": "pull"
+        }
+      ]
+    }
+  ]
+}

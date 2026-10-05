@@ -1,0 +1,63 @@
+{
+  "id": "riff-power-chords-1",
+  "title": "Progression power chords",
+  "artist": "Composition originale",
+  "subgenre": "hard rock",
+  "tuning": "Standard",
+  "originalTempo": 120,
+  "difficulty": 2,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 0.9
+        },
+        {
+          "string": 5,
+          "fret": 2,
+          "startBeat": 0,
+          "duration": 0.9
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 1,
+          "duration": 0.9
+        },
+        {
+          "string": 5,
+          "fret": 5,
+          "startBeat": 1,
+          "duration": 0.9
+        },
+        {
+          "string": 6,
+          "fret": 5,
+          "startBeat": 2,
+          "duration": 0.9
+        },
+        {
+          "string": 5,
+          "fret": 7,
+          "startBeat": 2,
+          "duration": 0.9
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 3,
+          "duration": 0.9
+        },
+        {
+          "string": 5,
+          "fret": 5,
+          "startBeat": 3,
+          "duration": 0.9
+        }
+      ]
+    }
+  ]
+}

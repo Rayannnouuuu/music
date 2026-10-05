@@ -1,0 +1,51 @@
+{
+  "id": "riff-pentatonique-rock-1",
+  "title": "Lick pentatonique rock",
+  "artist": "Composition originale",
+  "subgenre": "hard rock",
+  "tuning": "Standard",
+  "originalTempo": 110,
+  "difficulty": 3,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 3,
+          "fret": 5,
+          "startBeat": 0,
+          "duration": 0.6666666666666666
+        },
+        {
+          "string": 3,
+          "fret": 8,
+          "startBeat": 0.6666666666666666,
+          "duration": 0.6666666666666666
+        },
+        {
+          "string": 3,
+          "fret": 5,
+          "startBeat": 1.3333333333333333,
+          "duration": 0.6666666666666666
+        },
+        {
+          "string": 3,
+          "fret": 8,
+          "startBeat": 2,
+          "duration": 0.6666666666666666
+        },
+        {
+          "string": 3,
+          "fret": 7,
+          "startBeat": 2.6666666666666665,
+          "duration": 0.6666666666666666
+        },
+        {
+          "string": 3,
+          "fret": 5,
+          "startBeat": 3.333333333333333,
+          "duration": 0.6666666666666666
+        }
+      ]
+    }
+  ]
+}

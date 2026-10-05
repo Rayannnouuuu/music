@@ -1,0 +1,29 @@
+{
+  "id": "riff-stoner-1",
+  "title": "Riff stoner rock",
+  "artist": "Composition originale",
+  "subgenre": "stoner rock",
+  "tuning": "Drop D",
+  "originalTempo": 84,
+  "difficulty": 3,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 2,
+          "startBeat": 0,
+          "duration": 2,
+          "technique": "vibrato"
+        },
+        {
+          "string": 6,
+          "fret": 5,
+          "startBeat": 2,
+          "duration": 2,
+          "technique": "vibrato"
+        }
+      ]
+    }
+  ]
+}

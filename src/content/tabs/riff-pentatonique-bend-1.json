@@ -1,0 +1,52 @@
+{
+  "id": "riff-pentatonique-bend-1",
+  "title": "Lick pentatonique avec bend",
+  "artist": "Composition originale",
+  "subgenre": "hard rock",
+  "tuning": "Standard",
+  "originalTempo": 100,
+  "difficulty": 6,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 2,
+          "fret": 7,
+          "startBeat": 0,
+          "duration": 0.6666666666666666
+        },
+        {
+          "string": 2,
+          "fret": 10,
+          "startBeat": 0.6666666666666666,
+          "duration": 0.6666666666666666
+        },
+        {
+          "string": 2,
+          "fret": 7,
+          "startBeat": 1.3333333333333333,
+          "duration": 0.6666666666666666
+        },
+        {
+          "string": 2,
+          "fret": 10,
+          "startBeat": 2,
+          "duration": 0.6666666666666666
+        },
+        {
+          "string": 2,
+          "fret": 9,
+          "startBeat": 2.6666666666666665,
+          "duration": 0.6666666666666666,
+          "technique": "bend"
+        },
+        {
+          "string": 2,
+          "fret": 7,
+          "startBeat": 3.333333333333333,
+          "duration": 0.6666666666666666
+        }
+      ]
+    }
+  ]
+}

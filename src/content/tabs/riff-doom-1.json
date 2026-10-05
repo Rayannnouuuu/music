@@ -1,0 +1,29 @@
+{
+  "id": "riff-doom-1",
+  "title": "Riff doom lourd",
+  "artist": "Composition originale",
+  "subgenre": "doom metal",
+  "tuning": "Eb",
+  "originalTempo": 60,
+  "difficulty": 2,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 2,
+          "technique": "vibrato"
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 2,
+          "duration": 2,
+          "technique": "vibrato"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "id": "riff-blues-shuffle-1",
+  "title": "Shuffle blues-rock",
+  "artist": "Composition originale",
+  "subgenre": "blues rock",
+  "tuning": "Standard",
+  "originalTempo": 108,
+  "difficulty": 4,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 5,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 0.67
+        },
+        {
+          "string": 5,
+          "fret": 2,
+          "startBeat": 0.67,
+          "duration": 0.33
+        },
+        {
+          "string": 5,
+          "fret": 0,
+          "startBeat": 1,
+          "duration": 0.67
+        },
+        {
+          "string": 5,
+          "fret": 2,
+          "startBeat": 1.67,
+          "duration": 0.33
+        },
+        {
+          "string": 5,
+          "fret": 0,
+          "startBeat": 2,
+          "duration": 0.67,
+          "technique": "slide"
+        },
+        {
+          "string": 5,
+          "fret": 4,
+          "startBeat": 2.67,
+          "duration": 1.33
+        }
+      ]
+    }
+  ]
+}
