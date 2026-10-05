@@ -7,7 +7,13 @@ import { usePitchDetector } from '../../lib/audio/usePitchDetector'
 import { expectedFrequency, matchPercent } from '../../lib/audio/pitchMatch'
 import { eventKey } from '../../lib/tab/noteLayout'
 
-const NOTE_VALIDATION_THRESHOLD = 90
+// 90 (±10 cents) sounded right on paper but was unreachable in practice:
+// natural vibrato, pick-attack transients and ordinary autocorrelation
+// noise routinely push a correctly-played note's instantaneous reading
+// past that, so the right note was shown (frequencyToNote has no such
+// threshold) yet never actually validated. ±25 cents is still well inside
+// "that's the right note" to the ear while being realistic to hit.
+const NOTE_VALIDATION_THRESHOLD = 75
 const PIECE_VALIDATION_THRESHOLD = 90
 
 interface PracticeValidatorProps {
