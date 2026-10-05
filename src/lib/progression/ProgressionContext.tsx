@@ -21,6 +21,7 @@ function skillLevels(skillXp: Record<Category, number>): Record<string, number> 
 interface ProgressionContextValue {
   state: ProgressState
   completeExercise(exercise: Exercise, today: string): void
+  completeExercisePractice(exercise: Exercise, minutesSpent: number, today: string): void
   completeTabPractice(tab: Tab, minutesSpent: number, today: string): void
   setDailyGoal(goal: DailyGoal): void
   importTab(tab: Tab): void
@@ -83,17 +84,23 @@ export function ProgressionProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  function markExerciseEverCompleted(prev: ProgressState, exerciseId: string): ProgressState {
+    if (prev.completedExerciseIds.includes(exerciseId)) return prev
+    return { ...prev, completedExerciseIds: [...prev.completedExerciseIds, exerciseId] }
+  }
+
   const value: ProgressionContextValue = {
     state,
     completeExercise(exercise, today) {
       setState((prev) => {
+        const everCompleted = markExerciseEverCompleted(prev, exercise.id)
         if (hasCompletedExerciseToday(prev.completedExerciseIdsByDay, today, exercise.id)) {
-          return prev
+          return everCompleted
         }
         const withCompletion: ProgressState = {
-          ...prev,
+          ...everCompleted,
           completedExerciseIdsByDay: recordExerciseCompletion(
-            prev.completedExerciseIdsByDay,
+            everCompleted.completedExerciseIdsByDay,
             today,
             exercise.id,
           ),
@@ -106,6 +113,13 @@ export function ProgressionProvider({ children }: { children: ReactNode }) {
           { exercisesCount: 1 },
           0,
         )
+      })
+    },
+    completeExercisePractice(exercise, minutesSpent, today) {
+      const xpGained = Math.round(minutesSpent * XP_PER_MINUTE)
+      setState((prev) => {
+        const everCompleted = markExerciseEverCompleted(prev, exercise.id)
+        return applyXpGain(everCompleted, today, xpGained, exercise.category, { minutes: minutesSpent }, 0)
       })
     },
     completeTabPractice(_tab, minutesSpent, today) {

@@ -76,4 +76,19 @@ describe('hydrateProgressState', () => {
     const result = hydrateProgressState({ completedExerciseIdsByDay: 'nope' })
     expect(result.completedExerciseIdsByDay).toEqual({})
   })
+
+  test('completedExerciseIds keeps a valid string array', () => {
+    const result = hydrateProgressState({ completedExerciseIds: ['ex-1', 'ex-2'] })
+    expect(result.completedExerciseIds).toEqual(['ex-1', 'ex-2'])
+  })
+
+  test('completedExerciseIds drops non-string entries instead of crashing', () => {
+    const result = hydrateProgressState({ completedExerciseIds: ['ex-1', 42, null] })
+    expect(result.completedExerciseIds).toEqual(['ex-1'])
+  })
+
+  test('a non-array completedExerciseIds falls back to an empty array', () => {
+    const result = hydrateProgressState({ completedExerciseIds: 'nope' })
+    expect(result.completedExerciseIds).toEqual([])
+  })
 })

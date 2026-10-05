@@ -92,7 +92,7 @@ export default function TabPerformanceView({
           style={{ left: CURSOR_OFFSET_PX }}
         />
         <div
-          className="absolute left-0 top-1/2 flex -translate-y-1/2"
+          className="absolute left-0 top-1/2 flex"
           style={{ transform: `translate(${translateX}px, -50%)` }}
         >
           {Array.from({ length: STRIP_COPIES }, (_, i) => (

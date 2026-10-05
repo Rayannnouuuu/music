@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './layout/Layout'
 import DashboardPage from './pages/DashboardPage'
+import ParcoursPage from './pages/ParcoursPage'
 import ExercisesListPage from './pages/ExercisesListPage'
 import ExerciseDetailPage from './pages/ExerciseDetailPage'
 import TabLibraryPage from './pages/TabLibraryPage'
@@ -15,6 +16,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/parcours" element={<ParcoursPage />} />
           <Route path="/exercises" element={<ExercisesListPage />} />
           <Route path="/exercises/:id" element={<ExerciseDetailPage />} />
           <Route path="/tabs" element={<TabLibraryPage />} />

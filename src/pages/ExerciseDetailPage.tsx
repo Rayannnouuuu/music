@@ -1,29 +1,74 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowLeft, CheckCircle, Gauge } from '@phosphor-icons/react'
+import { ArrowLeft, ArrowRight, CheckCircle, Gauge, Play, Pause, Lightbulb, Lock } from '@phosphor-icons/react'
 import { loadAllExercises } from '../lib/content/loadExercises'
 import NoteHighway from '../components/tab/NoteHighway'
+import TabPerformanceView from '../components/tab/TabPerformanceView'
 import { totalBeatsForEvents } from '../lib/tab/noteLayout'
+import { activeEventIndex, isEventActive } from '../lib/tab/playback'
+import { useLoopPlayback } from '../lib/tab/useLoopPlayback'
+import { buildPath, flattenPath, isExerciseUnlocked } from '../lib/progression/path'
+import { tipsFor } from '../content/tips'
 import { Card } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { DifficultyMeter } from '../components/ui/DifficultyMeter'
-import { useProgression } from '../lib/progression/ProgressionContext'
+import { useProgression, XP_PER_MINUTE } from '../lib/progression/ProgressionContext'
 import { localDateString } from '../lib/date'
+
+const CATEGORY_LABELS: Record<string, string> = {
+  scales: 'Gammes',
+  legato: 'Legato',
+  picking: 'Picking',
+  bends: 'Bends',
+  palmMuting: 'Palm muting',
+  sweep: 'Sweep picking',
+  rhythm: 'Rythmique',
+  arpeggios: 'Arpèges',
+}
 
 export default function ExerciseDetailPage() {
   const { id } = useParams()
-  const exercise = loadAllExercises().find((e) => e.id === id)
-  const { completeExercise, isExerciseCompletedToday } = useProgression()
+  const allExercises = useMemo(() => loadAllExercises(), [])
+  const exercise = allExercises.find((e) => e.id === id)
+  const { state: progressState, completeExercise, completeExercisePractice, isExerciseCompletedToday } =
+    useProgression()
   const [justCompleted, setJustCompleted] = useState(false)
   const today = localDateString()
+
+  const chapters = useMemo(() => buildPath(allExercises), [allExercises])
+  const orderedIds = useMemo(() => flattenPath(chapters).map((e) => e.id), [chapters])
+  const chapter = chapters.find((c) => c.category === exercise?.category)
+  const positionInChapter = chapter && exercise ? chapter.exercises.findIndex((e) => e.id === exercise.id) : -1
+  const nextInChapter = chapter && positionInChapter >= 0 ? chapter.exercises[positionInChapter + 1] : undefined
+  const nextUnlocked = nextInChapter
+    ? isExerciseUnlocked(orderedIds, progressState.completedExerciseIds, nextInChapter.id)
+    : false
+
+  const totalBeats = exercise ? totalBeatsForEvents(exercise.pattern) : 4
+  const { state, dispatch, togglePlayback, effectiveBpm, practiceSecondsRef } = useLoopPlayback({
+    loopKey: exercise?.id ?? '',
+    totalBeats,
+    baseBpm: exercise?.targetBpm ?? 0,
+    onStop: (minutesSpent) => {
+      if (exercise) completeExercisePractice(exercise, minutesSpent, localDateString())
+    },
+  })
 
   if (!exercise) {
     return <p>Exercice introuvable.</p>
   }
 
   const doneToday = isExerciseCompletedToday(exercise.id, today)
+  const scrollPos = Math.min(totalBeats, Math.max(0, state.elapsedBeats))
+  const candidateIndex = activeEventIndex(exercise.pattern, scrollPos)
+  const activeEvent =
+    candidateIndex >= 0 && isEventActive(exercise.pattern[candidateIndex], scrollPos)
+      ? exercise.pattern[candidateIndex]
+      : undefined
+  const xpSoFar = Math.round((practiceSecondsRef.current / 60) * XP_PER_MINUTE)
+  const tips = tipsFor(exercise.category, exercise.difficulty)
 
   function handleComplete() {
     if (doneToday) return
@@ -32,8 +77,32 @@ export default function ExerciseDetailPage() {
     setTimeout(() => setJustCompleted(false), 2500)
   }
 
+  function handleSpeedChange(percent: number) {
+    dispatch({ type: 'setSpeed', percent })
+  }
+
   return (
     <div className="space-y-6">
+      <AnimatePresence>
+        {state.status === 'playing' && (
+          <TabPerformanceView
+            title={exercise.title}
+            artist={`${CATEGORY_LABELS[exercise.category] ?? exercise.category} · niveau ${
+              positionInChapter + 1
+            }/${chapter?.exercises.length ?? '?'}`}
+            loopEvents={exercise.pattern}
+            loopLength={totalBeats}
+            scrollPos={scrollPos}
+            activeEvent={activeEvent}
+            effectiveBpm={effectiveBpm}
+            speedPercent={state.speedPercent}
+            onSpeedChange={handleSpeedChange}
+            onExit={togglePlayback}
+            xpSoFar={xpSoFar}
+          />
+        )}
+      </AnimatePresence>
+
       <Link
         to="/exercises"
         className="inline-flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text"
@@ -46,6 +115,11 @@ export default function ExerciseDetailPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{exercise.title}</h1>
         <div className="mt-3 flex flex-wrap items-center gap-1.5">
           <Badge className="capitalize">{exercise.category}</Badge>
+          {chapter && positionInChapter >= 0 && (
+            <Badge>
+              Niveau {positionInChapter + 1}/{chapter.exercises.length}
+            </Badge>
+          )}
           <Badge>
             <Gauge size={13} />
             {exercise.targetBpm} BPM
@@ -58,14 +132,51 @@ export default function ExerciseDetailPage() {
 
       <p className="max-w-2xl text-text-muted">{exercise.description}</p>
 
-      <Card className="space-y-2 p-5">
-        <p className="text-xs uppercase tracking-wide text-text-muted">Tablature</p>
+      <Card className="space-y-5 p-4 sm:p-6">
+        <div className="flex flex-wrap items-center gap-5">
+          <motion.button
+            whileTap={{ scale: 0.88 }}
+            onClick={togglePlayback}
+            aria-label={state.status === 'playing' ? 'Pause' : 'Lecture'}
+            className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent text-text transition-shadow ${
+              state.status === 'playing' ? 'shadow-[0_0_0_6px_var(--color-accent-soft)]' : ''
+            }`}
+          >
+            {state.status === 'playing' ? (
+              <Pause size={28} weight="fill" />
+            ) : (
+              <Play size={28} weight="fill" />
+            )}
+          </motion.button>
+          <div className="space-y-1">
+            <p className="font-semibold text-text">Jouer avec le métronome</p>
+            <p className="text-xs text-text-muted">
+              Lecture démarre le métronome à {exercise.targetBpm} BPM et boucle l'exercice en plein écran.
+            </p>
+          </div>
+        </div>
+
         <div className="overflow-x-auto rounded-[var(--radius-input)] bg-bg/60 p-4">
-          <NoteHighway events={exercise.pattern} totalBeats={totalBeatsForEvents(exercise.pattern)} />
+          <NoteHighway events={exercise.pattern} totalBeats={totalBeats} />
         </div>
       </Card>
 
-      <div className="flex items-center gap-3">
+      <Card className="space-y-3 p-5">
+        <p className="flex items-center gap-2 text-xs uppercase tracking-wide text-text-muted">
+          <Lightbulb size={15} />
+          Astuces
+        </p>
+        <ul className="space-y-2">
+          {tips.map((tip) => (
+            <li key={tip} className="flex gap-2 text-sm text-text-muted">
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-accent" />
+              {tip}
+            </li>
+          ))}
+        </ul>
+      </Card>
+
+      <div className="flex flex-wrap items-center gap-3">
         <Button onClick={handleComplete} disabled={doneToday} variant={doneToday ? 'secondary' : 'primary'}>
           <CheckCircle size={18} weight="fill" />
           {doneToday ? 'Fait aujourd’hui' : 'Marquer comme fait'}
@@ -85,9 +196,33 @@ export default function ExerciseDetailPage() {
         </AnimatePresence>
 
         {doneToday && !justCompleted && (
-          <p className="text-sm text-text-muted">Déjà comptabilisé aujourd’hui — reviens demain pour plus d’XP.</p>
+          <p className="text-sm text-text-muted">
+            Déjà comptabilisé aujourd&rsquo;hui — reviens demain pour plus d&rsquo;XP.
+          </p>
         )}
       </div>
+
+      {nextInChapter && (
+        <Card className="flex items-center justify-between gap-4 p-5">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-text-muted">Suite de la série</p>
+            <p className="font-semibold text-text">{nextInChapter.title}</p>
+          </div>
+          {nextUnlocked ? (
+            <Link
+              to={`/exercises/${nextInChapter.id}`}
+              className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent-strong"
+            >
+              Continuer <ArrowRight size={15} />
+            </Link>
+          ) : (
+            <span className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] border border-border px-4 py-2.5 text-sm font-medium text-text-muted">
+              <Lock size={14} />
+              Termine celui-ci d&rsquo;abord
+            </span>
+          )}
+        </Card>
+      )}
     </div>
   )
 }

@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { House, Barbell, MusicNotes, Waveform, TrendUp, BookOpen, Guitar } from '@phosphor-icons/react'
+import { House, MapTrifold, Barbell, MusicNotes, Waveform, TrendUp, BookOpen, Guitar } from '@phosphor-icons/react'
 import MetronomeWidget from '../components/audio/MetronomeWidget'
 
 const LINKS = [
   { to: '/', label: 'Dashboard', icon: House, end: true },
+  { to: '/parcours', label: 'Parcours', icon: MapTrifold },
   { to: '/exercises', label: 'Exercices', icon: Barbell },
   { to: '/tabs', label: 'Tabs', icon: MusicNotes },
   { to: '/tuner', label: 'Tuner', icon: Waveform },

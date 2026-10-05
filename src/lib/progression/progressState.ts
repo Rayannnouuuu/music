@@ -19,6 +19,10 @@ export interface ProgressState {
   // Which exercise ids have already paid out XP on which day — the guard
   // that makes XP mean something instead of being free on repeat clicks.
   completedExerciseIdsByDay: Record<string, string[]>
+  // Every exercise id ever completed at least once, regardless of day —
+  // powers the guided path's unlock gating, which cares about "has this
+  // ever been done" rather than "was it done today".
+  completedExerciseIds: string[]
 }
 
 export const defaultProgressState: ProgressState = {
@@ -42,6 +46,7 @@ export const defaultProgressState: ProgressState = {
   tabsCompletedCount: 0,
   dailyProgress: {},
   completedExerciseIdsByDay: {},
+  completedExerciseIds: [],
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -114,5 +119,8 @@ export function hydrateProgressState(loaded: unknown): ProgressState {
       ? (loaded.dailyProgress as Record<string, DailyProgress>)
       : {},
     completedExerciseIdsByDay: hydrateCompletedExerciseIdsByDay(loaded.completedExerciseIdsByDay),
+    completedExerciseIds: Array.isArray(loaded.completedExerciseIds)
+      ? (loaded.completedExerciseIds as unknown[]).filter((id): id is string => typeof id === 'string')
+      : [],
   }
 }

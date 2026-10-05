@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { ArrowLeft, Play, Pause, Gauge, Repeat, Guitar, type Icon } from '@phosphor-icons/react'
@@ -9,11 +9,10 @@ import { Card } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
 import { Slider } from '../components/ui/Slider'
 import BeatIndicator from '../components/audio/BeatIndicator'
-import { playerReducer, type PlayerState } from '../lib/tab/playerState'
 import { activeEventIndex, isEventActive } from '../lib/tab/playback'
 import { flattenTabEvents, eventsInRange } from '../lib/tab/flatten'
+import { useLoopPlayback } from '../lib/tab/useLoopPlayback'
 import { loadAllTabs } from '../lib/content/loadTabs'
-import { useMetronome } from '../lib/audio/useMetronome'
 import { useProgression, XP_PER_MINUTE } from '../lib/progression/ProgressionContext'
 import { localDateString } from '../lib/date'
 
@@ -55,67 +54,22 @@ export default function TabPlayerPage() {
   const measureCount = tab?.measures.length ?? 0
   const totalBeats = measureCount * BEATS_PER_MEASURE
 
-  const [state, dispatch] = useReducer(playerReducer, {
-    status: 'idle',
-    speedPercent: 100,
-    elapsedBeats: 0,
-    loopRange: [0, totalBeats] as [number, number],
-  } satisfies PlayerState)
+  const { state, dispatch, effectiveBpm, togglePlayback, metronome, practiceSecondsRef } = useLoopPlayback({
+    loopKey: tab?.id ?? '',
+    totalBeats,
+    baseBpm: tab?.originalTempo ?? 0,
+    onStop: (minutesSpent) => {
+      if (tab) completeTabPractice(tab, minutesSpent, localDateString())
+    },
+  })
   const [showFretboard, setShowFretboard] = useState(true)
   const [loopMeasures, setLoopMeasures] = useState<[number, number]>([0, Math.max(0, measureCount - 1)])
-  const metronome = useMetronome()
-  const practiceSecondsRef = useRef(0)
 
-  const effectiveBpm = tab ? (tab.originalTempo * state.speedPercent) / 100 : 0
-
-  // A tab is always a short riff meant to loop forever while you practice it:
-  // reset to a fresh full-tab loop whenever the tab itself changes.
+  // Keep the measure-range picker in sync whenever the tab itself changes.
   useEffect(() => {
-    if (!tab) return
-    dispatch({ type: 'seek', beat: 0 })
-    dispatch({ type: 'setLoop', range: [0, totalBeats] })
     setLoopMeasures([0, Math.max(0, measureCount - 1)])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab?.id])
-
-  // Drive the playback clock, and accumulate real practice time while playing.
-  // Only runs while actually playing; recording happens in the cleanup, which
-  // fires on pause (manual) and on unmount (navigating away mid-play).
-  useEffect(() => {
-    if (!tab || state.status !== 'playing') return
-    const currentTab = tab
-    let rafId: number
-    let lastTime: number | null = null
-    function frame(time: number) {
-      if (lastTime !== null) {
-        const deltaSeconds = (time - lastTime) / 1000
-        practiceSecondsRef.current += deltaSeconds
-        dispatch({ type: 'tick', deltaSeconds, bpm: currentTab.originalTempo })
-      }
-      lastTime = time
-      rafId = requestAnimationFrame(frame)
-    }
-    rafId = requestAnimationFrame(frame)
-    return () => {
-      cancelAnimationFrame(rafId)
-      if (practiceSecondsRef.current > 0) {
-        completeTabPractice(currentTab, practiceSecondsRef.current / 60, localDateString())
-        practiceSecondsRef.current = 0
-      }
-    }
-    // completeTabPractice intentionally omitted: it is stable in effect (new
-    // object identity per render, but always closes over the latest setState).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, state.status])
-
-  // Keep the metronome's tempo in sync when the speed slider is adjusted
-  // mid-playback (play/pause alone only starts/stops it, not re-tempos it).
-  useEffect(() => {
-    if (state.status === 'playing' && effectiveBpm > 0) {
-      metronome.start(effectiveBpm)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectiveBpm])
 
   if (!tab) {
     return <p>Tab introuvable.</p>
@@ -139,16 +93,6 @@ export default function TabPlayerPage() {
   const loopLength = loopRange[1] - loopRange[0]
   const scrollPos = Math.min(loopLength, Math.max(0, state.elapsedBeats - loopRange[0]))
   const xpSoFar = Math.round((practiceSecondsRef.current / 60) * XP_PER_MINUTE)
-
-  function togglePlayback() {
-    if (state.status === 'playing') {
-      dispatch({ type: 'pause' })
-      metronome.stop()
-    } else {
-      dispatch({ type: 'play' })
-      metronome.start(effectiveBpm)
-    }
-  }
 
   function updateLoopRange(start: number, end: number) {
     const clampedEnd = Math.max(start, end)
