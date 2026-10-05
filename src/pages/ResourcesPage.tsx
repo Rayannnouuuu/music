@@ -1,33 +1,65 @@
+import { Barbell, BookOpenText, Lightning, SpeakerHigh, Lightbulb, YoutubeLogo, ArrowSquareOut, type Icon } from '@phosphor-icons/react'
 import { RESOURCE_CATEGORIES } from '../content/resources'
+import { Card } from '../components/ui/Card'
+
+const CATEGORY_ICONS: Record<string, Icon> = {
+  'Technique générale': Barbell,
+  'Théorie musicale appliquée à la guitare': BookOpenText,
+  'Spécifique metal (palm muting, riffs rythmiques, accordages abaissés)': Lightning,
+  'Matériel / son (ampli, pédales, réglages de base)': SpeakerHigh,
+}
 
 export default function ResourcesPage() {
   return (
     <div className="space-y-6">
-      <h1>Ressources</h1>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Ressources</h1>
+        <p className="mt-1 text-text-muted">Des liens choisis pour progresser au-delà du site.</p>
+      </div>
 
-      {RESOURCE_CATEGORIES.map((category) => (
-        <section
-          key={category.title}
-          className="bg-panel border border-border rounded-lg p-4 space-y-3"
-        >
-          <h2 className="font-semibold">{category.title}</h2>
-          <p className="text-text-muted text-sm">{category.tip}</p>
-          <ul className="flex flex-wrap gap-2">
-            {category.links.map((link) => (
-              <li key={link.url}>
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-block bg-bg border border-border rounded px-3 py-1 text-sm text-accent hover:border-accent"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      <div className="grid gap-5 lg:grid-cols-2">
+        {RESOURCE_CATEGORIES.map((category) => {
+          const CategoryIcon = CATEGORY_ICONS[category.title] ?? BookOpenText
+          return (
+            <Card key={category.title} className="space-y-4 p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-strong">
+                  <CategoryIcon size={19} />
+                </span>
+                <h2 className="font-semibold text-text">{category.title}</h2>
+              </div>
+
+              <div className="flex gap-2 rounded-[var(--radius-input)] border-l-2 border-accent bg-panel-raised p-3 text-sm text-text-muted">
+                <Lightbulb size={16} className="mt-0.5 shrink-0 text-accent-strong" />
+                <p>{category.tip}</p>
+              </div>
+
+              <ul className="space-y-1.5">
+                {category.links.map((link) => {
+                  const isYoutube = link.url.includes('youtube.com')
+                  return (
+                    <li key={link.url}>
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group flex items-center gap-2.5 rounded-[var(--radius-input)] border border-border-soft bg-panel px-3 py-2.5 text-sm text-text transition-colors hover:border-accent-soft hover:text-accent-strong"
+                      >
+                        {isYoutube ? (
+                          <YoutubeLogo size={17} className="shrink-0 text-text-muted" />
+                        ) : (
+                          <ArrowSquareOut size={15} className="shrink-0 text-text-muted" />
+                        )}
+                        <span className="flex-1">{link.label}</span>
+                      </a>
+                    </li>
+                  )
+                })}
+              </ul>
+            </Card>
+          )
+        })}
+      </div>
     </div>
   )
 }

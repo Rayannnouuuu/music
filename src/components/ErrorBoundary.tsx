@@ -1,4 +1,7 @@
 import { Component, type ReactNode } from 'react'
+import { WarningCircle } from '@phosphor-icons/react'
+import { Button } from './ui/Button'
+import { Card } from './ui/Card'
 
 interface ErrorBoundaryProps {
   children: ReactNode
@@ -22,22 +25,22 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   render() {
     if (this.state.error) {
       return (
-        <div className="min-h-screen bg-bg text-text flex items-center justify-center p-6">
-          <div className="max-w-md space-y-3 bg-panel border border-border rounded-lg p-6">
+        <div className="flex min-h-screen items-center justify-center bg-bg p-6 text-text">
+          <Card className="max-w-md space-y-4 p-6 text-center">
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-warning-soft text-warning">
+              <WarningCircle size={24} weight="fill" />
+            </span>
             <h1 className="font-semibold">Une erreur est survenue</h1>
-            <p className="text-text-muted text-sm">
+            <p className="text-sm text-text-muted">
               Quelque chose s'est mal passé. Essaie de recharger la page ; si le problème persiste
               après un import ou une donnée corrompue, tu peux réinitialiser tes données locales
               depuis les outils de développement du navigateur (localStorage, clé
               "guitar-progress").
             </p>
-            <button
-              className="text-accent font-semibold"
-              onClick={() => window.location.reload()}
-            >
+            <Button className="mx-auto" onClick={() => window.location.reload()}>
               Recharger la page
-            </button>
-          </div>
+            </Button>
+          </Card>
         </div>
       )
     }

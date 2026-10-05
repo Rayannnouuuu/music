@@ -1,9 +1,33 @@
+import {
+  Flame,
+  Medal,
+  Trophy,
+  MusicNotes,
+  Guitar,
+  TrendUp,
+  Lightning,
+  MedalMilitary,
+  Lock,
+  type Icon,
+} from '@phosphor-icons/react'
 import { useProgression } from '../lib/progression/ProgressionContext'
 import { aggregateXpByDay, skillBreakdown } from '../lib/progression/charts'
 import { currentStreak, longestStreak } from '../lib/progression/streak'
 import { BADGES } from '../lib/progression/badges'
 import BarChart from '../components/charts/BarChart'
+import { Card } from '../components/ui/Card'
 import { localDateString } from '../lib/date'
+
+const BADGE_ICONS: Record<string, Icon> = {
+  'premiere-semaine': Flame,
+  'un-mois': Medal,
+  centurion: Trophy,
+  'premier-riff': MusicNotes,
+  'dix-riffs': Guitar,
+  'monte-en-gamme': TrendUp,
+  'virtuose-en-herbe': Lightning,
+  'shred-master': MedalMilitary,
+}
 
 export default function ProgressionPage() {
   const { state } = useProgression()
@@ -15,50 +39,83 @@ export default function ProgressionPage() {
   const streak = currentStreak(state.streakHistory, today)
   const longest = longestStreak(state.streakHistory)
 
-  const unlockedBadges = BADGES.filter((b) => state.badgesUnlocked.includes(b.id))
-
   return (
     <div className="space-y-6">
-      <h1>Progression</h1>
+      <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Progression</h1>
 
-      <section className="bg-panel border border-border rounded-lg p-4 space-y-3">
-        <p className="text-text-muted text-sm">XP dans le temps</p>
-        {xpByDay.length > 0 ? (
-          <BarChart data={xpByDay.map((d) => ({ label: d.date.slice(5), value: d.total }))} />
-        ) : (
-          <p className="text-text-muted">Pas encore de données.</p>
-        )}
-      </section>
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Card className="space-y-3 p-5">
+          <p className="text-xs uppercase tracking-wide text-text-muted">XP dans le temps</p>
+          {xpByDay.length > 0 ? (
+            <BarChart data={xpByDay.map((d) => ({ label: d.date.slice(5), value: d.total }))} />
+          ) : (
+            <p className="text-text-muted">Pas encore de données.</p>
+          )}
+        </Card>
 
-      <section className="bg-panel border border-border rounded-lg p-4 space-y-3">
-        <p className="text-text-muted text-sm">Répartition par compétence (niveau)</p>
-        <BarChart data={skills.map((s) => ({ label: s.category, value: s.level }))} />
-      </section>
+        <Card className="space-y-3 p-5">
+          <p className="text-xs uppercase tracking-wide text-text-muted">
+            Répartition par compétence (niveau)
+          </p>
+          <BarChart data={skills.map((s) => ({ label: s.category, value: s.level }))} />
+        </Card>
+      </div>
 
-      <section className="bg-panel border border-border rounded-lg p-4 space-y-2">
-        <p className="text-text-muted text-sm">Streak</p>
-        <p>
-          Actuel : <span className="text-accent font-semibold">{streak} jour(s)</span> · Record :{' '}
-          <span className="text-accent font-semibold">{longest} jour(s)</span>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Card className="flex items-center gap-4 p-5">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-warning-soft text-warning">
+            <Flame size={22} weight="fill" />
+          </span>
+          <div>
+            <p className="text-2xl font-bold tabular-nums text-text">{streak}</p>
+            <p className="text-sm text-text-muted">Streak actuel</p>
+          </div>
+        </Card>
+        <Card className="flex items-center gap-4 p-5">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-strong">
+            <Trophy size={22} weight="fill" />
+          </span>
+          <div>
+            <p className="text-2xl font-bold tabular-nums text-text">{longest}</p>
+            <p className="text-sm text-text-muted">Record de streak</p>
+          </div>
+        </Card>
+      </div>
+
+      <Card className="space-y-4 p-5">
+        <p className="text-xs uppercase tracking-wide text-text-muted">
+          Badges ({state.badgesUnlocked.length}/{BADGES.length})
         </p>
-      </section>
-
-      <section className="bg-panel border border-border rounded-lg p-4 space-y-2">
-        <p className="text-text-muted text-sm">
-          Badges débloqués ({unlockedBadges.length}/{BADGES.length})
-        </p>
-        {unlockedBadges.length > 0 ? (
-          <ul className="flex flex-wrap gap-2">
-            {unlockedBadges.map((b) => (
-              <li key={b.id} className="bg-bg border border-border rounded px-3 py-1 text-sm">
-                {b.label}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-text-muted">Aucun badge débloqué pour l'instant.</p>
-        )}
-      </section>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {BADGES.map((badge) => {
+            const unlocked = state.badgesUnlocked.includes(badge.id)
+            const BadgeIcon = BADGE_ICONS[badge.id] ?? Trophy
+            return (
+              <div
+                key={badge.id}
+                className={`flex flex-col items-center gap-2 rounded-[var(--radius-card)] border p-4 text-center transition-colors ${
+                  unlocked
+                    ? 'border-accent-soft bg-accent-soft'
+                    : 'border-border-soft bg-panel-raised opacity-50'
+                }`}
+              >
+                <span
+                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                    unlocked ? 'bg-accent text-text' : 'bg-border text-text-muted'
+                  }`}
+                >
+                  {unlocked ? <BadgeIcon size={19} weight="fill" /> : <Lock size={16} />}
+                </span>
+                <span
+                  className={`text-xs font-medium ${unlocked ? 'text-accent-strong' : 'text-text-muted'}`}
+                >
+                  {badge.label}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      </Card>
     </div>
   )
 }

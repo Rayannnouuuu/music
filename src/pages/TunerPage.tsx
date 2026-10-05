@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { Microphone, MicrophoneSlash, CheckCircle, ArrowsClockwise } from '@phosphor-icons/react'
 import { detectPitch } from '../lib/audio/pitchDetect'
 import { frequencyToNote } from '../lib/audio/noteUtils'
 import { TUNINGS } from '../lib/audio/tunings'
+import { Button } from '../components/ui/Button'
+import { Card } from '../components/ui/Card'
+import TunerGauge from '../components/audio/TunerGauge'
 
 type MicState = 'requesting' | 'granted' | 'denied'
+const IN_TUNE_THRESHOLD = 5
 
 export default function TunerPage() {
   const [micState, setMicState] = useState<MicState>('requesting')
@@ -60,70 +66,131 @@ export default function TunerPage() {
 
   const activeTuning = TUNINGS.find((t) => t.id === tuningId) ?? TUNINGS[0]
   const clampedCents = reading ? Math.max(-50, Math.min(50, reading.cents)) : 0
+  const inTune = !!reading && Math.abs(reading.cents) <= IN_TUNE_THRESHOLD
 
   return (
-    <div className="space-y-4">
-      <h1>Tuner</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Tuner</h1>
+        <p className="mt-1 text-text-muted">Accorde ta guitare à l'oreille, en direct.</p>
+      </div>
 
-      <label className="flex items-center gap-2 text-sm">
-        Accordage de référence
-        <select
-          value={tuningId}
-          onChange={(e) => setTuningId(e.target.value)}
-          className="bg-bg text-text border border-border rounded px-2 py-1"
-        >
-          {TUNINGS.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.label}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className="flex flex-wrap gap-2">
+        {TUNINGS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTuningId(t.id)}
+            className={`rounded-[var(--radius-control)] border px-3.5 py-1.5 text-sm font-medium transition-colors ${
+              t.id === tuningId
+                ? 'border-accent-soft bg-accent-soft text-accent-strong'
+                : 'border-border text-text-muted hover:border-accent-soft hover:text-text'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {micState === 'requesting' && (
+        <Card className="flex flex-col items-center gap-3 p-10 text-center">
+          <motion.div
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-soft text-accent-strong"
+          >
+            <Microphone size={26} />
+          </motion.div>
+          <p className="text-text-muted">Autorisation du micro en cours...</p>
+        </Card>
+      )}
 
       {micState === 'denied' && (
-        <div className="bg-panel border border-border rounded-lg p-4 space-y-2">
-          <p>
-            Accès au microphone refusé ou indisponible. Autorise le microphone dans les
-            paramètres de ton navigateur pour utiliser le tuner.
+        <Card className="flex flex-col items-center gap-4 p-8 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-warning-soft text-warning">
+            <MicrophoneSlash size={26} />
+          </div>
+          <p className="max-w-sm text-text-muted">
+            Accès au microphone refusé ou indisponible. Autorise le microphone dans les paramètres
+            de ton navigateur pour utiliser le tuner.
           </p>
-          <button className="text-accent font-semibold" onClick={() => setRetryKey((k) => k + 1)}>
+          <Button variant="secondary" onClick={() => setRetryKey((k) => k + 1)}>
+            <ArrowsClockwise size={17} />
             Réessayer
-          </button>
-        </div>
+          </Button>
+        </Card>
       )}
 
       {micState === 'granted' && (
-        <div
-          data-testid="tuner-reading"
-          className="bg-panel border border-border rounded-lg p-4 space-y-3"
-        >
-          {reading ? (
-            <>
-              <p className="text-3xl font-bold text-accent">
-                {reading.note}
-                {reading.octave}
-              </p>
-              <p className="text-text-muted">
-                {reading.cents > 0 ? '+' : ''}
-                {reading.cents} cents
-              </p>
-              <div className="h-2 bg-bg border border-border rounded relative">
-                <div
-                  className="absolute top-0 bottom-0 w-1 bg-accent"
-                  style={{ left: `${50 + clampedCents}%` }}
-                />
-              </div>
-            </>
-          ) : (
-            <p className="text-text-muted">Joue une note...</p>
-          )}
-        </div>
+        <Card data-testid="tuner-reading" className="space-y-6 p-6 sm:p-10">
+          <TunerGauge cents={clampedCents} hasReading={!!reading} inTune={inTune} />
+
+          <div className="flex flex-col items-center gap-2">
+            <AnimatePresence mode="wait">
+              {reading ? (
+                <motion.div
+                  key={`${reading.note}${reading.octave}`}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex flex-col items-center gap-1"
+                >
+                  <p className="font-mono text-5xl font-bold tabular-nums text-text">
+                    {reading.note}
+                    <span className="text-text-muted">{reading.octave}</span>
+                  </p>
+                  <p
+                    className={`font-mono text-sm tabular-nums ${
+                      inTune ? 'text-success' : 'text-text-muted'
+                    }`}
+                  >
+                    {reading.cents > 0 ? '+' : ''}
+                    {reading.cents} cents
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.p
+                  key="idle"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-text-muted"
+                >
+                  Joue une note...
+                </motion.p>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {inTune && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="flex items-center gap-1.5 rounded-[var(--radius-control)] bg-success-soft px-3 py-1 text-sm font-semibold text-success"
+                >
+                  <CheckCircle size={16} weight="fill" />
+                  Accordé !
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </Card>
       )}
 
-      <p className="text-text-muted text-sm">
-        Cordes de référence ({activeTuning.label}) :{' '}
-        {activeTuning.strings.map((s) => s.note).join(' · ')}
-      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-sm text-text-muted">Cordes de référence ({activeTuning.label})</span>
+        <div className="flex flex-wrap gap-1.5">
+          {activeTuning.strings.map((s, i) => (
+            <span
+              key={i}
+              className="rounded-[var(--radius-control)] border border-border-soft bg-panel px-2.5 py-1 font-mono text-xs text-text-muted"
+            >
+              {s.note}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

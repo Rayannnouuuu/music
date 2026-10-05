@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Barbell, Gauge, ArrowRight } from '@phosphor-icons/react'
 import { loadAllExercises, filterExercises } from '../lib/content/loadExercises'
+import { Card } from '../components/ui/Card'
+import { Slider } from '../components/ui/Slider'
+import { DifficultyMeter } from '../components/ui/DifficultyMeter'
 import type { Category } from '../lib/content/types'
 
 export default function ExercisesListPage() {
@@ -19,58 +23,80 @@ export default function ExercisesListPage() {
   })
 
   return (
-    <div className="space-y-4">
-      <h1>Exercices</h1>
-
-      <div className="flex flex-wrap gap-4 bg-panel border border-border rounded-lg p-3">
-        <label className="flex items-center gap-2 text-sm">
-          Catégorie
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as Category | '')}
-            className="bg-bg text-text border border-border rounded px-2 py-1"
-          >
-            <option value="">Toutes</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="flex items-center gap-2 text-sm">
-          Difficulté max {maxDifficulty}
-          <input
-            type="range"
-            min={1}
-            max={10}
-            value={maxDifficulty}
-            onChange={(e) => setMaxDifficulty(Number(e.target.value))}
-          />
-        </label>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Exercices</h1>
+        <p className="mt-1 text-text-muted">{allExercises.length} exercices à pratiquer.</p>
       </div>
 
-      {exercises.length === 0 ? (
-        <p className="text-text-muted">Aucun exercice ne correspond à ces filtres.</p>
-      ) : (
-        <ul className="space-y-2">
-          {exercises.map((exercise) => (
-            <li key={exercise.id}>
-              <Link
-                to={`/exercises/${exercise.id}`}
-                className="block bg-panel border border-border rounded-lg p-3 hover:border-accent"
-              >
-                <span className="font-semibold">{exercise.title}</span>
-                <span className="text-text-muted text-sm">
-                  {' '}
-                  · {exercise.category} · difficulté {exercise.difficulty}/10 · {exercise.targetBpm}{' '}
-                  BPM
-                </span>
-              </Link>
-            </li>
+      <Card className="space-y-4 p-4 sm:p-5">
+        <div className="flex flex-wrap gap-1.5">
+          <button
+            onClick={() => setCategory('')}
+            className={`rounded-[var(--radius-control)] border px-3.5 py-1.5 text-sm font-medium transition-colors ${
+              category === ''
+                ? 'border-accent-soft bg-accent-soft text-accent-strong'
+                : 'border-border text-text-muted hover:border-accent-soft hover:text-text'
+            }`}
+          >
+            Toutes
+          </button>
+          {categories.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCategory(c)}
+              className={`rounded-[var(--radius-control)] border px-3.5 py-1.5 text-sm font-medium capitalize transition-colors ${
+                category === c
+                  ? 'border-accent-soft bg-accent-soft text-accent-strong'
+                  : 'border-border text-text-muted hover:border-accent-soft hover:text-text'
+              }`}
+            >
+              {c}
+            </button>
           ))}
-        </ul>
+        </div>
+
+        <div className="max-w-xs">
+          <Slider
+            label="Difficulté max"
+            value={maxDifficulty}
+            min={1}
+            max={10}
+            onChange={setMaxDifficulty}
+          />
+        </div>
+      </Card>
+
+      {exercises.length === 0 ? (
+        <Card className="p-8 text-center text-text-muted">
+          Aucun exercice ne correspond à ces filtres.
+        </Card>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {exercises.map((exercise) => (
+            <Link key={exercise.id} to={`/exercises/${exercise.id}`}>
+              <Card interactive className="flex h-full flex-col gap-3 p-5">
+                <div className="flex items-center justify-between">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-soft text-accent-strong">
+                    <Barbell size={17} />
+                  </span>
+                  <span className="text-xs capitalize text-text-muted">{exercise.category}</span>
+                </div>
+                <p className="flex-1 font-semibold text-text">{exercise.title}</p>
+                <div className="flex items-center justify-between">
+                  <DifficultyMeter value={exercise.difficulty} />
+                  <span className="flex items-center gap-1 text-xs text-text-muted">
+                    <Gauge size={13} />
+                    {exercise.targetBpm} BPM
+                  </span>
+                </div>
+                <span className="flex items-center gap-1 text-sm font-medium text-accent-strong">
+                  Voir <ArrowRight size={14} />
+                </span>
+              </Card>
+            </Link>
+          ))}
+        </div>
       )}
     </div>
   )

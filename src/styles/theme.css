@@ -1,15 +1,131 @@
 @import "tailwindcss";
 
+@import "@fontsource/geist-sans/400.css";
+@import "@fontsource/geist-sans/500.css";
+@import "@fontsource/geist-sans/600.css";
+@import "@fontsource/geist-sans/700.css";
+@import "@fontsource/geist-mono/400.css";
+@import "@fontsource/geist-mono/500.css";
+@import "@fontsource/geist-mono/600.css";
+
 @theme {
+  /* Brand surface & text — unchanged from the original palette. */
   --color-bg: #0c0a10;
   --color-panel: #16131c;
   --color-border: #271f30;
   --color-accent: #a855f7;
   --color-text: #f1edf5;
   --color-text-muted: #948aa3;
+
+  /* Extended surface scale (depth without leaving the brand's hue). */
+  --color-panel-raised: #1c1824;
+  --color-panel-hover: #221d2b;
+  --color-border-soft: #1f1a27;
+
+  /* Accent variants — same hue, different strength, never a second brand color. */
+  --color-accent-soft: #a855f71a; /* 10% — tints, active-nav backgrounds */
+  --color-accent-strong: #c084fc; /* lighter step, for text-on-dark emphasis */
+
+  /* Functional semantics (tuner, goal status) — distinct from the brand accent
+     on purpose: these communicate state, not identity. Desaturated to stay
+     premium rather than traffic-light bright. */
+  --color-success: #4ade80;
+  --color-success-soft: #4ade8026;
+  --color-warning: #fb923c;
+  --color-warning-soft: #fb923c26;
+
+  --font-sans: "Geist Sans", "Geist", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", monospace;
+
+  /* Shape Consistency Lock: controls = pill, cards = soft-large, inputs = soft-small.
+     These three values are the only radii used anywhere in the app. */
+  --radius-control: 9999px;
+  --radius-card: 20px;
+  --radius-input: 12px;
 }
 
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+/* Reduced motion is respected globally; components that add their own
+   transforms still gate themselves individually where it matters. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom range input used by <Slider>. The fill gradient is set inline per
+   instance; this just styles the track height and the thumb. */
+.guitar-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-control);
+  outline: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.guitar-slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.guitar-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-text);
+  border: 3px solid var(--color-accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.guitar-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.5),
+    0 0 0 6px var(--color-accent-soft);
+}
+
+.guitar-slider::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+}
+
+.guitar-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-text);
+  border: 3px solid var(--color-accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.guitar-slider::-moz-range-track {
+  height: 6px;
+  border-radius: var(--radius-control);
+  background: transparent;
 }
