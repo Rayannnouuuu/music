@@ -7,6 +7,7 @@ import { buildPath, flattenPath, nextExerciseId, CATEGORY_LABELS } from '../lib/
 import { useProgression } from '../lib/progression/ProgressionContext'
 import { Card } from '../components/ui/Card'
 import { CHAPTER_ICONS } from './parcoursShared'
+import { staggerContainer, fadeInUp } from '../lib/motion/variants'
 
 export default function ParcoursPage() {
   const allExercises = useMemo(() => loadAllExercises(), [])
@@ -54,31 +55,38 @@ export default function ParcoursPage() {
         )}
       </Card>
 
-      <div className="space-y-3">
+      <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-3">
         {chapters.map((chapter, chapterIndex) => {
           const ChapterIcon = CHAPTER_ICONS[chapterIndex % CHAPTER_ICONS.length]
           const doneInChapter = chapter.exercises.filter((e) => completedIds.includes(e.id)).length
+          const chapterDone = doneInChapter === chapter.exercises.length
           return (
-            <Link key={chapter.category} to={`/parcours/${chapter.category}`}>
-              <Card interactive className="flex items-center gap-3 p-5">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-strong">
-                  <ChapterIcon size={19} />
-                </span>
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-text-muted">Chapitre {chapterIndex + 1}</p>
-                  <h2 className="font-semibold text-text">{CATEGORY_LABELS[chapter.category]}</h2>
-                </div>
-                <span className="ml-auto flex items-center gap-3">
-                  <span className="text-sm text-text-muted">
-                    {doneInChapter}/{chapter.exercises.length}
+            <motion.div key={chapter.category} variants={fadeInUp}>
+              <Link to={`/parcours/${chapter.category}`}>
+                <Card interactive className="flex items-center gap-3 p-5">
+                  <motion.span
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-strong"
+                    animate={chapterDone ? { scale: [1, 1.12, 1] } : undefined}
+                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <ChapterIcon size={19} />
+                  </motion.span>
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-text-muted">Chapitre {chapterIndex + 1}</p>
+                    <h2 className="font-semibold text-text">{CATEGORY_LABELS[chapter.category]}</h2>
+                  </div>
+                  <span className="ml-auto flex items-center gap-3">
+                    <span className="text-sm text-text-muted">
+                      {doneInChapter}/{chapter.exercises.length}
+                    </span>
+                    <CaretRight size={16} className="text-text-muted" />
                   </span>
-                  <CaretRight size={16} className="text-text-muted" />
-                </span>
-              </Card>
-            </Link>
+                </Card>
+              </Link>
+            </motion.div>
           )
         })}
-      </div>
+      </motion.div>
     </div>
   )
 }

@@ -10,6 +10,7 @@ import {
   Lock,
   type Icon,
 } from '@phosphor-icons/react'
+import { motion } from 'motion/react'
 import { useProgression } from '../lib/progression/ProgressionContext'
 import { aggregateXpByDay, skillBreakdown } from '../lib/progression/charts'
 import { currentStreak, longestStreak } from '../lib/progression/streak'
@@ -17,6 +18,7 @@ import { BADGES } from '../lib/progression/badges'
 import BarChart from '../components/charts/BarChart'
 import { Card } from '../components/ui/Card'
 import { localDateString } from '../lib/date'
+import { staggerContainer, fadeInScale } from '../lib/motion/variants'
 
 const BADGE_ICONS: Record<string, Icon> = {
   'premiere-semaine': Flame,
@@ -86,13 +88,21 @@ export default function ProgressionPage() {
         <p className="text-xs uppercase tracking-wide text-text-muted">
           Badges ({state.badgesUnlocked.length}/{BADGES.length})
         </p>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+        >
           {BADGES.map((badge) => {
             const unlocked = state.badgesUnlocked.includes(badge.id)
             const BadgeIcon = BADGE_ICONS[badge.id] ?? Trophy
             return (
-              <div
+              <motion.div
                 key={badge.id}
+                variants={fadeInScale}
+                whileHover={unlocked ? { y: -3, scale: 1.03 } : undefined}
+                transition={{ type: 'spring', stiffness: 400, damping: 28 }}
                 className={`flex flex-col items-center gap-2 rounded-[var(--radius-card)] border p-4 text-center transition-colors ${
                   unlocked
                     ? 'border-accent-soft bg-accent-soft'
@@ -111,10 +121,10 @@ export default function ProgressionPage() {
                 >
                   {badge.label}
                 </span>
-              </div>
+              </motion.div>
             )
           })}
-        </div>
+        </motion.div>
       </Card>
     </div>
   )

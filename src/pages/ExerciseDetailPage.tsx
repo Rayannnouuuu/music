@@ -84,21 +84,23 @@ export default function ExerciseDetailPage() {
           <ArrowLeft size={15} />
           Exercices
         </Link>
-        <Card className="flex flex-col items-center gap-3 p-10 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-border text-text-muted">
-            <Lock size={24} />
-          </span>
-          <p className="font-semibold text-text">Exercice verrouillé</p>
-          <p className="max-w-sm text-sm text-text-muted">
-            Termine les étapes précédentes du parcours pour débloquer celle-ci.
-          </p>
-          <Link
-            to="/parcours"
-            className="mt-2 flex items-center gap-1.5 rounded-[var(--radius-control)] bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent-strong"
-          >
-            Voir le parcours <ArrowRight size={15} />
-          </Link>
-        </Card>
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+          <Card className="flex flex-col items-center gap-3 p-10 text-center">
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-border text-text-muted">
+              <Lock size={24} />
+            </span>
+            <p className="font-semibold text-text">Exercice verrouillé</p>
+            <p className="max-w-sm text-sm text-text-muted">
+              Termine les étapes précédentes du parcours pour débloquer celle-ci.
+            </p>
+            <Link
+              to="/parcours"
+              className="mt-2 flex items-center gap-1.5 rounded-[var(--radius-control)] bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent-strong"
+            >
+              Voir le parcours <ArrowRight size={15} />
+            </Link>
+          </Card>
+        </motion.div>
       </div>
     )
   }
@@ -263,51 +265,77 @@ export default function ExerciseDetailPage() {
         )}
       </div>
 
-      {autoAdvancing && nextExercise ? (
-        <Card className="flex items-center justify-between gap-4 border-accent-soft bg-accent-soft/40 p-5">
-          <div>
-            <p className="flex items-center gap-1.5 text-xs uppercase tracking-wide text-accent-strong">
-              <Trophy size={13} weight="fill" />
-              Bravo ! On enchaîne
-            </p>
-            <p className="font-semibold text-text">{nextExercise.title}</p>
-          </div>
-          <Link
-            to={`/exercises/${nextExercise.id}`}
-            className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent-strong"
+      <AnimatePresence mode="wait">
+        {autoAdvancing && nextExercise ? (
+          <motion.div
+            key="auto-advancing"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           >
-            Continuer <ArrowRight size={15} />
-          </Link>
-        </Card>
-      ) : doneToday && !nextExercise ? (
-        <Card className="flex flex-col items-center gap-2 p-8 text-center">
-          <Trophy size={28} weight="fill" className="text-accent-strong" />
-          <p className="font-semibold text-text">Parcours terminé !</p>
-          <p className="text-sm text-text-muted">Tu as fini les {orderedIds.length} étapes. Bravo.</p>
-        </Card>
-      ) : (
-        nextExercise && (
-          <Card className="flex items-center justify-between gap-4 p-5">
-            <div>
-              <p className="text-xs uppercase tracking-wide text-text-muted">Suite du parcours</p>
-              <p className="font-semibold text-text">{nextExercise.title}</p>
-            </div>
-            {doneToday ? (
+            <Card className="flex items-center justify-between gap-4 border-accent-soft bg-accent-soft/40 p-5">
+              <div>
+                <p className="flex items-center gap-1.5 text-xs uppercase tracking-wide text-accent-strong">
+                  <Trophy size={13} weight="fill" />
+                  Bravo ! On enchaîne
+                </p>
+                <p className="font-semibold text-text">{nextExercise.title}</p>
+              </div>
               <Link
                 to={`/exercises/${nextExercise.id}`}
                 className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent-strong"
               >
                 Continuer <ArrowRight size={15} />
               </Link>
-            ) : (
-              <span className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] border border-border px-4 py-2.5 text-sm font-medium text-text-muted">
-                <Lock size={14} />
-                Termine celui-ci d&rsquo;abord
-              </span>
-            )}
-          </Card>
-        )
-      )}
+            </Card>
+          </motion.div>
+        ) : doneToday && !nextExercise ? (
+          <motion.div
+            key="path-complete"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Card className="flex flex-col items-center gap-2 p-8 text-center">
+              <Trophy size={28} weight="fill" className="text-accent-strong" />
+              <p className="font-semibold text-text">Parcours terminé !</p>
+              <p className="text-sm text-text-muted">Tu as fini les {orderedIds.length} étapes. Bravo.</p>
+            </Card>
+          </motion.div>
+        ) : (
+          nextExercise && (
+            <motion.div
+              key="suite"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <Card className="flex items-center justify-between gap-4 p-5">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-text-muted">Suite du parcours</p>
+                  <p className="font-semibold text-text">{nextExercise.title}</p>
+                </div>
+                {doneToday ? (
+                  <Link
+                    to={`/exercises/${nextExercise.id}`}
+                    className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent-strong"
+                  >
+                    Continuer <ArrowRight size={15} />
+                  </Link>
+                ) : (
+                  <span className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] border border-border px-4 py-2.5 text-sm font-medium text-text-muted">
+                    <Lock size={14} />
+                    Termine celui-ci d&rsquo;abord
+                  </span>
+                )}
+              </Card>
+            </motion.div>
+          )
+        )}
+      </AnimatePresence>
     </div>
   )
 }

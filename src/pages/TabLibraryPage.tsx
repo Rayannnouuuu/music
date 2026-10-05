@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'motion/react'
 import { MusicNotes, ArrowRight, PenNib } from '@phosphor-icons/react'
 import { loadAllTabs, filterTabs } from '../lib/content/loadTabs'
 import { useProgression } from '../lib/progression/ProgressionContext'
@@ -7,7 +8,9 @@ import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { Slider } from '../components/ui/Slider'
+import { FilterChips } from '../components/ui/FilterChips'
 import { DifficultyMeter } from '../components/ui/DifficultyMeter'
+import { fadeInUpDelayed } from '../lib/motion/variants'
 
 export default function TabLibraryPage() {
   const { state } = useProgression()
@@ -47,60 +50,22 @@ export default function TabLibraryPage() {
         <div className="flex flex-wrap gap-4">
           <div className="space-y-1.5">
             <p className="text-xs uppercase tracking-wide text-text-muted">Sous-genre</p>
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                onClick={() => setSubgenre('')}
-                className={`rounded-[var(--radius-control)] border px-3 py-1.5 text-sm font-medium transition-colors ${
-                  subgenre === ''
-                    ? 'border-accent-soft bg-accent-soft text-accent-strong'
-                    : 'border-border text-text-muted hover:border-accent-soft hover:text-text'
-                }`}
-              >
-                Tous
-              </button>
-              {subgenres.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSubgenre(s)}
-                  className={`rounded-[var(--radius-control)] border px-3 py-1.5 text-sm font-medium transition-colors ${
-                    subgenre === s
-                      ? 'border-accent-soft bg-accent-soft text-accent-strong'
-                      : 'border-border text-text-muted hover:border-accent-soft hover:text-text'
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
+            <FilterChips
+              layoutId="tabs-subgenre-pill"
+              value={subgenre}
+              onChange={setSubgenre}
+              options={[{ value: '', label: 'Tous' }, ...subgenres.map((s) => ({ value: s, label: s }))]}
+            />
           </div>
 
           <div className="space-y-1.5">
             <p className="text-xs uppercase tracking-wide text-text-muted">Accordage</p>
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                onClick={() => setTuning('')}
-                className={`rounded-[var(--radius-control)] border px-3 py-1.5 text-sm font-medium transition-colors ${
-                  tuning === ''
-                    ? 'border-accent-soft bg-accent-soft text-accent-strong'
-                    : 'border-border text-text-muted hover:border-accent-soft hover:text-text'
-                }`}
-              >
-                Tous
-              </button>
-              {tunings.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTuning(t)}
-                  className={`rounded-[var(--radius-control)] border px-3 py-1.5 text-sm font-medium transition-colors ${
-                    tuning === t
-                      ? 'border-accent-soft bg-accent-soft text-accent-strong'
-                      : 'border-border text-text-muted hover:border-accent-soft hover:text-text'
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
+            <FilterChips
+              layoutId="tabs-tuning-pill"
+              value={tuning}
+              onChange={setTuning}
+              options={[{ value: '', label: 'Tous' }, ...tunings.map((t) => ({ value: t, label: t }))]}
+            />
           </div>
         </div>
 
@@ -120,29 +85,31 @@ export default function TabLibraryPage() {
           Aucune tab ne correspond à ces filtres.
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {tabs.map((tab) => (
-            <Link key={tab.id} to={`/tabs/${tab.id}`}>
-              <Card interactive className="flex h-full flex-col gap-3 p-5">
-                <div className="flex items-center justify-between">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-soft text-accent-strong">
-                    <MusicNotes size={17} />
+        <div key={`${subgenre}-${tuning}`} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {tabs.map((tab, index) => (
+            <motion.div key={tab.id} {...fadeInUpDelayed(index)}>
+              <Link to={`/tabs/${tab.id}`}>
+                <Card interactive className="flex h-full flex-col gap-3 p-5">
+                  <div className="flex items-center justify-between">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-soft text-accent-strong">
+                      <MusicNotes size={17} />
+                    </span>
+                    <Badge>{tab.tuning}</Badge>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-text">{tab.title}</p>
+                    <p className="text-sm text-text-muted">{tab.artist}</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs capitalize text-text-muted">{tab.subgenre}</span>
+                    <DifficultyMeter value={tab.difficulty} />
+                  </div>
+                  <span className="flex items-center gap-1 text-sm font-medium text-accent-strong">
+                    Jouer <ArrowRight size={14} />
                   </span>
-                  <Badge>{tab.tuning}</Badge>
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-text">{tab.title}</p>
-                  <p className="text-sm text-text-muted">{tab.artist}</p>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs capitalize text-text-muted">{tab.subgenre}</span>
-                  <DifficultyMeter value={tab.difficulty} />
-                </div>
-                <span className="flex items-center gap-1 text-sm font-medium text-accent-strong">
-                  Jouer <ArrowRight size={14} />
-                </span>
-              </Card>
-            </Link>
+                </Card>
+              </Link>
+            </motion.div>
           ))}
         </div>
       )}

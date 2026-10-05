@@ -1,5 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { motion } from 'motion/react'
 import { ArrowLeft, CheckCircle, Lock, Play } from '@phosphor-icons/react'
 import { loadAllExercises } from '../lib/content/loadExercises'
 import { buildPath, flattenPath, isExerciseUnlocked, nextExerciseId, CATEGORY_LABELS } from '../lib/progression/path'
@@ -7,6 +8,7 @@ import { useProgression } from '../lib/progression/ProgressionContext'
 import { CHAPTER_ICONS } from './parcoursShared'
 import { Card } from '../components/ui/Card'
 import { DifficultyMeter } from '../components/ui/DifficultyMeter'
+import { staggerContainer, fadeInScale, shake } from '../lib/motion/variants'
 import type { Category } from '../lib/content/types'
 
 export default function ParcoursChapterPage() {
@@ -17,12 +19,18 @@ export default function ParcoursChapterPage() {
   const { state } = useProgression()
   const completedIds = state.completedExerciseIds
   const upNextId = nextExerciseId(orderedIds, completedIds)
+  const [shakingId, setShakingId] = useState<string | null>(null)
 
   const chapterIndex = chapters.findIndex((c) => c.category === category)
   const chapter = chapters[chapterIndex]
 
   if (!chapter) {
     return <p>Chapitre introuvable.</p>
+  }
+
+  function handleLockedClick(id: string) {
+    setShakingId(id)
+    setTimeout(() => setShakingId((current) => (current === id ? null : current)), 400)
   }
 
   const ChapterIcon = CHAPTER_ICONS[chapterIndex % CHAPTER_ICONS.length]
@@ -55,7 +63,12 @@ export default function ParcoursChapterPage() {
 
       <Card className="p-5">
         <div className="overflow-x-auto pb-2">
-          <div className="relative flex w-max gap-7 pt-7">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="show"
+            className="relative flex w-max gap-7 pt-7"
+          >
             <div className="absolute left-0 right-0 top-14 h-px bg-border-soft" />
             {chapter.exercises.map((exercise, i) => {
               const completed = completedIds.includes(exercise.id)
@@ -63,7 +76,7 @@ export default function ParcoursChapterPage() {
               const isUpNext = exercise.id === upNextId
 
               const node = (
-                <div
+                <motion.div
                   className={`relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 font-mono text-sm font-bold transition-colors ${
                     completed
                       ? 'border-success bg-success-soft text-success'
@@ -73,6 +86,16 @@ export default function ParcoursChapterPage() {
                           ? 'border-accent-soft bg-panel-raised text-accent-strong'
                           : 'border-border bg-panel-raised text-text-muted'
                   }`}
+                  animate={
+                    isUpNext
+                      ? { scale: [1, 1.08, 1] }
+                      : shakingId === exercise.id
+                        ? shake
+                        : undefined
+                  }
+                  transition={isUpNext ? { duration: 1.6, repeat: Infinity, ease: 'easeInOut' } : undefined}
+                  whileHover={unlocked ? { scale: 1.08 } : undefined}
+                  whileTap={unlocked ? { scale: 0.95 } : undefined}
                 >
                   {completed ? (
                     <CheckCircle size={24} weight="fill" />
@@ -85,17 +108,32 @@ export default function ParcoursChapterPage() {
                   ) : (
                     <Lock size={18} />
                   )}
-                </div>
+                </motion.div>
               )
 
               return (
-                <div key={exercise.id} className="flex w-28 shrink-0 flex-col items-center gap-2 text-center">
+                <motion.div
+                  key={exercise.id}
+                  variants={fadeInScale}
+                  className="flex w-28 shrink-0 flex-col items-center gap-2 text-center"
+                >
                   {unlocked ? (
                     <Link to={`/exercises/${exercise.id}`} aria-label={exercise.title}>
                       {node}
                     </Link>
                   ) : (
-                    <span aria-label={`${exercise.title} (verrouillé)`}>{node}</span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${exercise.title} (verrouillé)`}
+                      className="cursor-not-allowed"
+                      onClick={() => handleLockedClick(exercise.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') handleLockedClick(exercise.id)
+                      }}
+                    >
+                      {node}
+                    </span>
                   )}
                   <div className="min-w-0">
                     <p
@@ -109,10 +147,10 @@ export default function ParcoursChapterPage() {
                       <DifficultyMeter value={exercise.difficulty} />
                     </div>
                   </div>
-                </div>
+                </motion.div>
               )
             })}
-          </div>
+          </motion.div>
         </div>
       </Card>
     </div>

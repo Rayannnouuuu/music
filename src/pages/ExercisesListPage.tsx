@@ -1,12 +1,15 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'motion/react'
 import { Barbell, Gauge, ArrowRight, Lock } from '@phosphor-icons/react'
 import { loadAllExercises, filterExercises } from '../lib/content/loadExercises'
 import { buildPath, flattenPath, isExerciseUnlocked } from '../lib/progression/path'
 import { useProgression } from '../lib/progression/ProgressionContext'
 import { Card } from '../components/ui/Card'
 import { Slider } from '../components/ui/Slider'
+import { FilterChips } from '../components/ui/FilterChips'
 import { DifficultyMeter } from '../components/ui/DifficultyMeter'
+import { shake, fadeInUpDelayed } from '../lib/motion/variants'
 import type { Category } from '../lib/content/types'
 
 export default function ExercisesListPage() {
@@ -20,11 +23,17 @@ export default function ExercisesListPage() {
 
   const [category, setCategory] = useState<Category | ''>('')
   const [maxDifficulty, setMaxDifficulty] = useState(10)
+  const [shakingId, setShakingId] = useState<string | null>(null)
 
   const exercises = filterExercises(allExercises, {
     category: category || undefined,
     maxDifficulty,
   })
+
+  function handleLockedClick(id: string) {
+    setShakingId(id)
+    setTimeout(() => setShakingId((current) => (current === id ? null : current)), 400)
+  }
 
   return (
     <div className="space-y-6">
@@ -40,31 +49,12 @@ export default function ExercisesListPage() {
       </div>
 
       <Card className="space-y-4 p-4 sm:p-5">
-        <div className="flex flex-wrap gap-1.5">
-          <button
-            onClick={() => setCategory('')}
-            className={`rounded-[var(--radius-control)] border px-3.5 py-1.5 text-sm font-medium transition-colors ${
-              category === ''
-                ? 'border-accent-soft bg-accent-soft text-accent-strong'
-                : 'border-border text-text-muted hover:border-accent-soft hover:text-text'
-            }`}
-          >
-            Toutes
-          </button>
-          {categories.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              className={`rounded-[var(--radius-control)] border px-3.5 py-1.5 text-sm font-medium capitalize transition-colors ${
-                category === c
-                  ? 'border-accent-soft bg-accent-soft text-accent-strong'
-                  : 'border-border text-text-muted hover:border-accent-soft hover:text-text'
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
+        <FilterChips
+          layoutId="exercises-category-pill"
+          value={category}
+          onChange={setCategory}
+          options={[{ value: '' as const, label: 'Toutes' }, ...categories.map((c) => ({ value: c, label: c }))]}
+        />
 
         <div className="max-w-xs">
           <Slider
@@ -82,8 +72,8 @@ export default function ExercisesListPage() {
           Aucun exercice ne correspond à ces filtres.
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {exercises.map((exercise) => {
+        <div key={category} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {exercises.map((exercise, index) => {
             const unlocked = isExerciseUnlocked(orderedIds, progressState.completedExerciseIds, exercise.id)
             const card = (
               <Card
@@ -120,14 +110,26 @@ export default function ExercisesListPage() {
                 )}
               </Card>
             )
-            return unlocked ? (
-              <Link key={exercise.id} to={`/exercises/${exercise.id}`}>
-                {card}
-              </Link>
-            ) : (
-              <div key={exercise.id} aria-label={`${exercise.title} (verrouillé)`}>
-                {card}
-              </div>
+            return (
+              <motion.div key={exercise.id} {...fadeInUpDelayed(index)}>
+                {unlocked ? (
+                  <Link to={`/exercises/${exercise.id}`}>{card}</Link>
+                ) : (
+                  <motion.div
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${exercise.title} (verrouillé)`}
+                    className="cursor-not-allowed"
+                    animate={shakingId === exercise.id ? shake : undefined}
+                    onClick={() => handleLockedClick(exercise.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') handleLockedClick(exercise.id)
+                    }}
+                  >
+                    {card}
+                  </motion.div>
+                )}
+              </motion.div>
             )
           })}
         </div>

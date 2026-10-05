@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { MotionConfig } from 'motion/react'
 import Layout from './layout/Layout'
 import DashboardPage from './pages/DashboardPage'
 import ParcoursPage from './pages/ParcoursPage'
@@ -14,22 +15,24 @@ import ResourcesPage from './pages/ResourcesPage'
 
 export default function App() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/parcours" element={<ParcoursPage />} />
-          <Route path="/parcours/:category" element={<ParcoursChapterPage />} />
-          <Route path="/exercises" element={<ExercisesListPage />} />
-          <Route path="/exercises/:id" element={<ExerciseDetailPage />} />
-          <Route path="/tabs" element={<TabLibraryPage />} />
-          <Route path="/tabs/new" element={<TabCreatorPage />} />
-          <Route path="/tabs/:id" element={<TabPlayerPage />} />
-          <Route path="/tuner" element={<TunerPage />} />
-          <Route path="/progression" element={<ProgressionPage />} />
-          <Route path="/resources" element={<ResourcesPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <MotionConfig reducedMotion="user">
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/parcours" element={<ParcoursPage />} />
+            <Route path="/parcours/:category" element={<ParcoursChapterPage />} />
+            <Route path="/exercises" element={<ExercisesListPage />} />
+            <Route path="/exercises/:id" element={<ExerciseDetailPage />} />
+            <Route path="/tabs" element={<TabLibraryPage />} />
+            <Route path="/tabs/new" element={<TabCreatorPage />} />
+            <Route path="/tabs/:id" element={<TabPlayerPage />} />
+            <Route path="/tuner" element={<TunerPage />} />
+            <Route path="/progression" element={<ProgressionPage />} />
+            <Route path="/resources" element={<ResourcesPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </MotionConfig>
   )
 }
