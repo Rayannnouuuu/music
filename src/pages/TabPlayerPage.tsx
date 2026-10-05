@@ -5,6 +5,7 @@ import FretboardDiagram from '../components/tab/FretboardDiagram'
 import { playerReducer, type PlayerState } from '../lib/tab/playerState'
 import { activeEventIndex, isEventActive } from '../lib/tab/playback'
 import { loadAllTabs } from '../lib/content/loadTabs'
+import { useMetronome } from '../lib/audio/useMetronome'
 
 const BEATS_PER_MEASURE = 4
 
@@ -15,8 +16,10 @@ export default function TabPlayerPage() {
   const tab = useMemo(() => loadAllTabs().find((t) => t.id === id), [id])
   const [state, dispatch] = useReducer(playerReducer, initialState)
   const [showFretboard, setShowFretboard] = useState(true)
+  const metronome = useMetronome()
 
   const totalBeats = tab ? tab.measures.length * BEATS_PER_MEASURE : 0
+  const effectiveBpm = tab ? (tab.originalTempo * state.speedPercent) / 100 : 0
 
   // Drive the playback clock. Only runs while actually playing.
   useEffect(() => {
@@ -44,11 +47,18 @@ export default function TabPlayerPage() {
     }
   }, [tab, state.elapsedBeats, state.loopRange, state.status, totalBeats])
 
+  // Keep the shared metronome's tempo in sync with this tab's effective BPM while it's running.
+  useEffect(() => {
+    if (metronome.isPlaying && effectiveBpm > 0) {
+      metronome.start(effectiveBpm)
+    }
+    // Only re-sync when the effective BPM actually changes.
+  }, [effectiveBpm])
+
   if (!tab) {
     return <p>Tab introuvable.</p>
   }
 
-  const effectiveBpm = (tab.originalTempo * state.speedPercent) / 100
   const measureIndex = Math.min(
     Math.floor(state.elapsedBeats / BEATS_PER_MEASURE),
     tab.measures.length - 1,
@@ -102,6 +112,17 @@ export default function TabPlayerPage() {
             onChange={(e) => setShowFretboard(e.target.checked)}
           />
           Manche
+        </label>
+
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={metronome.isPlaying}
+            onChange={(e) =>
+              e.target.checked ? metronome.start(effectiveBpm) : metronome.stop()
+            }
+          />
+          Métronome
         </label>
 
         <span className="text-text-muted text-sm">{Math.round(effectiveBpm)} BPM</span>
