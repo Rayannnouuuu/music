@@ -1,4 +1,5 @@
 import { validateTab } from '../content/validate'
+import { TUNINGS } from '../audio/tunings'
 import type { DailyGoal, DailyProgress } from './streak'
 import type { Category, Tab } from '../content/types'
 
@@ -27,6 +28,12 @@ export interface ProgressState {
   // all — the settings toggle gates the microphone request itself, not
   // just the UI.
   autoDetectEnabled: boolean
+  // The player's actual guitar tuning, set once (from the tuner) and used
+  // everywhere pitch-matching needs to know what an open string sounds
+  // like — exercises have no tuning of their own, so without this they
+  // were always matched against standard tuning regardless of how the
+  // guitar is really tuned.
+  guitarTuningId: string
 }
 
 export const defaultProgressState: ProgressState = {
@@ -52,6 +59,7 @@ export const defaultProgressState: ProgressState = {
   completedExerciseIdsByDay: {},
   completedExerciseIds: [],
   autoDetectEnabled: true,
+  guitarTuningId: 'standard',
 }
 
 function booleanOr(value: unknown, fallback: boolean): boolean {
@@ -132,5 +140,9 @@ export function hydrateProgressState(loaded: unknown): ProgressState {
       ? (loaded.completedExerciseIds as unknown[]).filter((id): id is string => typeof id === 'string')
       : [],
     autoDetectEnabled: booleanOr(loaded.autoDetectEnabled, true),
+    guitarTuningId:
+      typeof loaded.guitarTuningId === 'string' && TUNINGS.some((t) => t.id === loaded.guitarTuningId)
+        ? loaded.guitarTuningId
+        : defaultProgressState.guitarTuningId,
   }
 }

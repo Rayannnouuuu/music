@@ -11,7 +11,7 @@ import { Slider } from '../components/ui/Slider'
 import BeatIndicator from '../components/audio/BeatIndicator'
 import { activeEventIndex, isEventActive } from '../lib/tab/playback'
 import { flattenTabEvents, eventsInRange } from '../lib/tab/flatten'
-import { useLoopPlayback } from '../lib/tab/useLoopPlayback'
+import { useLoopPlayback, LEAD_IN_BEATS } from '../lib/tab/useLoopPlayback'
 import { loadAllTabs } from '../lib/content/loadTabs'
 import { findTuningByLabel } from '../lib/audio/tunings'
 import { useProgression, XP_PER_MINUTE } from '../lib/progression/ProgressionContext'
@@ -101,22 +101,28 @@ export default function TabPlayerPage() {
   }
 
   const loopRange = state.loopRange ?? [0, totalBeats]
-  const measureIndex = Math.min(Math.floor(state.elapsedBeats / BEATS_PER_MEASURE), measureCount - 1)
+  // elapsedBeats can run a couple of beats negative during the lead-in before
+  // the loop's first note (see LEAD_IN_BEATS) — clamp the measure index so
+  // that stays "nothing active yet" instead of indexing before measure 0.
+  const measureIndex = Math.min(
+    Math.max(0, Math.floor(state.elapsedBeats / BEATS_PER_MEASURE)),
+    measureCount - 1,
+  )
   const localBeat = state.elapsedBeats - measureIndex * BEATS_PER_MEASURE
   const measure = tab.measures[measureIndex]
   const nextMeasure = tab.measures[measureIndex + 1]
   const candidateIndex = activeEventIndex(measure.events, localBeat)
   const isActive = candidateIndex >= 0 && isEventActive(measure.events[candidateIndex], localBeat)
   const activeEvent = isActive ? measure.events[candidateIndex] : undefined
-  const progressPercent = Math.min(
-    100,
-    ((measureIndex + localBeat / BEATS_PER_MEASURE) / measureCount) * 100,
+  const progressPercent = Math.max(
+    0,
+    Math.min(100, ((measureIndex + localBeat / BEATS_PER_MEASURE) / measureCount) * 100),
   )
 
   const flatEvents = flattenTabEvents(tab, BEATS_PER_MEASURE)
   const loopEvents = eventsInRange(flatEvents, loopRange[0], loopRange[1])
   const loopLength = loopRange[1] - loopRange[0]
-  const scrollPos = Math.min(loopLength, Math.max(0, state.elapsedBeats - loopRange[0]))
+  const scrollPos = Math.min(loopLength, Math.max(-LEAD_IN_BEATS, state.elapsedBeats - loopRange[0]))
   const xpSoFar = Math.round((practiceSecondsRef.current / 60) * XP_PER_MINUTE)
 
   function updateLoopRange(start: number, end: number) {

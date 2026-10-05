@@ -25,6 +25,10 @@ interface UseLoopPlaybackOptions {
 const COUNTDOWN_START = 3
 const COUNTDOWN_STEP_MS = 800
 const COUNTDOWN_GO_HOLD_MS = 500
+// Starting the cursor this many beats before the loop's first note gives it
+// visible travel time across the highway before it's actually due, instead
+// of appearing already active the instant playback starts.
+export const LEAD_IN_BEATS = 2
 
 // Shared playback + "performance session" engine behind both the tab player
 // and the exercise player: owns the play/pause clock, a 3-2-1-GO countdown,
@@ -155,7 +159,7 @@ export function useLoopPlayback({
   function enterPerformance() {
     setPerformanceOpen(true)
     resetAttemptState()
-    dispatch({ type: 'seek', beat: 0 })
+    dispatch({ type: 'seek', beat: (state.loopRange?.[0] ?? 0) - LEAD_IN_BEATS })
     setCountdown(COUNTDOWN_START)
   }
 
@@ -174,7 +178,7 @@ export function useLoopPlayback({
       metronome.stop(loopKey)
     }
     resetAttemptState()
-    dispatch({ type: 'seek', beat: 0 })
+    dispatch({ type: 'seek', beat: (state.loopRange?.[0] ?? 0) - LEAD_IN_BEATS })
     setCountdown(COUNTDOWN_START)
   }
 

@@ -30,6 +30,7 @@ interface ProgressionContextValue {
   setTempoForTab(tabId: string, bpm: number): void
   isExerciseCompletedToday(exerciseId: string, today: string): boolean
   setAutoDetectEnabled(enabled: boolean): void
+  setGuitarTuning(tuningId: string): void
 }
 
 const ProgressionContext = createContext<ProgressionContextValue | null>(null)
@@ -190,6 +191,9 @@ export function ProgressionProvider({ children }: { children: ReactNode }) {
     },
     setAutoDetectEnabled(enabled) {
       setState((prev) => ({ ...prev, autoDetectEnabled: enabled }))
+    },
+    setGuitarTuning(tuningId) {
+      setState((prev) => ({ ...prev, guitarTuningId: tuningId }))
     },
   }
 

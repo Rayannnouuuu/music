@@ -42,7 +42,10 @@ interface TabPerformanceViewProps {
   onAdvanceBeat: (beat: number) => void
 }
 
-const PX_PER_BEAT = 130
+// Wider spacing makes each note easier to pick out; since the scroll speed
+// is pixels-per-beat and the tempo (beats/second) doesn't change, a bigger
+// value here also makes the highway visibly move faster, not just sparser.
+const PX_PER_BEAT = 170
 const CURSOR_OFFSET_PX = 110
 // The highway is centered vertically inside its flex-1 container; if that
 // container shrinks below the 6 lanes' actual height, the centering clips

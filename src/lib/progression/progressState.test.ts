@@ -100,4 +100,14 @@ describe('hydrateProgressState', () => {
   test('a non-boolean autoDetectEnabled falls back to the default (true)', () => {
     expect(hydrateProgressState({ autoDetectEnabled: 'nope' }).autoDetectEnabled).toBe(true)
   })
+
+  test('guitarTuningId defaults to standard and keeps a known tuning id', () => {
+    expect(hydrateProgressState({})).toHaveProperty('guitarTuningId', 'standard')
+    expect(hydrateProgressState({ guitarTuningId: 'dropD' }).guitarTuningId).toBe('dropD')
+  })
+
+  test('an unknown guitarTuningId falls back to the default instead of propagating', () => {
+    expect(hydrateProgressState({ guitarTuningId: 'not-a-real-tuning' }).guitarTuningId).toBe('standard')
+    expect(hydrateProgressState({ guitarTuningId: 42 }).guitarTuningId).toBe('standard')
+  })
 })

@@ -67,6 +67,10 @@ export const TUNINGS: Tuning[] = [
   },
 ]
 
+export function findTuningById(id: string): Tuning {
+  return TUNINGS.find((t) => t.id === id) ?? TUNINGS[0]
+}
+
 // Tab/exercise content stores tuning as free text (e.g. "Standard", "Drop D",
 // "Eb"). Match it against a known tuning's id or label, falling back to
 // standard tuning for anything unrecognized.

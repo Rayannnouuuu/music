@@ -1,19 +1,20 @@
-import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Microphone, MicrophoneSlash, CheckCircle, ArrowsClockwise } from '@phosphor-icons/react'
 import { usePitchDetector } from '../lib/audio/usePitchDetector'
-import { TUNINGS } from '../lib/audio/tunings'
+import { TUNINGS, findTuningById } from '../lib/audio/tunings'
+import { useProgression } from '../lib/progression/ProgressionContext'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
+import { FilterChips } from '../components/ui/FilterChips'
 import TunerGauge from '../components/audio/TunerGauge'
 
 const IN_TUNE_THRESHOLD = 5
 
 export default function TunerPage() {
-  const [tuningId, setTuningId] = useState(TUNINGS[0].id)
+  const { state: progressState, setGuitarTuning } = useProgression()
   const { micState, reading, retry } = usePitchDetector(true)
 
-  const activeTuning = TUNINGS.find((t) => t.id === tuningId) ?? TUNINGS[0]
+  const activeTuning = findTuningById(progressState.guitarTuningId)
   const clampedCents = reading ? Math.max(-50, Math.min(50, reading.cents)) : 0
   const inTune = !!reading && Math.abs(reading.cents) <= IN_TUNE_THRESHOLD
 
@@ -21,24 +22,18 @@ export default function TunerPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Tuner</h1>
-        <p className="mt-1 text-text-muted">Accorde ta guitare à l'oreille, en direct.</p>
+        <p className="mt-1 text-text-muted">
+          Accorde ta guitare à l'oreille, en direct. L'accordage choisi ici est aussi utilisé pour
+          détecter les notes dans les exercices.
+        </p>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {TUNINGS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTuningId(t.id)}
-            className={`rounded-[var(--radius-control)] border px-3.5 py-1.5 text-sm font-medium transition-colors ${
-              t.id === tuningId
-                ? 'border-accent-soft bg-accent-soft text-accent-strong'
-                : 'border-border text-text-muted hover:border-accent-soft hover:text-text'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <FilterChips
+        layoutId="tuner-tuning-pill"
+        value={progressState.guitarTuningId}
+        onChange={setGuitarTuning}
+        options={TUNINGS.map((t) => ({ value: t.id, label: t.label }))}
+      />
 
       {micState === 'requesting' && (
         <Card className="flex flex-col items-center gap-3 p-10 text-center">

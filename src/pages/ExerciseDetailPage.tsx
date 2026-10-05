@@ -17,10 +17,10 @@ import NoteHighway from '../components/tab/NoteHighway'
 import TabPerformanceView from '../components/tab/TabPerformanceView'
 import { totalBeatsForEvents } from '../lib/tab/noteLayout'
 import { activeEventIndex, isEventActive } from '../lib/tab/playback'
-import { useLoopPlayback } from '../lib/tab/useLoopPlayback'
+import { useLoopPlayback, LEAD_IN_BEATS } from '../lib/tab/useLoopPlayback'
 import { buildPath, flattenPath, isExerciseUnlocked, exerciseAfter, CATEGORY_LABELS } from '../lib/progression/path'
 import { tipsFor } from '../content/tips'
-import { TUNINGS } from '../lib/audio/tunings'
+import { findTuningById } from '../lib/audio/tunings'
 import { Card } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -152,7 +152,7 @@ export default function ExerciseDetailPage() {
     )
   }
 
-  const scrollPos = Math.min(totalBeats, Math.max(0, state.elapsedBeats))
+  const scrollPos = Math.min(totalBeats, Math.max(-LEAD_IN_BEATS, state.elapsedBeats))
   const candidateIndex = activeEventIndex(exercise.pattern, scrollPos)
   const activeEvent =
     candidateIndex >= 0 && isEventActive(exercise.pattern[candidateIndex], scrollPos)
@@ -190,7 +190,7 @@ export default function ExerciseDetailPage() {
             loopLength={totalBeats}
             scrollPos={scrollPos}
             activeEvent={activeEvent}
-            tuning={TUNINGS[0]}
+            tuning={findTuningById(progressState.guitarTuningId)}
             effectiveBpm={effectiveBpm}
             speedPercent={state.speedPercent}
             onSpeedChange={handleSpeedChange}
