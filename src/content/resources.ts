@@ -40,4 +40,12 @@ export const RESOURCE_CATEGORIES: ResourceCategory[] = [
       { label: 'Rhett Shull (YouTube)', url: 'https://www.youtube.com/@RhettShull' },
     ],
   },
+  {
+    title: 'Tabs de morceaux complets',
+    tip: "Ce site se concentre sur des riffs courts à pratiquer. Pour la tab complète d'un morceau, utilise un site dédié — tu peux aussi recréer tes passages préférés toi-même avec l'onglet « Créer une tab ».",
+    links: [
+      { label: 'Songsterr — tabs jouables avec lecture audio', url: 'https://www.songsterr.com' },
+      { label: 'Ultimate Guitar — la plus grosse base de tabs', url: 'https://www.ultimate-guitar.com' },
+    ],
+  },
 ]

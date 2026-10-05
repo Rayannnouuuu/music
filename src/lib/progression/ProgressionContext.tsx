@@ -25,6 +25,7 @@ interface ProgressionContextValue {
   completeTabPractice(tab: Tab, minutesSpent: number, today: string): void
   setDailyGoal(goal: DailyGoal): void
   importTab(tab: Tab): void
+  deleteImportedTab(tabId: string): void
   setTempoForTab(tabId: string, bpm: number): void
   isExerciseCompletedToday(exerciseId: string, today: string): boolean
 }
@@ -131,6 +132,12 @@ export function ProgressionProvider({ children }: { children: ReactNode }) {
     },
     importTab(tab) {
       setState((prev) => ({ ...prev, importedTabs: [...prev.importedTabs, tab] }))
+    },
+    deleteImportedTab(tabId) {
+      setState((prev) => ({
+        ...prev,
+        importedTabs: prev.importedTabs.filter((t) => t.id !== tabId),
+      }))
     },
     setTempoForTab(tabId, bpm) {
       setState((prev) => ({

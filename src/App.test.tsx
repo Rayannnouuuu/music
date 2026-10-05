@@ -9,6 +9,7 @@ const routes: [string, string][] = [
   ['/exercises', 'Exercices'],
   ['/exercises/1', 'Exercice introuvable.'],
   ['/tabs', 'Bibliothèque de tabs'],
+  ['/tabs/new', 'Créer une tab'],
   ['/tabs/1', 'Tab introuvable.'],
   ['/tuner', 'Tuner'],
   ['/progression', 'Progression'],

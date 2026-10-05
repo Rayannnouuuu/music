@@ -5,6 +5,7 @@ import ParcoursPage from './pages/ParcoursPage'
 import ExercisesListPage from './pages/ExercisesListPage'
 import ExerciseDetailPage from './pages/ExerciseDetailPage'
 import TabLibraryPage from './pages/TabLibraryPage'
+import TabCreatorPage from './pages/TabCreatorPage'
 import TabPlayerPage from './pages/TabPlayerPage'
 import TunerPage from './pages/TunerPage'
 import ProgressionPage from './pages/ProgressionPage'
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/exercises" element={<ExercisesListPage />} />
           <Route path="/exercises/:id" element={<ExerciseDetailPage />} />
           <Route path="/tabs" element={<TabLibraryPage />} />
+          <Route path="/tabs/new" element={<TabCreatorPage />} />
           <Route path="/tabs/:id" element={<TabPlayerPage />} />
           <Route path="/tuner" element={<TunerPage />} />
           <Route path="/progression" element={<ProgressionPage />} />

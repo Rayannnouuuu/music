@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowLeft, Play, Pause, Gauge, Repeat, Guitar, type Icon } from '@phosphor-icons/react'
+import { ArrowLeft, Play, Pause, Gauge, Repeat, Guitar, Minus, Plus, type Icon } from '@phosphor-icons/react'
 import NoteHighway from '../components/tab/NoteHighway'
 import FretboardDiagram from '../components/tab/FretboardDiagram'
 import TabPerformanceView from '../components/tab/TabPerformanceView'
@@ -46,18 +46,19 @@ function ToggleChip({
 
 export default function TabPlayerPage() {
   const { id } = useParams()
-  const { state: progressState, completeTabPractice } = useProgression()
+  const { state: progressState, completeTabPractice, setTempoForTab } = useProgression()
   const tab = useMemo(
     () => [...loadAllTabs(), ...progressState.importedTabs].find((t) => t.id === id),
     [id, progressState.importedTabs],
   )
   const measureCount = tab?.measures.length ?? 0
   const totalBeats = measureCount * BEATS_PER_MEASURE
+  const baseBpm = tab ? (progressState.customTempoByTabId[tab.id] ?? tab.originalTempo) : 0
 
   const { state, dispatch, effectiveBpm, togglePlayback, metronome, practiceSecondsRef } = useLoopPlayback({
     loopKey: tab?.id ?? '',
     totalBeats,
-    baseBpm: tab?.originalTempo ?? 0,
+    baseBpm,
     onStop: (minutesSpent) => {
       if (tab) completeTabPractice(tab, minutesSpent, localDateString())
     },
@@ -108,6 +109,10 @@ export default function TabPlayerPage() {
 
   function handleSpeedChange(percent: number) {
     dispatch({ type: 'setSpeed', percent })
+  }
+
+  function adjustBaseTempo(delta: number) {
+    setTempoForTab(tab!.id, Math.max(20, Math.min(400, baseBpm + delta)))
   }
 
   return (
@@ -194,7 +199,7 @@ export default function TabPlayerPage() {
           Lecture démarre automatiquement le métronome et passe en plein écran.
         </p>
 
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-3">
           <Slider
             label="Vitesse"
             value={state.speedPercent}
@@ -204,6 +209,37 @@ export default function TabPlayerPage() {
             onChange={handleSpeedChange}
             formatValue={(v) => `${v}%`}
           />
+
+          <div className="space-y-2">
+            <p className="text-sm text-text-muted">Tempo de base</p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => adjustBaseTempo(-1)}
+                aria-label="Ralentir le tempo de base"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-text-muted transition-colors hover:border-accent-soft hover:text-text"
+              >
+                <Minus size={14} />
+              </button>
+              <span className="w-16 text-center font-mono text-sm tabular-nums text-text">
+                {Math.round(baseBpm)} BPM
+              </span>
+              <button
+                onClick={() => adjustBaseTempo(1)}
+                aria-label="Accélérer le tempo de base"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-text-muted transition-colors hover:border-accent-soft hover:text-text"
+              >
+                <Plus size={14} />
+              </button>
+              {baseBpm !== tab.originalTempo && (
+                <button
+                  onClick={() => setTempoForTab(tab.id, tab.originalTempo)}
+                  className="text-xs font-medium text-accent-strong hover:underline"
+                >
+                  Réinitialiser
+                </button>
+              )}
+            </div>
+          </div>
 
           <ToggleChip
             active={showFretboard}
