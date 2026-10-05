@@ -24,6 +24,7 @@ interface TabPerformanceViewProps {
   onSpeedChange: (percent: number) => void
   onExit: () => void
   xpSoFar: number
+  onPieceValidated?: () => void
 }
 
 const PX_PER_BEAT = 130
@@ -46,6 +47,7 @@ export default function TabPerformanceView({
   onSpeedChange,
   onExit,
   xpSoFar,
+  onPieceValidated,
 }: TabPerformanceViewProps) {
   const { state: progressState } = useProgression()
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function TabPerformanceView({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-50 flex flex-col bg-bg/97 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-bg/97 backdrop-blur-sm"
     >
       <div className="flex items-center justify-between gap-4 p-4 sm:p-6">
         <div>
@@ -80,7 +82,7 @@ export default function TabPerformanceView({
         </button>
       </div>
 
-      <div className="relative flex-1 overflow-hidden">
+      <div className="relative min-h-[160px] flex-1 overflow-hidden">
         <div
           className="pointer-events-none absolute left-0 top-1/2 z-10 flex -translate-y-1/2 flex-col"
           style={{ height: 6 * NOTE_HIGHWAY_SIZES.lg.lane }}
@@ -144,7 +146,12 @@ export default function TabPerformanceView({
 
       {progressState.autoDetectEnabled && (
         <div className="border-t border-border-soft px-4 py-3 sm:px-6">
-          <PracticeValidator activeEvent={activeEvent} tuning={tuning} />
+          <PracticeValidator
+            activeEvent={activeEvent}
+            tuning={tuning}
+            totalNotes={loopEvents.length}
+            onValidated={onPieceValidated}
+          />
         </div>
       )}
     </motion.div>

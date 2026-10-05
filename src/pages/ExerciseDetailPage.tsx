@@ -1,14 +1,24 @@
-import { useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowLeft, ArrowRight, CheckCircle, Gauge, Play, Pause, Lightbulb, Lock } from '@phosphor-icons/react'
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  Gauge,
+  Play,
+  Pause,
+  Lightbulb,
+  Lock,
+  Trophy,
+} from '@phosphor-icons/react'
 import { loadAllExercises } from '../lib/content/loadExercises'
 import NoteHighway from '../components/tab/NoteHighway'
 import TabPerformanceView from '../components/tab/TabPerformanceView'
 import { totalBeatsForEvents } from '../lib/tab/noteLayout'
 import { activeEventIndex, isEventActive } from '../lib/tab/playback'
 import { useLoopPlayback } from '../lib/tab/useLoopPlayback'
-import { buildPath, flattenPath, isExerciseUnlocked } from '../lib/progression/path'
+import { buildPath, flattenPath, isExerciseUnlocked, exerciseAfter, CATEGORY_LABELS } from '../lib/progression/path'
 import { tipsFor } from '../content/tips'
 import { TUNINGS } from '../lib/audio/tunings'
 import { Card } from '../components/ui/Card'
@@ -18,34 +28,30 @@ import { DifficultyMeter } from '../components/ui/DifficultyMeter'
 import { useProgression, XP_PER_MINUTE } from '../lib/progression/ProgressionContext'
 import { localDateString } from '../lib/date'
 
-const CATEGORY_LABELS: Record<string, string> = {
-  scales: 'Gammes',
-  legato: 'Legato',
-  picking: 'Picking',
-  bends: 'Bends',
-  palmMuting: 'Palm muting',
-  sweep: 'Sweep picking',
-  rhythm: 'Rythmique',
-  arpeggios: 'Arpèges',
-}
+// How long the "bravo, on enchaîne" banner stays up before auto-navigating
+// to the next step — long enough to register the XP toast, short enough
+// that the path still feels continuous rather than stalled.
+const AUTO_ADVANCE_DELAY_MS = 2800
 
 export default function ExerciseDetailPage() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const allExercises = useMemo(() => loadAllExercises(), [])
   const exercise = allExercises.find((e) => e.id === id)
   const { state: progressState, completeExercise, completeExercisePractice, isExerciseCompletedToday } =
     useProgression()
   const [justCompleted, setJustCompleted] = useState(false)
+  const [autoAdvancing, setAutoAdvancing] = useState(false)
   const today = localDateString()
 
   const chapters = useMemo(() => buildPath(allExercises), [allExercises])
   const orderedIds = useMemo(() => flattenPath(chapters).map((e) => e.id), [chapters])
   const chapter = chapters.find((c) => c.category === exercise?.category)
   const positionInChapter = chapter && exercise ? chapter.exercises.findIndex((e) => e.id === exercise.id) : -1
-  const nextInChapter = chapter && positionInChapter >= 0 ? chapter.exercises[positionInChapter + 1] : undefined
-  const nextUnlocked = nextInChapter
-    ? isExerciseUnlocked(orderedIds, progressState.completedExerciseIds, nextInChapter.id)
-    : false
+
+  const unlocked = exercise ? isExerciseUnlocked(orderedIds, progressState.completedExerciseIds, exercise.id) : false
+  const nextId = exercise ? exerciseAfter(orderedIds, exercise.id) : undefined
+  const nextExercise = nextId ? allExercises.find((e) => e.id === nextId) : undefined
 
   const totalBeats = exercise ? totalBeatsForEvents(exercise.pattern) : 4
   const { state, dispatch, togglePlayback, effectiveBpm, practiceSecondsRef } = useLoopPlayback({
@@ -57,8 +63,44 @@ export default function ExerciseDetailPage() {
     },
   })
 
+  // Cancel any pending auto-advance if the user navigates away first.
+  useEffect(() => {
+    if (!autoAdvancing || !nextId) return
+    const timer = setTimeout(() => navigate(`/exercises/${nextId}`), AUTO_ADVANCE_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [autoAdvancing, nextId, navigate])
+
   if (!exercise) {
     return <p>Exercice introuvable.</p>
+  }
+
+  if (!unlocked) {
+    return (
+      <div className="space-y-6">
+        <Link
+          to="/exercises"
+          className="inline-flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text"
+        >
+          <ArrowLeft size={15} />
+          Exercices
+        </Link>
+        <Card className="flex flex-col items-center gap-3 p-10 text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-border text-text-muted">
+            <Lock size={24} />
+          </span>
+          <p className="font-semibold text-text">Exercice verrouillé</p>
+          <p className="max-w-sm text-sm text-text-muted">
+            Termine les étapes précédentes du parcours pour débloquer celle-ci.
+          </p>
+          <Link
+            to="/parcours"
+            className="mt-2 flex items-center gap-1.5 rounded-[var(--radius-control)] bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent-strong"
+          >
+            Voir le parcours <ArrowRight size={15} />
+          </Link>
+        </Card>
+      </div>
+    )
   }
 
   const doneToday = isExerciseCompletedToday(exercise.id, today)
@@ -71,11 +113,26 @@ export default function ExerciseDetailPage() {
   const xpSoFar = Math.round((practiceSecondsRef.current / 60) * XP_PER_MINUTE)
   const tips = tipsFor(exercise.category, exercise.difficulty)
 
+  // Shared by the manual button and the 90%-note-accuracy auto-validation:
+  // whichever happens first grants the XP and kicks off the "flow into the
+  // next step" sequence — the point is a continuous path, not two
+  // disconnected ways to finish an exercise.
+  function handleNewCompletion() {
+    setJustCompleted(true)
+    setTimeout(() => setJustCompleted(false), 2500)
+    if (nextId) setAutoAdvancing(true)
+  }
+
   function handleComplete() {
     if (doneToday) return
     completeExercise(exercise!, today)
-    setJustCompleted(true)
-    setTimeout(() => setJustCompleted(false), 2500)
+    handleNewCompletion()
+  }
+
+  function handlePieceValidated() {
+    if (doneToday) return
+    completeExercise(exercise!, today)
+    handleNewCompletion()
   }
 
   function handleSpeedChange(percent: number) {
@@ -101,6 +158,7 @@ export default function ExerciseDetailPage() {
             onSpeedChange={handleSpeedChange}
             onExit={togglePlayback}
             xpSoFar={xpSoFar}
+            onPieceValidated={handlePieceValidated}
           />
         )}
       </AnimatePresence>
@@ -154,6 +212,7 @@ export default function ExerciseDetailPage() {
             <p className="font-semibold text-text">Jouer avec le métronome</p>
             <p className="text-xs text-text-muted">
               Lecture démarre le métronome à {exercise.targetBpm} BPM et boucle l'exercice en plein écran.
+              Joue 90% des notes justes (au micro ou via le bouton Valider) pour valider le morceau.
             </p>
           </div>
         </div>
@@ -197,33 +256,57 @@ export default function ExerciseDetailPage() {
           )}
         </AnimatePresence>
 
-        {doneToday && !justCompleted && (
+        {doneToday && !justCompleted && !autoAdvancing && (
           <p className="text-sm text-text-muted">
             Déjà comptabilisé aujourd&rsquo;hui — reviens demain pour plus d&rsquo;XP.
           </p>
         )}
       </div>
 
-      {nextInChapter && (
-        <Card className="flex items-center justify-between gap-4 p-5">
+      {autoAdvancing && nextExercise ? (
+        <Card className="flex items-center justify-between gap-4 border-accent-soft bg-accent-soft/40 p-5">
           <div>
-            <p className="text-xs uppercase tracking-wide text-text-muted">Suite de la série</p>
-            <p className="font-semibold text-text">{nextInChapter.title}</p>
+            <p className="flex items-center gap-1.5 text-xs uppercase tracking-wide text-accent-strong">
+              <Trophy size={13} weight="fill" />
+              Bravo ! On enchaîne
+            </p>
+            <p className="font-semibold text-text">{nextExercise.title}</p>
           </div>
-          {nextUnlocked ? (
-            <Link
-              to={`/exercises/${nextInChapter.id}`}
-              className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent-strong"
-            >
-              Continuer <ArrowRight size={15} />
-            </Link>
-          ) : (
-            <span className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] border border-border px-4 py-2.5 text-sm font-medium text-text-muted">
-              <Lock size={14} />
-              Termine celui-ci d&rsquo;abord
-            </span>
-          )}
+          <Link
+            to={`/exercises/${nextExercise.id}`}
+            className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent-strong"
+          >
+            Continuer <ArrowRight size={15} />
+          </Link>
         </Card>
+      ) : doneToday && !nextExercise ? (
+        <Card className="flex flex-col items-center gap-2 p-8 text-center">
+          <Trophy size={28} weight="fill" className="text-accent-strong" />
+          <p className="font-semibold text-text">Parcours terminé !</p>
+          <p className="text-sm text-text-muted">Tu as fini les {orderedIds.length} étapes. Bravo.</p>
+        </Card>
+      ) : (
+        nextExercise && (
+          <Card className="flex items-center justify-between gap-4 p-5">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-text-muted">Suite du parcours</p>
+              <p className="font-semibold text-text">{nextExercise.title}</p>
+            </div>
+            {doneToday ? (
+              <Link
+                to={`/exercises/${nextExercise.id}`}
+                className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent-strong"
+              >
+                Continuer <ArrowRight size={15} />
+              </Link>
+            ) : (
+              <span className="flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-control)] border border-border px-4 py-2.5 text-sm font-medium text-text-muted">
+                <Lock size={14} />
+                Termine celui-ci d&rsquo;abord
+              </span>
+            )}
+          </Card>
+        )
       )}
     </div>
   )

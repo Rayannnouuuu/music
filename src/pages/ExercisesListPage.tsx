@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Barbell, Gauge, ArrowRight } from '@phosphor-icons/react'
+import { Barbell, Gauge, ArrowRight, Lock } from '@phosphor-icons/react'
 import { loadAllExercises, filterExercises } from '../lib/content/loadExercises'
+import { buildPath, flattenPath, isExerciseUnlocked } from '../lib/progression/path'
+import { useProgression } from '../lib/progression/ProgressionContext'
 import { Card } from '../components/ui/Card'
 import { Slider } from '../components/ui/Slider'
 import { DifficultyMeter } from '../components/ui/DifficultyMeter'
@@ -13,6 +15,8 @@ export default function ExercisesListPage() {
     () => Array.from(new Set(allExercises.map((e) => e.category))).sort(),
     [allExercises],
   )
+  const orderedIds = useMemo(() => flattenPath(buildPath(allExercises)).map((e) => e.id), [allExercises])
+  const { state: progressState } = useProgression()
 
   const [category, setCategory] = useState<Category | ''>('')
   const [maxDifficulty, setMaxDifficulty] = useState(10)
@@ -26,7 +30,13 @@ export default function ExercisesListPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Exercices</h1>
-        <p className="mt-1 text-text-muted">{allExercises.length} exercices à pratiquer.</p>
+        <p className="mt-1 text-text-muted">
+          {allExercises.length} exercices à pratiquer — débloqués au fil du{' '}
+          <Link to="/parcours" className="text-accent-strong hover:underline">
+            parcours
+          </Link>
+          .
+        </p>
       </div>
 
       <Card className="space-y-4 p-4 sm:p-5">
@@ -73,12 +83,20 @@ export default function ExercisesListPage() {
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {exercises.map((exercise) => (
-            <Link key={exercise.id} to={`/exercises/${exercise.id}`}>
-              <Card interactive className="flex h-full flex-col gap-3 p-5">
+          {exercises.map((exercise) => {
+            const unlocked = isExerciseUnlocked(orderedIds, progressState.completedExerciseIds, exercise.id)
+            const card = (
+              <Card
+                interactive={unlocked}
+                className={`flex h-full flex-col gap-3 p-5 ${unlocked ? '' : 'opacity-50'}`}
+              >
                 <div className="flex items-center justify-between">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-soft text-accent-strong">
-                    <Barbell size={17} />
+                  <span
+                    className={`flex h-9 w-9 items-center justify-center rounded-full ${
+                      unlocked ? 'bg-accent-soft text-accent-strong' : 'bg-border text-text-muted'
+                    }`}
+                  >
+                    {unlocked ? <Barbell size={17} /> : <Lock size={15} />}
                   </span>
                   <span className="text-xs capitalize text-text-muted">{exercise.category}</span>
                 </div>
@@ -90,12 +108,28 @@ export default function ExercisesListPage() {
                     {exercise.targetBpm} BPM
                   </span>
                 </div>
-                <span className="flex items-center gap-1 text-sm font-medium text-accent-strong">
-                  Voir <ArrowRight size={14} />
-                </span>
+                {unlocked ? (
+                  <span className="flex items-center gap-1 text-sm font-medium text-accent-strong">
+                    Voir <ArrowRight size={14} />
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-sm font-medium text-text-muted">
+                    <Lock size={12} />
+                    Verrouillé
+                  </span>
+                )}
               </Card>
-            </Link>
-          ))}
+            )
+            return unlocked ? (
+              <Link key={exercise.id} to={`/exercises/${exercise.id}`}>
+                {card}
+              </Link>
+            ) : (
+              <div key={exercise.id} aria-label={`${exercise.title} (verrouillé)`}>
+                {card}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

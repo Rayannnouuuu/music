@@ -68,3 +68,13 @@ export function isExerciseUnlocked(
 export function nextExerciseId(orderedIds: string[], completedIds: string[]): string | undefined {
   return orderedIds.find((id) => !completedIds.includes(id))
 }
+
+// The step immediately after a given one in the global path, crossing
+// chapter boundaries — used to chain straight into the next chapter once
+// the current one's last exercise is done, instead of stopping at the
+// chapter edge.
+export function exerciseAfter(orderedIds: string[], exerciseId: string): string | undefined {
+  const index = orderedIds.indexOf(exerciseId)
+  if (index === -1) return undefined
+  return orderedIds[index + 1]
+}

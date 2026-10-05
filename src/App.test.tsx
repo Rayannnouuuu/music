@@ -4,7 +4,7 @@ import App from './App'
 import { ProgressionProvider } from './lib/progression/ProgressionContext'
 
 const routes: [string, string][] = [
-  ['/', 'Dashboard'],
+  ['/', 'Aujourd’hui'],
   ['/parcours', 'Parcours'],
   ['/parcours/picking', 'Picking'],
   ['/parcours/not-a-category', 'Chapitre introuvable.'],

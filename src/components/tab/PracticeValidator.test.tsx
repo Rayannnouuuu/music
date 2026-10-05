@@ -23,38 +23,84 @@ function event(overrides: Partial<TabEvent> = {}): TabEvent {
 }
 
 describe('PracticeValidator', () => {
-  test('starts at 0 validated notes', async () => {
-    render(<PracticeValidator activeEvent={event()} tuning={standard} />)
-    expect(await screen.findByText(/0 bonne note/i)).toBeInTheDocument()
+  test('starts at 0 validated notes out of the total', async () => {
+    render(<PracticeValidator activeEvent={event()} tuning={standard} totalNotes={4} />)
+    expect(await screen.findByText('0/4 notes')).toBeInTheDocument()
+    expect(screen.getByText('0%')).toBeInTheDocument()
   })
 
-  test('manual "Valider" increments the counter and then disables itself', async () => {
-    render(<PracticeValidator activeEvent={event()} tuning={standard} />)
+  test('manual "Valider" counts the current note and then disables itself', async () => {
+    render(<PracticeValidator activeEvent={event()} tuning={standard} totalNotes={4} />)
     const validateButton = await screen.findByRole('button', { name: /valider/i })
 
     fireEvent.click(validateButton)
-    expect(await screen.findByText(/1 bonne note/i)).toBeInTheDocument()
+    expect(await screen.findByText('1/4 notes')).toBeInTheDocument()
     expect(validateButton).toBeDisabled()
 
     fireEvent.click(validateButton)
-    expect(screen.getByText(/1 bonne note/i)).toBeInTheDocument()
+    expect(screen.getByText('1/4 notes')).toBeInTheDocument()
   })
 
-  test('moving to a different note re-enables validation', async () => {
-    const { rerender } = render(<PracticeValidator activeEvent={event({ fret: 0 })} tuning={standard} />)
+  test('moving to a different note re-enables validation and counts it separately', async () => {
+    const { rerender } = render(
+      <PracticeValidator activeEvent={event({ fret: 0 })} tuning={standard} totalNotes={4} />,
+    )
     const validateButton = await screen.findByRole('button', { name: /valider/i })
     fireEvent.click(validateButton)
-    expect(await screen.findByText(/1 bonne note/i)).toBeInTheDocument()
+    expect(await screen.findByText('1/4 notes')).toBeInTheDocument()
 
-    rerender(<PracticeValidator activeEvent={event({ fret: 3 })} tuning={standard} />)
+    rerender(<PracticeValidator activeEvent={event({ fret: 3 })} tuning={standard} totalNotes={4} />)
     const stillButton = screen.getByRole('button', { name: /valider/i })
     expect(stillButton).not.toBeDisabled()
     fireEvent.click(stillButton)
-    expect(await screen.findByText(/2 bonnes notes/i)).toBeInTheDocument()
+    expect(await screen.findByText('2/4 notes')).toBeInTheDocument()
+  })
+
+  test('revisiting an already-validated note does not double count it', async () => {
+    const { rerender } = render(
+      <PracticeValidator activeEvent={event({ fret: 0 })} tuning={standard} totalNotes={4} />,
+    )
+    fireEvent.click(await screen.findByRole('button', { name: /valider/i }))
+    expect(await screen.findByText('1/4 notes')).toBeInTheDocument()
+
+    rerender(<PracticeValidator activeEvent={event({ fret: 3 })} tuning={standard} totalNotes={4} />)
+    rerender(<PracticeValidator activeEvent={event({ fret: 0 })} tuning={standard} totalNotes={4} />)
+    expect(screen.getByRole('button', { name: /valider/i })).toBeDisabled()
+    expect(screen.getByText('1/4 notes')).toBeInTheDocument()
+  })
+
+  test('fires onValidated once coverage reaches 90%, not before', async () => {
+    const onValidated = vi.fn()
+    let current = event({ fret: 0, startBeat: 0 })
+    const { rerender } = render(
+      <PracticeValidator activeEvent={current} tuning={standard} totalNotes={10} onValidated={onValidated} />,
+    )
+
+    // Validate 8 of 10 distinct notes (80%) — should not fire yet.
+    for (let i = 0; i < 8; i++) {
+      current = event({ fret: i, startBeat: i })
+      rerender(
+        <PracticeValidator activeEvent={current} tuning={standard} totalNotes={10} onValidated={onValidated} />,
+      )
+      fireEvent.click(screen.getByRole('button', { name: /valider/i }))
+    }
+    expect(await screen.findByText('8/10 notes')).toBeInTheDocument()
+    expect(onValidated).not.toHaveBeenCalled()
+
+    // A 9th distinct note crosses 90%.
+    current = event({ fret: 9, startBeat: 9 })
+    rerender(
+      <PracticeValidator activeEvent={current} tuning={standard} totalNotes={10} onValidated={onValidated} />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: /valider/i }))
+
+    expect(await screen.findByText('9/10 notes')).toBeInTheDocument()
+    expect(onValidated).toHaveBeenCalledTimes(1)
+    expect(await screen.findByText(/morceau validé/i)).toBeInTheDocument()
   })
 
   test('shows a mic-unavailable state when microphone access is denied', async () => {
-    render(<PracticeValidator activeEvent={event()} tuning={standard} />)
+    render(<PracticeValidator activeEvent={event()} tuning={standard} totalNotes={4} />)
     expect(await screen.findByText(/micro indisponible/i)).toBeInTheDocument()
   })
 })

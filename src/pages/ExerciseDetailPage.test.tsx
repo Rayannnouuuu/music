@@ -4,6 +4,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import ExerciseDetailPage from './ExerciseDetailPage'
 import { ProgressionProvider } from '../lib/progression/ProgressionContext'
 import { loadAllExercises } from '../lib/content/loadExercises'
+import { buildPath, flattenPath } from '../lib/progression/path'
 
 function renderPage(exerciseId: string) {
   return render(
@@ -18,7 +19,9 @@ function renderPage(exerciseId: string) {
 }
 
 describe('ExerciseDetailPage completion', () => {
-  const exercise = loadAllExercises()[0]
+  // The first step of the path is always unlocked; any other exercise
+  // would hit the lock guard instead of rendering the practice UI.
+  const exercise = flattenPath(buildPath(loadAllExercises()))[0]
 
   beforeEach(() => {
     localStorage.clear()

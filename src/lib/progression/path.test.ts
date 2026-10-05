@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { buildPath, flattenPath, isExerciseUnlocked, nextExerciseId } from './path'
+import { buildPath, flattenPath, isExerciseUnlocked, nextExerciseId, exerciseAfter } from './path'
 import type { Exercise } from '../content/types'
 
 function ex(id: string, category: Exercise['category'], difficulty: number): Exercise {
@@ -75,5 +75,26 @@ describe('nextExerciseId', () => {
 
   test('returns undefined once everything is completed', () => {
     expect(nextExerciseId(['a', 'b'], ['a', 'b'])).toBeUndefined()
+  })
+})
+
+describe('exerciseAfter', () => {
+  test('returns the next id regardless of completion state', () => {
+    expect(exerciseAfter(['a', 'b', 'c'], 'a')).toBe('b')
+  })
+
+  test('crosses what would be a chapter boundary transparently', () => {
+    // exerciseAfter has no notion of chapters — it just walks the flat
+    // array, which is exactly what lets the UI chain into the next
+    // chapter's first exercise without special-casing the edge.
+    expect(exerciseAfter(['picking-1', 'scales-1'], 'picking-1')).toBe('scales-1')
+  })
+
+  test('returns undefined for the last id', () => {
+    expect(exerciseAfter(['a', 'b'], 'b')).toBeUndefined()
+  })
+
+  test('returns undefined for an id not in the path', () => {
+    expect(exerciseAfter(['a', 'b'], 'z')).toBeUndefined()
   })
 })
