@@ -1,0 +1,67 @@
+{
+  "id": "walk",
+  "title": "Walk",
+  "artist": "Pantera",
+  "subgenre": "groove metal",
+  "tuning": "Drop D",
+  "originalTempo": 104,
+  "difficulty": 5,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 1,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 5,
+          "startBeat": 2,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 3,
+          "duration": 1
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 1,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 2,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 3,
+          "duration": 1
+        }
+      ]
+    }
+  ]
+}

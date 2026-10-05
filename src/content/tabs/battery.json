@@ -1,0 +1,67 @@
+{
+  "id": "battery",
+  "title": "Battery (riff principal)",
+  "artist": "Metallica",
+  "subgenre": "thrash",
+  "tuning": "Eb",
+  "originalTempo": 187,
+  "difficulty": 7,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 0.5,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0.5,
+          "duration": 0.5,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 1,
+          "duration": 0.5,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 1.5,
+          "duration": 0.5,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 7,
+          "startBeat": 2,
+          "duration": 0.5
+        },
+        {
+          "string": 6,
+          "fret": 7,
+          "startBeat": 2.5,
+          "duration": 0.5
+        },
+        {
+          "string": 6,
+          "fret": 5,
+          "startBeat": 3,
+          "duration": 0.5
+        },
+        {
+          "string": 6,
+          "fret": 5,
+          "startBeat": 3.5,
+          "duration": 0.5
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "id": "symphony-of-destruction",
+  "title": "Symphony of Destruction",
+  "artist": "Megadeth",
+  "subgenre": "thrash",
+  "tuning": "Standard",
+  "originalTempo": 130,
+  "difficulty": 4,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 0,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 1,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 5,
+          "startBeat": 2,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 3,
+          "duration": 1
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 1,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 5,
+          "startBeat": 2,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 3,
+          "duration": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "id": "paranoid",
+  "title": "Paranoid",
+  "artist": "Black Sabbath",
+  "subgenre": "heavy classique",
+  "tuning": "Standard",
+  "originalTempo": 164,
+  "difficulty": 2,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 1,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 1,
+          "duration": 1,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 2,
+          "duration": 1,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 3,
+          "duration": 1
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 1,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 1,
+          "duration": 1,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 2,
+          "duration": 1,
+          "technique": "palmMute"
+        },
+        {
+          "string": 6,
+          "fret": 2,
+          "startBeat": 3,
+          "duration": 1
+        }
+      ]
+    }
+  ]
+}

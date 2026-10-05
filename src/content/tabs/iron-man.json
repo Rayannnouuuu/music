@@ -1,0 +1,65 @@
+{
+  "id": "iron-man",
+  "title": "Iron Man",
+  "artist": "Black Sabbath",
+  "subgenre": "heavy classique",
+  "tuning": "Standard",
+  "originalTempo": 70,
+  "difficulty": 2,
+  "measures": [
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 0,
+          "duration": 2
+        },
+        {
+          "string": 6,
+          "fret": 0,
+          "startBeat": 2,
+          "duration": 2
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 0,
+          "duration": 4
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 0,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 5,
+          "startBeat": 1,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 5,
+          "startBeat": 2,
+          "duration": 1
+        },
+        {
+          "string": 6,
+          "fret": 3,
+          "startBeat": 3,
+          "duration": 1
+        }
+      ]
+    }
+  ]
+}
