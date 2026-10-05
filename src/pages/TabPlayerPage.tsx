@@ -6,6 +6,7 @@ import { playerReducer, type PlayerState } from '../lib/tab/playerState'
 import { activeEventIndex, isEventActive } from '../lib/tab/playback'
 import { loadAllTabs } from '../lib/content/loadTabs'
 import { useMetronome } from '../lib/audio/useMetronome'
+import { useProgression } from '../lib/progression/ProgressionContext'
 
 const BEATS_PER_MEASURE = 4
 
@@ -13,7 +14,11 @@ const initialState: PlayerState = { status: 'idle', speedPercent: 100, elapsedBe
 
 export default function TabPlayerPage() {
   const { id } = useParams()
-  const tab = useMemo(() => loadAllTabs().find((t) => t.id === id), [id])
+  const { state: progressState } = useProgression()
+  const tab = useMemo(
+    () => [...loadAllTabs(), ...progressState.importedTabs].find((t) => t.id === id),
+    [id, progressState.importedTabs],
+  )
   const [state, dispatch] = useReducer(playerReducer, initialState)
   const [showFretboard, setShowFretboard] = useState(true)
   const metronome = useMetronome()
