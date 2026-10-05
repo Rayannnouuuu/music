@@ -29,6 +29,10 @@ interface TabPerformanceViewProps {
 
 const PX_PER_BEAT = 130
 const CURSOR_OFFSET_PX = 110
+// The highway is centered vertically inside its flex-1 container; if that
+// container shrinks below the 6 lanes' actual height, the centering clips
+// the top and bottom strings symmetrically instead of just scrolling.
+const HIGHWAY_HEIGHT = 6 * NOTE_HIGHWAY_SIZES.lg.lane
 // Rendered side-by-side copies of the loop, wide enough that the viewport
 // never runs out of content before the scroll position wraps back to 0 —
 // the wrap is invisible because copy N+1 is pixel-identical to copy N.
@@ -82,10 +86,10 @@ export default function TabPerformanceView({
         </button>
       </div>
 
-      <div className="relative min-h-[160px] flex-1 overflow-hidden">
+      <div className="relative flex-1 overflow-hidden" style={{ minHeight: HIGHWAY_HEIGHT + 24 }}>
         <div
           className="pointer-events-none absolute left-0 top-1/2 z-10 flex -translate-y-1/2 flex-col"
-          style={{ height: 6 * NOTE_HIGHWAY_SIZES.lg.lane }}
+          style={{ height: HIGHWAY_HEIGHT }}
         >
           {STANDARD_TUNING_LABELS.map((label, i) => (
             <span key={label + i} className="flex flex-1 items-center pl-3">
@@ -108,7 +112,11 @@ export default function TabPerformanceView({
               key={i}
               events={loopEvents}
               totalBeats={loopLength}
-              activeBeat={scrollPos}
+              // Every copy renders the same events at the same relative
+              // position, but only copy 0 is the one currently crossing the
+              // cursor (copies 1+ are just upcoming-loop previews) — so only
+              // it should light up, or every repeat would highlight at once.
+              activeBeat={i === 0 ? scrollPos : undefined}
               pxPerBeat={PX_PER_BEAT}
               size="lg"
             />
