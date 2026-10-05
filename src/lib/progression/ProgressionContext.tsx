@@ -4,12 +4,13 @@ import { levelFromXp } from './xp'
 import { isGoalMet, recordCompletion, currentStreak, type DailyGoal, type DailyProgress } from './streak'
 import { evaluateBadges, type BadgeCheckInput } from './badges'
 import { hydrateProgressState, type ProgressState } from './progressState'
+import { hasCompletedExerciseToday, recordExerciseCompletion } from './completion'
 import type { Category, Exercise, Tab } from '../content/types'
 
 export type { ProgressState } from './progressState'
 
 const STORAGE_KEY = 'guitar-progress'
-const XP_PER_MINUTE = 5
+export const XP_PER_MINUTE = 5
 
 function skillLevels(skillXp: Record<Category, number>): Record<string, number> {
   return Object.fromEntries(
@@ -24,6 +25,7 @@ interface ProgressionContextValue {
   setDailyGoal(goal: DailyGoal): void
   importTab(tab: Tab): void
   setTempoForTab(tabId: string, bpm: number): void
+  isExerciseCompletedToday(exerciseId: string, today: string): boolean
 }
 
 const ProgressionContext = createContext<ProgressionContextValue | null>(null)
@@ -84,9 +86,27 @@ export function ProgressionProvider({ children }: { children: ReactNode }) {
   const value: ProgressionContextValue = {
     state,
     completeExercise(exercise, today) {
-      setState((prev) =>
-        applyXpGain(prev, today, exercise.xpReward, exercise.category, { exercisesCount: 1 }, 0),
-      )
+      setState((prev) => {
+        if (hasCompletedExerciseToday(prev.completedExerciseIdsByDay, today, exercise.id)) {
+          return prev
+        }
+        const withCompletion: ProgressState = {
+          ...prev,
+          completedExerciseIdsByDay: recordExerciseCompletion(
+            prev.completedExerciseIdsByDay,
+            today,
+            exercise.id,
+          ),
+        }
+        return applyXpGain(
+          withCompletion,
+          today,
+          exercise.xpReward,
+          exercise.category,
+          { exercisesCount: 1 },
+          0,
+        )
+      })
     },
     completeTabPractice(_tab, minutesSpent, today) {
       const xpGained = Math.round(minutesSpent * XP_PER_MINUTE)
@@ -103,6 +123,9 @@ export function ProgressionProvider({ children }: { children: ReactNode }) {
         ...prev,
         customTempoByTabId: { ...prev.customTempoByTabId, [tabId]: bpm },
       }))
+    },
+    isExerciseCompletedToday(exerciseId, today) {
+      return hasCompletedExerciseToday(state.completedExerciseIdsByDay, today, exerciseId)
     },
   }
 

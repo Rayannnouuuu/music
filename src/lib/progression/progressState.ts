@@ -16,6 +16,9 @@ export interface ProgressState {
   // the daily-goal check) — see Task 16 ledger ruling.
   tabsCompletedCount: number
   dailyProgress: Record<string, DailyProgress>
+  // Which exercise ids have already paid out XP on which day — the guard
+  // that makes XP mean something instead of being free on repeat clicks.
+  completedExerciseIdsByDay: Record<string, string[]>
 }
 
 export const defaultProgressState: ProgressState = {
@@ -38,6 +41,7 @@ export const defaultProgressState: ProgressState = {
   importedTabs: [],
   tabsCompletedCount: 0,
   dailyProgress: {},
+  completedExerciseIdsByDay: {},
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -55,6 +59,17 @@ function hydrateSkillXp(loaded: unknown): Record<Category, number> {
     base[category] = numberOr(loaded[category], 0)
   }
   return base
+}
+
+function hydrateCompletedExerciseIdsByDay(loaded: unknown): Record<string, string[]> {
+  if (!isPlainObject(loaded)) return {}
+  const result: Record<string, string[]> = {}
+  for (const [day, ids] of Object.entries(loaded)) {
+    if (Array.isArray(ids) && ids.every((id) => typeof id === 'string')) {
+      result[day] = ids
+    }
+  }
+  return result
 }
 
 function hydrateImportedTabs(loaded: unknown): Tab[] {
@@ -98,5 +113,6 @@ export function hydrateProgressState(loaded: unknown): ProgressState {
     dailyProgress: isPlainObject(loaded.dailyProgress)
       ? (loaded.dailyProgress as Record<string, DailyProgress>)
       : {},
+    completedExerciseIdsByDay: hydrateCompletedExerciseIdsByDay(loaded.completedExerciseIdsByDay),
   }
 }

@@ -3,7 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { ArrowLeft, CheckCircle, Gauge } from '@phosphor-icons/react'
 import { loadAllExercises } from '../lib/content/loadExercises'
-import TabStaticView from '../components/tab/TabStaticView'
+import NoteHighway from '../components/tab/NoteHighway'
+import { totalBeatsForEvents } from '../lib/tab/noteLayout'
 import { Card } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -14,15 +15,19 @@ import { localDateString } from '../lib/date'
 export default function ExerciseDetailPage() {
   const { id } = useParams()
   const exercise = loadAllExercises().find((e) => e.id === id)
-  const { completeExercise } = useProgression()
+  const { completeExercise, isExerciseCompletedToday } = useProgression()
   const [justCompleted, setJustCompleted] = useState(false)
+  const today = localDateString()
 
   if (!exercise) {
     return <p>Exercice introuvable.</p>
   }
 
+  const doneToday = isExerciseCompletedToday(exercise.id, today)
+
   function handleComplete() {
-    completeExercise(exercise!, localDateString())
+    if (doneToday) return
+    completeExercise(exercise!, today)
     setJustCompleted(true)
     setTimeout(() => setJustCompleted(false), 2500)
   }
@@ -56,14 +61,14 @@ export default function ExerciseDetailPage() {
       <Card className="space-y-2 p-5">
         <p className="text-xs uppercase tracking-wide text-text-muted">Tablature</p>
         <div className="overflow-x-auto rounded-[var(--radius-input)] bg-bg/60 p-4">
-          <TabStaticView measure={{ events: exercise.pattern }} />
+          <NoteHighway events={exercise.pattern} totalBeats={totalBeatsForEvents(exercise.pattern)} />
         </div>
       </Card>
 
       <div className="flex items-center gap-3">
-        <Button onClick={handleComplete}>
+        <Button onClick={handleComplete} disabled={doneToday} variant={doneToday ? 'secondary' : 'primary'}>
           <CheckCircle size={18} weight="fill" />
-          Marquer comme fait
+          {doneToday ? 'Fait aujourd’hui' : 'Marquer comme fait'}
         </Button>
 
         <AnimatePresence>
@@ -78,6 +83,10 @@ export default function ExerciseDetailPage() {
             </motion.span>
           )}
         </AnimatePresence>
+
+        {doneToday && !justCompleted && (
+          <p className="text-sm text-text-muted">Déjà comptabilisé aujourd’hui — reviens demain pour plus d’XP.</p>
+        )}
       </div>
     </div>
   )

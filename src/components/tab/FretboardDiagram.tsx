@@ -25,7 +25,8 @@ export default function FretboardDiagram({ activeString, activeFret }: Fretboard
           cx={fret * CELL_WIDTH + CELL_WIDTH / 2}
           cy={height / 2}
           r={3}
-          fill="var(--color-border-soft)"
+          fill="var(--color-text-muted)"
+          fillOpacity={0.45}
         />
       ))}
 
@@ -36,7 +37,8 @@ export default function FretboardDiagram({ activeString, activeFret }: Fretboard
           y1={0}
           x2={fret * CELL_WIDTH}
           y2={height}
-          stroke="var(--color-border)"
+          stroke="var(--color-text-muted)"
+          strokeOpacity={fret === 0 ? 0.75 : 0.35}
           strokeWidth={fret === 0 ? 3 : 1}
         />
       ))}
@@ -48,7 +50,8 @@ export default function FretboardDiagram({ activeString, activeFret }: Fretboard
           y1={rowIndex * CELL_HEIGHT + CELL_HEIGHT / 2}
           x2={width}
           y2={rowIndex * CELL_HEIGHT + CELL_HEIGHT / 2}
-          stroke="var(--color-border-soft)"
+          stroke="var(--color-text-muted)"
+          strokeOpacity={0.5}
           strokeWidth={0.75 + string * 0.3}
         />
       ))}

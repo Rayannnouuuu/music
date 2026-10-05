@@ -1,23 +1,23 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowLeft, Play, Pause, Gauge, Metronome, Repeat, Guitar, type Icon } from '@phosphor-icons/react'
-import TabStaticView from '../components/tab/TabStaticView'
+import { ArrowLeft, Play, Pause, Gauge, Repeat, Guitar, type Icon } from '@phosphor-icons/react'
+import NoteHighway from '../components/tab/NoteHighway'
 import FretboardDiagram from '../components/tab/FretboardDiagram'
+import TabPerformanceView from '../components/tab/TabPerformanceView'
 import { Card } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
 import { Slider } from '../components/ui/Slider'
 import BeatIndicator from '../components/audio/BeatIndicator'
 import { playerReducer, type PlayerState } from '../lib/tab/playerState'
 import { activeEventIndex, isEventActive } from '../lib/tab/playback'
+import { flattenTabEvents, eventsInRange } from '../lib/tab/flatten'
 import { loadAllTabs } from '../lib/content/loadTabs'
 import { useMetronome } from '../lib/audio/useMetronome'
-import { useProgression } from '../lib/progression/ProgressionContext'
+import { useProgression, XP_PER_MINUTE } from '../lib/progression/ProgressionContext'
 import { localDateString } from '../lib/date'
 
 const BEATS_PER_MEASURE = 4
-
-const initialState: PlayerState = { status: 'idle', speedPercent: 100, elapsedBeats: 0 }
 
 function ToggleChip({
   active,
@@ -52,18 +52,35 @@ export default function TabPlayerPage() {
     () => [...loadAllTabs(), ...progressState.importedTabs].find((t) => t.id === id),
     [id, progressState.importedTabs],
   )
-  const [state, dispatch] = useReducer(playerReducer, initialState)
+  const measureCount = tab?.measures.length ?? 0
+  const totalBeats = measureCount * BEATS_PER_MEASURE
+
+  const [state, dispatch] = useReducer(playerReducer, {
+    status: 'idle',
+    speedPercent: 100,
+    elapsedBeats: 0,
+    loopRange: [0, totalBeats] as [number, number],
+  } satisfies PlayerState)
   const [showFretboard, setShowFretboard] = useState(true)
-  const [loopMeasures, setLoopMeasures] = useState<[number, number]>([0, 0])
+  const [loopMeasures, setLoopMeasures] = useState<[number, number]>([0, Math.max(0, measureCount - 1)])
   const metronome = useMetronome()
   const practiceSecondsRef = useRef(0)
 
-  const totalBeats = tab ? tab.measures.length * BEATS_PER_MEASURE : 0
   const effectiveBpm = tab ? (tab.originalTempo * state.speedPercent) / 100 : 0
+
+  // A tab is always a short riff meant to loop forever while you practice it:
+  // reset to a fresh full-tab loop whenever the tab itself changes.
+  useEffect(() => {
+    if (!tab) return
+    dispatch({ type: 'seek', beat: 0 })
+    dispatch({ type: 'setLoop', range: [0, totalBeats] })
+    setLoopMeasures([0, Math.max(0, measureCount - 1)])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab?.id])
 
   // Drive the playback clock, and accumulate real practice time while playing.
   // Only runs while actually playing; recording happens in the cleanup, which
-  // fires on pause (manual or auto) and on unmount (navigating away mid-play).
+  // fires on pause (manual) and on unmount (navigating away mid-play).
   useEffect(() => {
     if (!tab || state.status !== 'playing') return
     const currentTab = tab
@@ -91,24 +108,12 @@ export default function TabPlayerPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, state.status])
 
-  // Auto-pause and rewind at the end when not looping, so the tab is ready to
-  // replay immediately rather than stuck on its last frame.
+  // Keep the metronome's tempo in sync when the speed slider is adjusted
+  // mid-playback (play/pause alone only starts/stops it, not re-tempos it).
   useEffect(() => {
-    if (!tab) return
-    if (!state.loopRange && state.elapsedBeats >= totalBeats && state.status === 'playing') {
-      dispatch({ type: 'pause' })
-      dispatch({ type: 'seek', beat: 0 })
-      if (metronome.isPlaying) metronome.stop()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, state.elapsedBeats, state.loopRange, state.status, totalBeats])
-
-  // Keep the shared metronome's tempo in sync with this tab's effective BPM while it's running.
-  useEffect(() => {
-    if (metronome.isPlaying && effectiveBpm > 0) {
+    if (state.status === 'playing' && effectiveBpm > 0) {
       metronome.start(effectiveBpm)
     }
-    // Only re-sync when the effective BPM actually changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [effectiveBpm])
 
@@ -116,7 +121,7 @@ export default function TabPlayerPage() {
     return <p>Tab introuvable.</p>
   }
 
-  const measureCount = tab.measures.length
+  const loopRange = state.loopRange ?? [0, totalBeats]
   const measureIndex = Math.min(Math.floor(state.elapsedBeats / BEATS_PER_MEASURE), measureCount - 1)
   const localBeat = state.elapsedBeats - measureIndex * BEATS_PER_MEASURE
   const measure = tab.measures[measureIndex]
@@ -124,33 +129,63 @@ export default function TabPlayerPage() {
   const candidateIndex = activeEventIndex(measure.events, localBeat)
   const isActive = candidateIndex >= 0 && isEventActive(measure.events[candidateIndex], localBeat)
   const activeEvent = isActive ? measure.events[candidateIndex] : undefined
-  const highlightIndex = isActive ? candidateIndex : undefined
   const progressPercent = Math.min(
     100,
     ((measureIndex + localBeat / BEATS_PER_MEASURE) / measureCount) * 100,
   )
 
-  function toggleLoop(enabled: boolean) {
-    if (enabled) {
-      const range: [number, number] = [0, measureCount - 1]
-      setLoopMeasures(range)
-      dispatch({ type: 'setLoop', range: [0, measureCount * BEATS_PER_MEASURE] })
+  const flatEvents = flattenTabEvents(tab, BEATS_PER_MEASURE)
+  const loopEvents = eventsInRange(flatEvents, loopRange[0], loopRange[1])
+  const loopLength = loopRange[1] - loopRange[0]
+  const scrollPos = Math.min(loopLength, Math.max(0, state.elapsedBeats - loopRange[0]))
+  const xpSoFar = Math.round((practiceSecondsRef.current / 60) * XP_PER_MINUTE)
+
+  function togglePlayback() {
+    if (state.status === 'playing') {
+      dispatch({ type: 'pause' })
+      metronome.stop()
     } else {
-      dispatch({ type: 'setLoop', range: undefined })
+      dispatch({ type: 'play' })
+      metronome.start(effectiveBpm)
     }
   }
 
   function updateLoopRange(start: number, end: number) {
     const clampedEnd = Math.max(start, end)
     setLoopMeasures([start, clampedEnd])
-    dispatch({
-      type: 'setLoop',
-      range: [start * BEATS_PER_MEASURE, (clampedEnd + 1) * BEATS_PER_MEASURE],
-    })
+    const range: [number, number] = [start * BEATS_PER_MEASURE, (clampedEnd + 1) * BEATS_PER_MEASURE]
+    dispatch({ type: 'setLoop', range })
+    dispatch({ type: 'seek', beat: range[0] })
+  }
+
+  function resetLoopToFullTab() {
+    updateLoopRange(0, measureCount - 1)
+  }
+
+  function handleSpeedChange(percent: number) {
+    dispatch({ type: 'setSpeed', percent })
   }
 
   return (
     <div className="space-y-6">
+      <AnimatePresence>
+        {state.status === 'playing' && (
+          <TabPerformanceView
+            title={tab.title}
+            artist={tab.artist}
+            loopEvents={loopEvents}
+            loopLength={loopLength}
+            scrollPos={scrollPos}
+            activeEvent={activeEvent}
+            effectiveBpm={effectiveBpm}
+            speedPercent={state.speedPercent}
+            onSpeedChange={handleSpeedChange}
+            onExit={togglePlayback}
+            xpSoFar={xpSoFar}
+          />
+        )}
+      </AnimatePresence>
+
       <Link
         to="/tabs"
         className="inline-flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text"
@@ -178,7 +213,7 @@ export default function TabPlayerPage() {
         <div className="flex flex-wrap items-center gap-5">
           <motion.button
             whileTap={{ scale: 0.88 }}
-            onClick={() => dispatch({ type: state.status === 'playing' ? 'pause' : 'play' })}
+            onClick={togglePlayback}
             aria-label={state.status === 'playing' ? 'Pause' : 'Lecture'}
             className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent text-text transition-shadow ${
               state.status === 'playing' ? 'shadow-[0_0_0_6px_var(--color-accent-soft)]' : ''
@@ -207,8 +242,13 @@ export default function TabPlayerPage() {
           <div className="flex items-center gap-1.5 whitespace-nowrap font-mono text-sm text-text-muted">
             <Gauge size={16} />
             {Math.round(effectiveBpm)} BPM
+            {metronome.isPlaying && <BeatIndicator bpm={effectiveBpm} isPlaying size="sm" />}
           </div>
         </div>
+
+        <p className="text-xs text-text-muted">
+          Lecture démarre automatiquement le métronome et passe en plein écran.
+        </p>
 
         <div className="grid gap-5 sm:grid-cols-2">
           <Slider
@@ -217,70 +257,57 @@ export default function TabPlayerPage() {
             min={50}
             max={150}
             step={5}
-            onChange={(percent) => dispatch({ type: 'setSpeed', percent })}
+            onChange={handleSpeedChange}
             formatValue={(v) => `${v}%`}
           />
 
-          <div className="flex items-center gap-3">
-            <ToggleChip
-              active={metronome.isPlaying}
-              icon={Metronome}
-              label="Métronome"
-              onClick={() => (metronome.isPlaying ? metronome.stop() : metronome.start(effectiveBpm))}
-            />
-            {metronome.isPlaying && <BeatIndicator bpm={effectiveBpm} isPlaying />}
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <ToggleChip
-            active={!!state.loopRange}
-            icon={Repeat}
-            label="Boucle"
-            onClick={() => toggleLoop(!state.loopRange)}
-          />
           <ToggleChip
             active={showFretboard}
             icon={Guitar}
             label="Manche"
             onClick={() => setShowFretboard((v) => !v)}
           />
-
-          <AnimatePresence>
-            {state.loopRange && measureCount > 1 && (
-              <motion.div
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -8 }}
-                className="flex items-center gap-1.5 text-sm"
-              >
-                <select
-                  value={loopMeasures[0]}
-                  onChange={(e) => updateLoopRange(Number(e.target.value), loopMeasures[1])}
-                  className="rounded-[var(--radius-input)] border border-border bg-panel-raised px-2 py-2 text-text-muted"
-                >
-                  {Array.from({ length: measureCount }, (_, i) => (
-                    <option key={i} value={i}>
-                      Mesure {i + 1}
-                    </option>
-                  ))}
-                </select>
-                <span className="text-text-muted">à</span>
-                <select
-                  value={loopMeasures[1]}
-                  onChange={(e) => updateLoopRange(loopMeasures[0], Number(e.target.value))}
-                  className="rounded-[var(--radius-input)] border border-border bg-panel-raised px-2 py-2 text-text-muted"
-                >
-                  {Array.from({ length: measureCount }, (_, i) => (
-                    <option key={i} value={i}>
-                      Mesure {i + 1}
-                    </option>
-                  ))}
-                </select>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
+
+        {measureCount > 1 && (
+          <div className="flex flex-wrap items-center gap-2 border-t border-border-soft pt-4">
+            <span className="flex items-center gap-2 text-sm text-text-muted">
+              <Repeat size={17} />
+              Boucle sur
+            </span>
+            <select
+              value={loopMeasures[0]}
+              onChange={(e) => updateLoopRange(Number(e.target.value), loopMeasures[1])}
+              className="rounded-[var(--radius-input)] border border-border bg-panel-raised px-2 py-2 text-sm text-text-muted"
+            >
+              {Array.from({ length: measureCount }, (_, i) => (
+                <option key={i} value={i}>
+                  Mesure {i + 1}
+                </option>
+              ))}
+            </select>
+            <span className="text-text-muted">à</span>
+            <select
+              value={loopMeasures[1]}
+              onChange={(e) => updateLoopRange(loopMeasures[0], Number(e.target.value))}
+              className="rounded-[var(--radius-input)] border border-border bg-panel-raised px-2 py-2 text-sm text-text-muted"
+            >
+              {Array.from({ length: measureCount }, (_, i) => (
+                <option key={i} value={i}>
+                  Mesure {i + 1}
+                </option>
+              ))}
+            </select>
+            {(loopMeasures[0] !== 0 || loopMeasures[1] !== measureCount - 1) && (
+              <button
+                onClick={resetLoopToFullTab}
+                className="text-sm font-medium text-accent-strong hover:underline"
+              >
+                Toute la tab
+              </button>
+            )}
+          </div>
+        )}
       </Card>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -289,7 +316,7 @@ export default function TabPlayerPage() {
             Mesure {measureIndex + 1}
           </p>
           <div className="overflow-x-auto rounded-[var(--radius-input)] bg-bg/60 p-4">
-            <TabStaticView measure={measure} highlightIndex={highlightIndex} />
+            <NoteHighway events={measure.events} totalBeats={BEATS_PER_MEASURE} activeBeat={localBeat} />
           </div>
         </Card>
 
@@ -302,7 +329,7 @@ export default function TabPlayerPage() {
           {nextMeasure && (
             <Card className="space-y-2 p-4 opacity-60">
               <p className="text-xs uppercase tracking-wide text-text-muted">Mesure suivante</p>
-              <TabStaticView measure={nextMeasure} />
+              <NoteHighway events={nextMeasure.events} totalBeats={BEATS_PER_MEASURE} />
             </Card>
           )}
         </div>

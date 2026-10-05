@@ -57,4 +57,23 @@ describe('hydrateProgressState', () => {
     const result = hydrateProgressState({ importedTabs: 'not an array' })
     expect(result.importedTabs).toEqual([])
   })
+
+  test('completedExerciseIdsByDay keeps valid day -> string[] entries', () => {
+    const result = hydrateProgressState({
+      completedExerciseIdsByDay: { '2026-10-05': ['ex-1', 'ex-2'] },
+    })
+    expect(result.completedExerciseIdsByDay).toEqual({ '2026-10-05': ['ex-1', 'ex-2'] })
+  })
+
+  test('completedExerciseIdsByDay drops a day whose value is not a string array', () => {
+    const result = hydrateProgressState({
+      completedExerciseIdsByDay: { '2026-10-05': ['ex-1'], '2026-10-06': 'not an array' },
+    })
+    expect(result.completedExerciseIdsByDay).toEqual({ '2026-10-05': ['ex-1'] })
+  })
+
+  test('a non-object completedExerciseIdsByDay falls back to an empty object', () => {
+    const result = hydrateProgressState({ completedExerciseIdsByDay: 'nope' })
+    expect(result.completedExerciseIdsByDay).toEqual({})
+  })
 })
