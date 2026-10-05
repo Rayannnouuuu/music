@@ -55,3 +55,19 @@ export function nextNoteProximity(
   const distance = upcoming.startBeat - scrollPos
   return Math.max(0, Math.min(1, 1 - distance / PROXIMITY_LOOKAHEAD_BEATS))
 }
+
+// How far back to re-anchor the clock after a practice-mode hit, so the
+// next note gets its own short animated approach instead of the display
+// snapping straight to it (elapsedBeats keeps ticking the whole time a
+// note is waited on, so by the time it's hit it can be well past where the
+// next note needs to start animating from).
+export const PRACTICE_APPROACH_BEATS = 1.2
+
+// In practice mode the clock still ticks (so the cursor visibly animates
+// in) but must never run past the next note that hasn't been played yet —
+// that note is only "due" once it's actually played, however long that
+// takes. Pass this as an upper bound on the displayed scroll position.
+export function practiceCapBeat(events: TabEvent[], hitKeys: Set<string>, fallbackAtEnd: number): number {
+  const next = events.find((e) => !hitKeys.has(eventKey(e)!))
+  return next ? next.startBeat : fallbackAtEnd
+}

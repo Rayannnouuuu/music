@@ -70,9 +70,9 @@ describe('playerReducer', () => {
     expect(next.elapsedBeats).toBe(6)
   })
 
-  test('tick in practice mode does not advance elapsedBeats even while playing', () => {
+  test('tick advances elapsedBeats in practice mode too — capping which note is "due" is the page\'s job, not the clock\'s', () => {
     const state = baseState({ status: 'playing', mode: 'practice', elapsedBeats: 3 })
     const next = playerReducer(state, { type: 'tick', deltaSeconds: 1, bpm: 120 })
-    expect(next.elapsedBeats).toBe(3)
+    expect(next.elapsedBeats).toBe(5)
   })
 })

@@ -30,7 +30,7 @@ export default function PracticeValidator({
   onValidated,
   onNoteResult,
 }: PracticeValidatorProps) {
-  const { micState, reading } = usePitchDetector(true)
+  const { micState, reading, displayReading } = usePitchDetector(true)
   const [validatedKeys, setValidatedKeys] = useState<Set<string>>(new Set())
   const [hasFiredValidated, setHasFiredValidated] = useState(false)
   const prevKeyRef = useRef<string | undefined>(undefined)
@@ -39,7 +39,11 @@ export default function PracticeValidator({
   const justValidated = currentKey !== undefined && validatedKeys.has(currentKey)
 
   const expectedFreq = activeEvent ? expectedFrequency(tuning, activeEvent.string, activeEvent.fret) : null
+  // Real-time, not the held-back displayReading: a note's active window can
+  // be shorter than the display hold, so matching off a delayed reading
+  // would often miss notes that were actually played right on time.
   const percent = reading && expectedFreq ? matchPercent(reading.freq, expectedFreq) : null
+  const displayPercent = displayReading && expectedFreq ? matchPercent(displayReading.freq, expectedFreq) : null
 
   function markValidated(key: string) {
     setValidatedKeys((prev) => {
@@ -108,10 +112,10 @@ export default function PracticeValidator({
         {micState === 'granted' && (
           <div className="flex items-center gap-2 rounded-[var(--radius-control)] border border-border px-3 py-1.5 font-mono text-text-muted">
             <Microphone size={15} />
-            {reading ? (
+            {displayReading ? (
               <span className={percent !== null && percent >= NOTE_VALIDATION_THRESHOLD ? 'text-success' : 'text-text-muted'}>
-                {reading.note}
-                {reading.octave} · {percent !== null ? Math.round(percent) : 0}%
+                {displayReading.note}
+                {displayReading.octave} · {displayPercent !== null ? Math.round(displayPercent) : 0}%
               </span>
             ) : (
               <span>Joue une note...</span>

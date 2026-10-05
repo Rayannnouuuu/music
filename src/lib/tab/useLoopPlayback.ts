@@ -62,6 +62,14 @@ export function useLoopPlayback({
   const [hitKeys, setHitKeys] = useState<Set<string>>(new Set())
   const [missedKeys, setMissedKeys] = useState<Set<string>>(new Set())
   const [justFailed, setJustFailed] = useState(false)
+  // Bumped on every enter/restart. The practice validator keeps its own
+  // internal note-by-note state (separate from hitKeys/missedKeys above);
+  // without something that changes per attempt to key it on, that state
+  // survives a restart and can immediately re-report a stale miss for a
+  // note from the attempt that just failed — which re-triggers the fail
+  // banner right as it's being dismissed. Pages pass this as part of the
+  // validator's React key to force a clean remount each attempt.
+  const [attemptId, setAttemptId] = useState(0)
 
   const effectiveBpm = (baseBpm * state.speedPercent) / 100
 
@@ -152,6 +160,7 @@ export function useLoopPlayback({
     setHitKeys(new Set())
     setMissedKeys(new Set())
     setJustFailed(false)
+    setAttemptId((id) => id + 1)
     cleanSecondsRef.current = 0
     masteredFiredRef.current = false
   }
@@ -225,6 +234,7 @@ export function useLoopPlayback({
     practiceSecondsRef,
     performanceOpen,
     countdown,
+    attemptId,
     misses,
     maxMisses,
     hitKeys,

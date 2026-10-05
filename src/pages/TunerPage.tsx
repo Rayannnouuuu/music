@@ -12,7 +12,7 @@ const IN_TUNE_THRESHOLD = 5
 
 export default function TunerPage() {
   const { state: progressState, setGuitarTuning } = useProgression()
-  const { micState, reading, retry } = usePitchDetector(true)
+  const { micState, reading, displayReading, retry } = usePitchDetector(true)
 
   const activeTuning = findTuningById(progressState.guitarTuningId)
   const clampedCents = reading ? Math.max(-50, Math.min(50, reading.cents)) : 0
@@ -70,9 +70,9 @@ export default function TunerPage() {
 
           <div className="flex flex-col items-center gap-2">
             <AnimatePresence mode="wait">
-              {reading ? (
+              {displayReading ? (
                 <motion.div
-                  key={`${reading.note}${reading.octave}`}
+                  key={`${displayReading.note}${displayReading.octave}`}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
@@ -80,16 +80,16 @@ export default function TunerPage() {
                   className="flex flex-col items-center gap-1"
                 >
                   <p className="font-mono text-5xl font-bold tabular-nums text-text">
-                    {reading.note}
-                    <span className="text-text-muted">{reading.octave}</span>
+                    {displayReading.note}
+                    <span className="text-text-muted">{displayReading.octave}</span>
                   </p>
                   <p
                     className={`font-mono text-sm tabular-nums ${
                       inTune ? 'text-success' : 'text-text-muted'
                     }`}
                   >
-                    {reading.cents > 0 ? '+' : ''}
-                    {reading.cents} cents
+                    {displayReading.cents > 0 ? '+' : ''}
+                    {displayReading.cents} cents
                   </p>
                 </motion.div>
               ) : (

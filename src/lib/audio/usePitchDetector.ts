@@ -23,13 +23,20 @@ const DISPLAY_HOLD_MS = 350
 // settings toggle can fully disable this rather than just hiding its UI.
 export function usePitchDetector(active: boolean) {
   const [micState, setMicState] = useState<MicState>('requesting')
+  // `reading` updates every frame — practice validation compares it against
+  // a note's active time window, so holding it back would make real hits
+  // arrive too late to count, especially on short/fast notes. `displayReading`
+  // is the held-back copy for on-screen text, where legibility matters more
+  // than catching every frame.
   const [reading, setReading] = useState<PitchReading | null>(null)
+  const [displayReading, setDisplayReading] = useState<PitchReading | null>(null)
   const [retryKey, setRetryKey] = useState(0)
 
   useEffect(() => {
     if (!active) {
       setMicState('requesting')
       setReading(null)
+      setDisplayReading(null)
       return
     }
 
@@ -59,10 +66,12 @@ export function usePitchDetector(active: boolean) {
         function tick() {
           analyser.getFloatTimeDomainData(buffer)
           const freq = detectPitch(buffer, audioContext!.sampleRate)
+          const nextReading = freq !== null ? { freq, ...frequencyToNote(freq) } : null
+          setReading(nextReading)
           const now = performance.now()
           if (now - lastDisplayUpdate >= DISPLAY_HOLD_MS) {
             lastDisplayUpdate = now
-            setReading(freq !== null ? { freq, ...frequencyToNote(freq) } : null)
+            setDisplayReading(nextReading)
           }
           rafId = requestAnimationFrame(tick)
         }
@@ -82,5 +91,5 @@ export function usePitchDetector(active: boolean) {
     }
   }, [active, retryKey])
 
-  return { micState, reading, retry: () => setRetryKey((k) => k + 1) }
+  return { micState, reading, displayReading, retry: () => setRetryKey((k) => k + 1) }
 }

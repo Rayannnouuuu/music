@@ -8,6 +8,7 @@ import {
   STANDARD_TUNING_LABELS,
   eventKey,
   nextNoteProximity,
+  PRACTICE_APPROACH_BEATS,
 } from '../../lib/tab/noteLayout'
 import type { PlayerState } from '../../lib/tab/playerState'
 import { useProgression } from '../../lib/progression/ProgressionContext'
@@ -34,6 +35,10 @@ interface TabPerformanceViewProps {
   onExit: () => void
   xpSoFar: number
   onPieceValidated?: () => void
+  // Changes on every enter/restart — forces the practice validator to
+  // remount so its internal per-note state can't survive into a new
+  // attempt (see useLoopPlayback's attemptId for why that matters).
+  attemptId: number
   countdown: number | null
   mode: PlayerState['mode']
   onModeChange: (mode: PlayerState['mode']) => void
@@ -79,6 +84,7 @@ export default function TabPerformanceView({
   onExit,
   xpSoFar,
   onPieceValidated,
+  attemptId,
   countdown,
   mode,
   onModeChange,
@@ -110,7 +116,11 @@ export default function TabPerformanceView({
     if (hit && mode === 'practice') {
       const idx = loopEvents.findIndex((e) => eventKey(e) === key)
       const next = idx !== -1 ? (loopEvents[idx + 1] ?? loopEvents[0]) : undefined
-      if (next) onAdvanceBeat(next.startBeat)
+      // Re-anchor a bit before the next note rather than jumping onto it,
+      // so it gets its own short animated approach instead of appearing
+      // instantly "due" — elapsedBeats has kept ticking the whole time this
+      // note was being waited on and is likely already well past this point.
+      if (next) onAdvanceBeat(next.startBeat - PRACTICE_APPROACH_BEATS)
     }
   }
 
@@ -300,6 +310,7 @@ export default function TabPerformanceView({
       {progressState.autoDetectEnabled && (
         <div className="border-t border-border-soft px-4 py-3 sm:px-6">
           <PracticeValidator
+            key={attemptId}
             activeEvent={activeEvent}
             tuning={tuning}
             totalNotes={loopEvents.length}

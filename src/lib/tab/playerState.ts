@@ -38,7 +38,11 @@ export function playerReducer(state: PlayerState, action: PlayerAction): PlayerS
     case 'advance':
       return { ...state, elapsedBeats: action.beat }
     case 'tick': {
-      if (state.status !== 'playing' || state.mode === 'practice') return state
+      // Ticks in practice mode too: the page caps the displayed scroll
+      // position at the next not-yet-hit note so it still animates smoothly
+      // in (instead of staying frozen) but holds there instead of
+      // overshooting — see nextNoteProximity/practice capping in the pages.
+      if (state.status !== 'playing') return state
       const advance = beatsAtTime((action.deltaSeconds * state.speedPercent) / 100, action.bpm)
       let elapsedBeats = state.elapsedBeats + advance
       if (state.loopRange && elapsedBeats > state.loopRange[1]) {

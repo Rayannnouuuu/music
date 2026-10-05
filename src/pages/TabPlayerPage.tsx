@@ -12,6 +12,7 @@ import BeatIndicator from '../components/audio/BeatIndicator'
 import { activeEventIndex, isEventActive } from '../lib/tab/playback'
 import { flattenTabEvents, eventsInRange } from '../lib/tab/flatten'
 import { useLoopPlayback, LEAD_IN_BEATS } from '../lib/tab/useLoopPlayback'
+import { practiceCapBeat } from '../lib/tab/noteLayout'
 import { loadAllTabs } from '../lib/content/loadTabs'
 import { TUNINGS, findTuningByLabel, findTuningById } from '../lib/audio/tunings'
 import { useProgression, XP_PER_MINUTE } from '../lib/progression/ProgressionContext'
@@ -68,6 +69,7 @@ export default function TabPlayerPage() {
     practiceSecondsRef,
     performanceOpen,
     countdown,
+    attemptId,
     misses,
     maxMisses,
     hitKeys,
@@ -124,7 +126,24 @@ export default function TabPlayerPage() {
   const flatEvents = flattenTabEvents(tab, BEATS_PER_MEASURE)
   const loopEvents = eventsInRange(flatEvents, loopRange[0], loopRange[1])
   const loopLength = loopRange[1] - loopRange[0]
-  const scrollPos = Math.min(loopLength, Math.max(-LEAD_IN_BEATS, state.elapsedBeats - loopRange[0]))
+  const rawScrollPos = Math.min(loopLength, Math.max(-LEAD_IN_BEATS, state.elapsedBeats - loopRange[0]))
+  // In practice mode the clock keeps ticking (so the approach still
+  // animates), but must never race past the next unplayed note — it's only
+  // "due" once it's actually hit.
+  const scrollPos =
+    state.mode === 'practice'
+      ? Math.min(rawScrollPos, practiceCapBeat(loopEvents, hitKeys, loopLength))
+      : rawScrollPos
+  // The fullscreen view's "what note is due right now" must be derived from
+  // the same (possibly practice-capped) scrollPos as its own display —
+  // the page's own activeEvent above is tied to the raw, uncapped clock
+  // (it drives the non-fullscreen measure preview) and in practice mode
+  // would keep racing through notes the highway hasn't even scrolled to yet.
+  const performanceCandidateIndex = activeEventIndex(loopEvents, scrollPos)
+  const performanceActiveEvent =
+    performanceCandidateIndex >= 0 && isEventActive(loopEvents[performanceCandidateIndex], scrollPos)
+      ? loopEvents[performanceCandidateIndex]
+      : undefined
   const xpSoFar = Math.round((practiceSecondsRef.current / 60) * XP_PER_MINUTE)
 
   function updateLoopRange(start: number, end: number) {
@@ -157,7 +176,7 @@ export default function TabPlayerPage() {
             loopEvents={loopEvents}
             loopLength={loopLength}
             scrollPos={scrollPos}
-            activeEvent={activeEvent}
+            activeEvent={performanceActiveEvent}
             tuning={tuning}
             effectiveBpm={effectiveBpm}
             speedPercent={state.speedPercent}
@@ -166,6 +185,7 @@ export default function TabPlayerPage() {
             onTogglePause={togglePlayback}
             onExit={exitPerformance}
             xpSoFar={xpSoFar}
+            attemptId={attemptId}
             countdown={countdown}
             mode={state.mode}
             onModeChange={setMode}

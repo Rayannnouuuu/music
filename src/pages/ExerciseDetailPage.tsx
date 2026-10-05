@@ -15,7 +15,7 @@ import {
 import { loadAllExercises } from '../lib/content/loadExercises'
 import NoteHighway from '../components/tab/NoteHighway'
 import TabPerformanceView from '../components/tab/TabPerformanceView'
-import { totalBeatsForEvents } from '../lib/tab/noteLayout'
+import { totalBeatsForEvents, practiceCapBeat } from '../lib/tab/noteLayout'
 import { activeEventIndex, isEventActive } from '../lib/tab/playback'
 import { useLoopPlayback, LEAD_IN_BEATS } from '../lib/tab/useLoopPlayback'
 import { buildPath, flattenPath, isExerciseUnlocked, exerciseAfter, CATEGORY_LABELS } from '../lib/progression/path'
@@ -84,6 +84,7 @@ export default function ExerciseDetailPage() {
     practiceSecondsRef,
     performanceOpen,
     countdown,
+    attemptId,
     misses,
     maxMisses,
     hitKeys,
@@ -152,7 +153,14 @@ export default function ExerciseDetailPage() {
     )
   }
 
-  const scrollPos = Math.min(totalBeats, Math.max(-LEAD_IN_BEATS, state.elapsedBeats))
+  const rawScrollPos = Math.min(totalBeats, Math.max(-LEAD_IN_BEATS, state.elapsedBeats))
+  // In practice mode the clock keeps ticking (so the approach still
+  // animates), but must never race past the next unplayed note — it's only
+  // "due" once it's actually hit.
+  const scrollPos =
+    state.mode === 'practice'
+      ? Math.min(rawScrollPos, practiceCapBeat(exercise.pattern, hitKeys, totalBeats))
+      : rawScrollPos
   const candidateIndex = activeEventIndex(exercise.pattern, scrollPos)
   const activeEvent =
     candidateIndex >= 0 && isEventActive(exercise.pattern[candidateIndex], scrollPos)
@@ -199,6 +207,7 @@ export default function ExerciseDetailPage() {
             onExit={exitPerformance}
             xpSoFar={xpSoFar}
             onPieceValidated={handlePieceValidated}
+            attemptId={attemptId}
             countdown={countdown}
             mode={state.mode}
             onModeChange={setMode}

@@ -1,5 +1,12 @@
 import { describe, test, expect } from 'vitest'
-import { isNoteActive, totalBeatsForEvents, nextNoteProximity, PROXIMITY_LOOKAHEAD_BEATS } from './noteLayout'
+import {
+  isNoteActive,
+  totalBeatsForEvents,
+  nextNoteProximity,
+  PROXIMITY_LOOKAHEAD_BEATS,
+  practiceCapBeat,
+  eventKey,
+} from './noteLayout'
 import type { TabEvent } from '../content/types'
 
 describe('isNoteActive', () => {
@@ -69,5 +76,28 @@ describe('nextNoteProximity', () => {
 
   test('is 0 when there is no more upcoming note in the loop', () => {
     expect(nextNoteProximity(events, 10, undefined)).toBe(0)
+  })
+})
+
+describe('practiceCapBeat', () => {
+  const events: TabEvent[] = [
+    { string: 1, fret: 0, startBeat: 0, duration: 1 },
+    { string: 1, fret: 2, startBeat: 4, duration: 1 },
+    { string: 1, fret: 3, startBeat: 8, duration: 1 },
+  ]
+
+  test('caps at the first not-yet-hit note', () => {
+    expect(practiceCapBeat(events, new Set(), 100)).toBe(0)
+    expect(practiceCapBeat(events, new Set([eventKey(events[0])!]), 100)).toBe(4)
+  })
+
+  test('skips over hit notes even if a later one is still pending', () => {
+    const hit = new Set([eventKey(events[0])!, eventKey(events[1])!])
+    expect(practiceCapBeat(events, hit, 100)).toBe(8)
+  })
+
+  test('falls back to the given end value once every note has been hit', () => {
+    const hit = new Set(events.map((e) => eventKey(e)!))
+    expect(practiceCapBeat(events, hit, 100)).toBe(100)
   })
 })
