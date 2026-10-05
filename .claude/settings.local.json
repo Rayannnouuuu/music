@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash \"/c/Users/rayan/AppData/Roaming/Claude/local-agent-mode-sessions/6d3420e5-94c3-4bc2-8081-89410c91471f/0878e872-6a25-459c-ba36-bbbbe722c869/rpm/plugin_01JETPTMWTgidsotmEhVkQTG/skills/brainstorming/scripts/start-server.sh\" --project-dir \"/c/Users/rayan/musique\" --open)",
+      "mcp__claude-code-remote__add_repo",
+      "mcp__claude-code-remote__register_repo_root"
+    ]
+  }
+}
