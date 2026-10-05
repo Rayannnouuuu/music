@@ -1,6 +1,14 @@
 node_modules/
 dist/
+dist-ssr/
+*.local
 .superpowers/
 .worktrees/
 .env
 .env.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
