@@ -268,7 +268,10 @@ export default function TabPerformanceView({
         <FretboardDiagram activeString={activeEvent?.string} activeFret={activeEvent?.fret} />
       </div>
 
-      <p className="px-4 pb-2 text-center text-xs text-text-muted sm:px-6">{TECHNIQUE_LEGEND}</p>
+      <p className="px-4 pb-1 text-center text-xs text-text-muted sm:px-6">{TECHNIQUE_LEGEND}</p>
+      <p className="px-4 pb-2 text-center text-xs text-text-muted sm:px-6">
+        Détection calée sur l&rsquo;accordage <span className="font-semibold text-text">{tuning.label}</span>
+      </p>
 
       <div className="flex flex-wrap items-center justify-center gap-6 border-t border-border-soft p-4 sm:p-6">
         {mode === 'tempo' ? (

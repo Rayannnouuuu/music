@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowLeft, Play, Gauge, Repeat, Guitar, Minus, Plus, type Icon } from '@phosphor-icons/react'
+import { ArrowLeft, Play, Gauge, Repeat, Guitar, Minus, Plus, WarningCircle, type Icon } from '@phosphor-icons/react'
 import NoteHighway from '../components/tab/NoteHighway'
 import FretboardDiagram from '../components/tab/FretboardDiagram'
 import TabPerformanceView from '../components/tab/TabPerformanceView'
@@ -335,6 +335,24 @@ export default function TabPlayerPage() {
               ]}
             />
           </div>
+          {/* This tuning is independent of the Tuner page's global setting
+              (which only drives exercises) — a tab always uses its own
+              declared tuning unless overridden here. Surfacing a mismatch
+              up front beats the only symptom otherwise being silent
+              detection failures during practice. */}
+          {tuning.id !== progressState.guitarTuningId && (
+            <p className="flex flex-wrap items-center gap-1.5 text-xs text-warning">
+              <WarningCircle size={14} weight="fill" />
+              Ton accordage réglé dans le Tuner est {findTuningById(progressState.guitarTuningId).label}, différent
+              de celui utilisé ici.
+              <button
+                onClick={() => setTuningForTab(tab.id, progressState.guitarTuningId)}
+                className="font-semibold underline hover:text-text"
+              >
+                Utiliser {findTuningById(progressState.guitarTuningId).label} pour cette tab
+              </button>
+            </p>
+          )}
         </div>
 
         {measureCount > 1 && (

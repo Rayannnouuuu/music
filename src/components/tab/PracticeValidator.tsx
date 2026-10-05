@@ -119,7 +119,12 @@ export default function PracticeValidator({
           <div className="flex items-center gap-2 rounded-[var(--radius-control)] border border-border px-3 py-1.5 font-mono text-text-muted">
             <Microphone size={15} />
             {displayReading ? (
-              <span className={percent !== null && percent >= NOTE_VALIDATION_THRESHOLD ? 'text-success' : 'text-text-muted'}>
+              // Color and number both come from displayPercent (the same
+              // held-back cadence as the note name) — mixing in the
+              // real-time percent here made the color flicker independently
+              // of the number it was supposedly describing, which read as
+              // a confusing flash/"rollback" rather than a steady update.
+              <span className={displayPercent !== null && displayPercent >= NOTE_VALIDATION_THRESHOLD ? 'text-success' : 'text-text-muted'}>
                 {displayReading.note}
                 {displayReading.octave} · {displayPercent !== null ? Math.round(displayPercent) : 0}%
               </span>
