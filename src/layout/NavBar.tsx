@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { House, MapTrifold, Barbell, MusicNotes, Waveform, TrendUp, BookOpen, Guitar } from '@phosphor-icons/react'
 import MetronomeWidget from '../components/audio/MetronomeWidget'
+import SettingsWidget from '../components/SettingsWidget'
 
 const LINKS = [
   { to: '/', label: 'Dashboard', icon: House, end: true },
@@ -57,6 +58,7 @@ export default function NavBar() {
         </div>
 
         <MetronomeWidget />
+        <SettingsWidget />
       </div>
     </nav>
   )

@@ -6,6 +6,8 @@ import { ProgressionProvider } from './lib/progression/ProgressionContext'
 const routes: [string, string][] = [
   ['/', 'Dashboard'],
   ['/parcours', 'Parcours'],
+  ['/parcours/picking', 'Picking'],
+  ['/parcours/not-a-category', 'Chapitre introuvable.'],
   ['/exercises', 'Exercices'],
   ['/exercises/1', 'Exercice introuvable.'],
   ['/tabs', 'Bibliothèque de tabs'],

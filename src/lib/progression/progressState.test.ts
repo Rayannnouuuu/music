@@ -91,4 +91,13 @@ describe('hydrateProgressState', () => {
     const result = hydrateProgressState({ completedExerciseIds: 'nope' })
     expect(result.completedExerciseIds).toEqual([])
   })
+
+  test('autoDetectEnabled defaults to true and keeps a valid boolean', () => {
+    expect(hydrateProgressState({})).toHaveProperty('autoDetectEnabled', true)
+    expect(hydrateProgressState({ autoDetectEnabled: false }).autoDetectEnabled).toBe(false)
+  })
+
+  test('a non-boolean autoDetectEnabled falls back to the default (true)', () => {
+    expect(hydrateProgressState({ autoDetectEnabled: 'nope' }).autoDetectEnabled).toBe(true)
+  })
 })

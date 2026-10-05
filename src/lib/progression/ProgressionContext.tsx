@@ -28,6 +28,7 @@ interface ProgressionContextValue {
   deleteImportedTab(tabId: string): void
   setTempoForTab(tabId: string, bpm: number): void
   isExerciseCompletedToday(exerciseId: string, today: string): boolean
+  setAutoDetectEnabled(enabled: boolean): void
 }
 
 const ProgressionContext = createContext<ProgressionContextValue | null>(null)
@@ -147,6 +148,9 @@ export function ProgressionProvider({ children }: { children: ReactNode }) {
     },
     isExerciseCompletedToday(exerciseId, today) {
       return hasCompletedExerciseToday(state.completedExerciseIdsByDay, today, exerciseId)
+    },
+    setAutoDetectEnabled(enabled) {
+      setState((prev) => ({ ...prev, autoDetectEnabled: enabled }))
     },
   }
 

@@ -66,3 +66,15 @@ export const TUNINGS: Tuning[] = [
     ],
   },
 ]
+
+// Tab/exercise content stores tuning as free text (e.g. "Standard", "Drop D",
+// "Eb"). Match it against a known tuning's id or label, falling back to
+// standard tuning for anything unrecognized.
+export function findTuningByLabel(label: string): Tuning {
+  const normalized = label.trim().toLowerCase()
+  return (
+    TUNINGS.find((t) => t.id.toLowerCase() === normalized) ??
+    TUNINGS.find((t) => t.label.toLowerCase().startsWith(normalized)) ??
+    TUNINGS[0]
+  )
+}

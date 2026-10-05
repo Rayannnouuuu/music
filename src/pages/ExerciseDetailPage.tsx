@@ -10,6 +10,7 @@ import { activeEventIndex, isEventActive } from '../lib/tab/playback'
 import { useLoopPlayback } from '../lib/tab/useLoopPlayback'
 import { buildPath, flattenPath, isExerciseUnlocked } from '../lib/progression/path'
 import { tipsFor } from '../content/tips'
+import { TUNINGS } from '../lib/audio/tunings'
 import { Card } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -94,6 +95,7 @@ export default function ExerciseDetailPage() {
             loopLength={totalBeats}
             scrollPos={scrollPos}
             activeEvent={activeEvent}
+            tuning={TUNINGS[0]}
             effectiveBpm={effectiveBpm}
             speedPercent={state.speedPercent}
             onSpeedChange={handleSpeedChange}

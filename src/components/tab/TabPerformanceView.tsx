@@ -2,9 +2,12 @@ import { useEffect } from 'react'
 import { motion } from 'motion/react'
 import { X, Gauge, Lightning } from '@phosphor-icons/react'
 import type { TabEvent } from '../../lib/content/types'
+import type { Tuning } from '../../lib/audio/tunings'
 import { NOTE_HIGHWAY_SIZES, STANDARD_TUNING_LABELS } from '../../lib/tab/noteLayout'
+import { useProgression } from '../../lib/progression/ProgressionContext'
 import NoteHighway from './NoteHighway'
 import FretboardDiagram from './FretboardDiagram'
+import PracticeValidator from './PracticeValidator'
 import BeatIndicator from '../audio/BeatIndicator'
 import { Slider } from '../ui/Slider'
 
@@ -15,6 +18,7 @@ interface TabPerformanceViewProps {
   loopLength: number
   scrollPos: number
   activeEvent?: TabEvent
+  tuning: Tuning
   effectiveBpm: number
   speedPercent: number
   onSpeedChange: (percent: number) => void
@@ -36,12 +40,14 @@ export default function TabPerformanceView({
   loopLength,
   scrollPos,
   activeEvent,
+  tuning,
   effectiveBpm,
   speedPercent,
   onSpeedChange,
   onExit,
   xpSoFar,
 }: TabPerformanceViewProps) {
+  const { state: progressState } = useProgression()
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onExit()
@@ -135,6 +141,12 @@ export default function TabPerformanceView({
           <Lightning size={16} weight="fill" />+{xpSoFar} XP
         </div>
       </div>
+
+      {progressState.autoDetectEnabled && (
+        <div className="border-t border-border-soft px-4 py-3 sm:px-6">
+          <PracticeValidator activeEvent={activeEvent} tuning={tuning} />
+        </div>
+      )}
     </motion.div>
   )
 }

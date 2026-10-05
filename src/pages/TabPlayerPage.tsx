@@ -13,6 +13,7 @@ import { activeEventIndex, isEventActive } from '../lib/tab/playback'
 import { flattenTabEvents, eventsInRange } from '../lib/tab/flatten'
 import { useLoopPlayback } from '../lib/tab/useLoopPlayback'
 import { loadAllTabs } from '../lib/content/loadTabs'
+import { findTuningByLabel } from '../lib/audio/tunings'
 import { useProgression, XP_PER_MINUTE } from '../lib/progression/ProgressionContext'
 import { localDateString } from '../lib/date'
 
@@ -54,6 +55,7 @@ export default function TabPlayerPage() {
   const measureCount = tab?.measures.length ?? 0
   const totalBeats = measureCount * BEATS_PER_MEASURE
   const baseBpm = tab ? (progressState.customTempoByTabId[tab.id] ?? tab.originalTempo) : 0
+  const tuning = findTuningByLabel(tab?.tuning ?? 'Standard')
 
   const { state, dispatch, effectiveBpm, togglePlayback, metronome, practiceSecondsRef } = useLoopPlayback({
     loopKey: tab?.id ?? '',
@@ -126,6 +128,7 @@ export default function TabPlayerPage() {
             loopLength={loopLength}
             scrollPos={scrollPos}
             activeEvent={activeEvent}
+            tuning={tuning}
             effectiveBpm={effectiveBpm}
             speedPercent={state.speedPercent}
             onSpeedChange={handleSpeedChange}

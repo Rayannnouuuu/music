@@ -23,6 +23,10 @@ export interface ProgressState {
   // powers the guided path's unlock gating, which cares about "has this
   // ever been done" rather than "was it done today".
   completedExerciseIds: string[]
+  // Whether the mic-based practice note validator is allowed to run at
+  // all — the settings toggle gates the microphone request itself, not
+  // just the UI.
+  autoDetectEnabled: boolean
 }
 
 export const defaultProgressState: ProgressState = {
@@ -47,6 +51,11 @@ export const defaultProgressState: ProgressState = {
   dailyProgress: {},
   completedExerciseIdsByDay: {},
   completedExerciseIds: [],
+  autoDetectEnabled: true,
+}
+
+function booleanOr(value: unknown, fallback: boolean): boolean {
+  return typeof value === 'boolean' ? value : fallback
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -122,5 +131,6 @@ export function hydrateProgressState(loaded: unknown): ProgressState {
     completedExerciseIds: Array.isArray(loaded.completedExerciseIds)
       ? (loaded.completedExerciseIds as unknown[]).filter((id): id is string => typeof id === 'string')
       : [],
+    autoDetectEnabled: booleanOr(loaded.autoDetectEnabled, true),
   }
 }

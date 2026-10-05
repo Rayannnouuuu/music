@@ -1,68 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Microphone, MicrophoneSlash, CheckCircle, ArrowsClockwise } from '@phosphor-icons/react'
-import { detectPitch } from '../lib/audio/pitchDetect'
-import { frequencyToNote } from '../lib/audio/noteUtils'
+import { usePitchDetector } from '../lib/audio/usePitchDetector'
 import { TUNINGS } from '../lib/audio/tunings'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import TunerGauge from '../components/audio/TunerGauge'
 
-type MicState = 'requesting' | 'granted' | 'denied'
 const IN_TUNE_THRESHOLD = 5
 
 export default function TunerPage() {
-  const [micState, setMicState] = useState<MicState>('requesting')
   const [tuningId, setTuningId] = useState(TUNINGS[0].id)
-  const [reading, setReading] = useState<{ note: string; octave: number; cents: number } | null>(
-    null,
-  )
-  const [retryKey, setRetryKey] = useState(0)
-
-  useEffect(() => {
-    let cancelled = false
-    let rafId: number | null = null
-    let stream: MediaStream | null = null
-    let audioContext: AudioContext | null = null
-
-    async function start() {
-      setMicState('requesting')
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        if (cancelled) {
-          stream.getTracks().forEach((track) => track.stop())
-          return
-        }
-        audioContext = new AudioContext()
-        const source = audioContext.createMediaStreamSource(stream)
-        const analyser = audioContext.createAnalyser()
-        analyser.fftSize = 2048
-        source.connect(analyser)
-        const buffer = new Float32Array(analyser.fftSize)
-
-        setMicState('granted')
-
-        function tick() {
-          analyser.getFloatTimeDomainData(buffer)
-          const freq = detectPitch(buffer, audioContext!.sampleRate)
-          setReading(freq !== null ? frequencyToNote(freq) : null)
-          rafId = requestAnimationFrame(tick)
-        }
-        rafId = requestAnimationFrame(tick)
-      } catch {
-        if (!cancelled) setMicState('denied')
-      }
-    }
-
-    start()
-
-    return () => {
-      cancelled = true
-      if (rafId !== null) cancelAnimationFrame(rafId)
-      stream?.getTracks().forEach((track) => track.stop())
-      audioContext?.close()
-    }
-  }, [retryKey])
+  const { micState, reading, retry } = usePitchDetector(true)
 
   const activeTuning = TUNINGS.find((t) => t.id === tuningId) ?? TUNINGS[0]
   const clampedCents = reading ? Math.max(-50, Math.min(50, reading.cents)) : 0
@@ -113,7 +62,7 @@ export default function TunerPage() {
             Accès au microphone refusé ou indisponible. Autorise le microphone dans les paramètres
             de ton navigateur pour utiliser le tuner.
           </p>
-          <Button variant="secondary" onClick={() => setRetryKey((k) => k + 1)}>
+          <Button variant="secondary" onClick={retry}>
             <ArrowsClockwise size={17} />
             Réessayer
           </Button>

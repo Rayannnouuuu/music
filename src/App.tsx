@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './layout/Layout'
 import DashboardPage from './pages/DashboardPage'
 import ParcoursPage from './pages/ParcoursPage'
+import ParcoursChapterPage from './pages/ParcoursChapterPage'
 import ExercisesListPage from './pages/ExercisesListPage'
 import ExerciseDetailPage from './pages/ExerciseDetailPage'
 import TabLibraryPage from './pages/TabLibraryPage'
@@ -18,6 +19,7 @@ export default function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/parcours" element={<ParcoursPage />} />
+          <Route path="/parcours/:category" element={<ParcoursChapterPage />} />
           <Route path="/exercises" element={<ExercisesListPage />} />
           <Route path="/exercises/:id" element={<ExerciseDetailPage />} />
           <Route path="/tabs" element={<TabLibraryPage />} />

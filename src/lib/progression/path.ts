@@ -18,6 +18,17 @@ export interface PathChapter {
   exercises: Exercise[]
 }
 
+export const CATEGORY_LABELS: Record<Category, string> = {
+  scales: 'Gammes',
+  legato: 'Legato',
+  picking: 'Picking',
+  bends: 'Bends',
+  palmMuting: 'Palm muting',
+  sweep: 'Sweep picking',
+  rhythm: 'Rythmique',
+  arpeggios: 'Arpèges',
+}
+
 function idSuffix(id: string): number {
   const match = id.match(/(\d+)$/)
   return match ? Number(match[1]) : 0
