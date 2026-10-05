@@ -1,73 +1,54 @@
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useMemo, useReducer, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import TabStaticView from '../components/tab/TabStaticView'
 import FretboardDiagram from '../components/tab/FretboardDiagram'
 import { playerReducer, type PlayerState } from '../lib/tab/playerState'
 import { activeEventIndex, isEventActive } from '../lib/tab/playback'
-import type { Tab } from '../lib/content/types'
+import { loadAllTabs } from '../lib/content/loadTabs'
 
 const BEATS_PER_MEASURE = 4
-
-// Placeholder fixture — Task 8 replaces this with the real loader keyed by :id.
-const FIXTURE_TAB: Tab = {
-  id: 'fixture-1',
-  title: 'Riff de démonstration',
-  artist: 'Exemple',
-  subgenre: 'heavy',
-  tuning: 'Standard',
-  originalTempo: 90,
-  difficulty: 3,
-  measures: [
-    {
-      events: [
-        { string: 6, fret: 0, startBeat: 0, duration: 1, technique: 'palmMute' },
-        { string: 6, fret: 0, startBeat: 1, duration: 1, technique: 'palmMute' },
-        { string: 6, fret: 3, startBeat: 2, duration: 1 },
-        { string: 6, fret: 2, startBeat: 3, duration: 1 },
-      ],
-    },
-    {
-      events: [
-        { string: 6, fret: 0, startBeat: 0, duration: 2, technique: 'palmMute' },
-        { string: 5, fret: 2, startBeat: 2, duration: 2 },
-      ],
-    },
-  ],
-}
 
 const initialState: PlayerState = { status: 'idle', speedPercent: 100, elapsedBeats: 0 }
 
 export default function TabPlayerPage() {
-  const tab = FIXTURE_TAB
+  const { id } = useParams()
+  const tab = useMemo(() => loadAllTabs().find((t) => t.id === id), [id])
   const [state, dispatch] = useReducer(playerReducer, initialState)
   const [showFretboard, setShowFretboard] = useState(true)
 
-  const totalBeats = tab.measures.length * BEATS_PER_MEASURE
-  const effectiveBpm = (tab.originalTempo * state.speedPercent) / 100
+  const totalBeats = tab ? tab.measures.length * BEATS_PER_MEASURE : 0
 
   // Drive the playback clock. Only runs while actually playing.
   useEffect(() => {
-    if (state.status !== 'playing') return
+    if (!tab || state.status !== 'playing') return
+    const currentTab = tab
     let rafId: number
     let lastTime: number | null = null
     function frame(time: number) {
       if (lastTime !== null) {
         const deltaSeconds = (time - lastTime) / 1000
-        dispatch({ type: 'tick', deltaSeconds, bpm: tab.originalTempo })
+        dispatch({ type: 'tick', deltaSeconds, bpm: currentTab.originalTempo })
       }
       lastTime = time
       rafId = requestAnimationFrame(frame)
     }
     rafId = requestAnimationFrame(frame)
     return () => cancelAnimationFrame(rafId)
-  }, [state.status, tab.originalTempo])
+  }, [tab, state.status])
 
   // Auto-pause at the end when not looping.
   useEffect(() => {
+    if (!tab) return
     if (!state.loopRange && state.elapsedBeats >= totalBeats && state.status === 'playing') {
       dispatch({ type: 'pause' })
     }
-  }, [state.elapsedBeats, state.loopRange, state.status, totalBeats])
+  }, [tab, state.elapsedBeats, state.loopRange, state.status, totalBeats])
 
+  if (!tab) {
+    return <p>Tab introuvable.</p>
+  }
+
+  const effectiveBpm = (tab.originalTempo * state.speedPercent) / 100
   const measureIndex = Math.min(
     Math.floor(state.elapsedBeats / BEATS_PER_MEASURE),
     tab.measures.length - 1,
