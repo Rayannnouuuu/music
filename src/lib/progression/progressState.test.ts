@@ -110,4 +110,20 @@ describe('hydrateProgressState', () => {
     expect(hydrateProgressState({ guitarTuningId: 'not-a-real-tuning' }).guitarTuningId).toBe('standard')
     expect(hydrateProgressState({ guitarTuningId: 42 }).guitarTuningId).toBe('standard')
   })
+
+  test('customTuningByTabId keeps entries with a known tuning id', () => {
+    const result = hydrateProgressState({ customTuningByTabId: { 'tab-1': 'dropD' } })
+    expect(result.customTuningByTabId).toEqual({ 'tab-1': 'dropD' })
+  })
+
+  test('customTuningByTabId drops entries with an unknown tuning id', () => {
+    const result = hydrateProgressState({
+      customTuningByTabId: { 'tab-1': 'dropD', 'tab-2': 'not-a-real-tuning' },
+    })
+    expect(result.customTuningByTabId).toEqual({ 'tab-1': 'dropD' })
+  })
+
+  test('a non-object customTuningByTabId falls back to an empty object', () => {
+    expect(hydrateProgressState({ customTuningByTabId: 'nope' }).customTuningByTabId).toEqual({})
+  })
 })

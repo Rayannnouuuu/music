@@ -3,7 +3,12 @@ import { AnimatePresence, motion } from 'motion/react'
 import { X, Gauge, Lightning, Play, Pause, ArrowCounterClockwise, WarningCircle } from '@phosphor-icons/react'
 import type { TabEvent } from '../../lib/content/types'
 import type { Tuning } from '../../lib/audio/tunings'
-import { NOTE_HIGHWAY_SIZES, STANDARD_TUNING_LABELS, eventKey } from '../../lib/tab/noteLayout'
+import {
+  NOTE_HIGHWAY_SIZES,
+  STANDARD_TUNING_LABELS,
+  eventKey,
+  nextNoteProximity,
+} from '../../lib/tab/noteLayout'
 import type { PlayerState } from '../../lib/tab/playerState'
 import { useProgression } from '../../lib/progression/ProgressionContext'
 import NoteHighway from './NoteHighway'
@@ -96,6 +101,8 @@ export default function TabPerformanceView({
   }, [onExit])
 
   const translateX = CURSOR_OFFSET_PX - scrollPos * PX_PER_BEAT
+  const noteProximity = nextNoteProximity(loopEvents, scrollPos, activeEvent)
+  const cursorColor = `color-mix(in srgb, var(--color-success) ${Math.round(noteProximity * 100)}%, var(--color-accent-strong))`
   const counting = countdown !== null
 
   function handleNoteResult(key: string, hit: boolean) {
@@ -207,8 +214,12 @@ export default function TabPerformanceView({
           ))}
         </div>
         <motion.div
-          className="pointer-events-none absolute top-0 z-10 h-full w-[3px] rounded-full bg-accent-strong shadow-[0_0_24px_var(--color-accent)]"
-          style={{ left: CURSOR_OFFSET_PX }}
+          className="pointer-events-none absolute top-0 z-10 h-full w-[3px] rounded-full"
+          style={{
+            left: CURSOR_OFFSET_PX,
+            backgroundColor: cursorColor,
+            boxShadow: `0 0 24px ${cursorColor}`,
+          }}
           animate={isPlaying && mode === 'tempo' ? { opacity: [1, 0.45, 1] } : { opacity: 1 }}
           transition={{
             duration: effectiveBpm > 0 ? 60 / effectiveBpm : 1,

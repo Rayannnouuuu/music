@@ -11,6 +11,11 @@ export interface ProgressState {
   streakHistory: Record<string, boolean>
   badgesUnlocked: string[]
   customTempoByTabId: Record<string, number>
+  // Lets a tab be practiced in a different tuning than the one it was
+  // written for (e.g. playing a Standard tab on a Drop D guitar) — a
+  // per-tab override of the pitch-matching tuning, same pattern as the
+  // custom tempo override.
+  customTuningByTabId: Record<string, string>
   importedTabs: Tab[]
   // Beyond the plan's literal field list: completeExercise/completeTabPractice
   // need a running tab-practice count (for badges) and per-day progress (for
@@ -53,6 +58,7 @@ export const defaultProgressState: ProgressState = {
   streakHistory: {},
   badgesUnlocked: [],
   customTempoByTabId: {},
+  customTuningByTabId: {},
   importedTabs: [],
   tabsCompletedCount: 0,
   dailyProgress: {},
@@ -94,6 +100,17 @@ function hydrateCompletedExerciseIdsByDay(loaded: unknown): Record<string, strin
   return result
 }
 
+function hydrateCustomTuningByTabId(loaded: unknown): Record<string, string> {
+  if (!isPlainObject(loaded)) return {}
+  const result: Record<string, string> = {}
+  for (const [tabId, tuningId] of Object.entries(loaded)) {
+    if (typeof tuningId === 'string' && TUNINGS.some((t) => t.id === tuningId)) {
+      result[tabId] = tuningId
+    }
+  }
+  return result
+}
+
 function hydrateImportedTabs(loaded: unknown): Tab[] {
   if (!Array.isArray(loaded)) return []
   const tabs: Tab[] = []
@@ -130,6 +147,7 @@ export function hydrateProgressState(loaded: unknown): ProgressState {
     customTempoByTabId: isPlainObject(loaded.customTempoByTabId)
       ? (loaded.customTempoByTabId as Record<string, number>)
       : {},
+    customTuningByTabId: hydrateCustomTuningByTabId(loaded.customTuningByTabId),
     importedTabs: hydrateImportedTabs(loaded.importedTabs),
     tabsCompletedCount: numberOr(loaded.tabsCompletedCount, 0),
     dailyProgress: isPlainObject(loaded.dailyProgress)

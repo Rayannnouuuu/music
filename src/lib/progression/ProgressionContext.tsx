@@ -28,6 +28,8 @@ interface ProgressionContextValue {
   importTab(tab: Tab): void
   deleteImportedTab(tabId: string): void
   setTempoForTab(tabId: string, bpm: number): void
+  // tuningId: null clears the override, falling back to the tab's own tuning.
+  setTuningForTab(tabId: string, tuningId: string | null): void
   isExerciseCompletedToday(exerciseId: string, today: string): boolean
   setAutoDetectEnabled(enabled: boolean): void
   setGuitarTuning(tuningId: string): void
@@ -185,6 +187,16 @@ export function ProgressionProvider({ children }: { children: ReactNode }) {
         ...prev,
         customTempoByTabId: { ...prev.customTempoByTabId, [tabId]: bpm },
       }))
+    },
+    setTuningForTab(tabId, tuningId) {
+      setState((prev) => {
+        if (tuningId === null) {
+          const next = { ...prev.customTuningByTabId }
+          delete next[tabId]
+          return { ...prev, customTuningByTabId: next }
+        }
+        return { ...prev, customTuningByTabId: { ...prev.customTuningByTabId, [tabId]: tuningId } }
+      })
     },
     isExerciseCompletedToday(exerciseId, today) {
       return hasCompletedExerciseToday(state.completedExerciseIdsByDay, today, exerciseId)

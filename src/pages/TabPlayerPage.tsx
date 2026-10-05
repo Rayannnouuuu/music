@@ -13,9 +13,10 @@ import { activeEventIndex, isEventActive } from '../lib/tab/playback'
 import { flattenTabEvents, eventsInRange } from '../lib/tab/flatten'
 import { useLoopPlayback, LEAD_IN_BEATS } from '../lib/tab/useLoopPlayback'
 import { loadAllTabs } from '../lib/content/loadTabs'
-import { findTuningByLabel } from '../lib/audio/tunings'
+import { TUNINGS, findTuningByLabel, findTuningById } from '../lib/audio/tunings'
 import { useProgression, XP_PER_MINUTE } from '../lib/progression/ProgressionContext'
 import { localDateString } from '../lib/date'
+import { FilterChips } from '../components/ui/FilterChips'
 
 const BEATS_PER_MEASURE = 4
 
@@ -47,7 +48,7 @@ function ToggleChip({
 
 export default function TabPlayerPage() {
   const { id } = useParams()
-  const { state: progressState, completeTabPractice, setTempoForTab } = useProgression()
+  const { state: progressState, completeTabPractice, setTempoForTab, setTuningForTab } = useProgression()
   const tab = useMemo(
     () => [...loadAllTabs(), ...progressState.importedTabs].find((t) => t.id === id),
     [id, progressState.importedTabs],
@@ -55,7 +56,8 @@ export default function TabPlayerPage() {
   const measureCount = tab?.measures.length ?? 0
   const totalBeats = measureCount * BEATS_PER_MEASURE
   const baseBpm = tab ? (progressState.customTempoByTabId[tab.id] ?? tab.originalTempo) : 0
-  const tuning = findTuningByLabel(tab?.tuning ?? 'Standard')
+  const tuningOverrideId = tab ? progressState.customTuningByTabId[tab.id] : undefined
+  const tuning = tuningOverrideId ? findTuningById(tuningOverrideId) : findTuningByLabel(tab?.tuning ?? 'Standard')
 
   const {
     state,
@@ -285,6 +287,23 @@ export default function TabPlayerPage() {
             label="Manche"
             onClick={() => setShowFretboard((v) => !v)}
           />
+        </div>
+
+        <div className="space-y-2 border-t border-border-soft pt-4">
+          <p className="text-sm text-text-muted">
+            Accordage pour la détection (tab écrite en {tab.tuning})
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <FilterChips
+              layoutId="tabplayer-tuning-override-pill"
+              value={tuningOverrideId ?? ''}
+              onChange={(value) => setTuningForTab(tab.id, value || null)}
+              options={[
+                { value: '', label: `Comme la tab (${tab.tuning})` },
+                ...TUNINGS.map((t) => ({ value: t.id, label: t.label })),
+              ]}
+            />
+          </div>
         </div>
 
         {measureCount > 1 && (

@@ -37,3 +37,21 @@ export function totalBeatsForEvents(events: TabEvent[], beatsPerMeasure = 4): nu
   const measures = Math.max(1, Math.ceil(furthestEnd / beatsPerMeasure))
   return measures * beatsPerMeasure
 }
+
+// How many beats out the cursor starts tinting toward green before a note
+// is actually due — gives an early "it's coming up" cue instead of a
+// binary switch exactly when the note arrives.
+export const PROXIMITY_LOOKAHEAD_BEATS = 1.2
+
+// 0 = far from the next note, 1 = right at (or within) the note to play now.
+export function nextNoteProximity(
+  loopEvents: TabEvent[],
+  scrollPos: number,
+  activeEvent?: TabEvent,
+): number {
+  if (activeEvent) return 1
+  const upcoming = loopEvents.find((e) => e.startBeat > scrollPos)
+  if (!upcoming) return 0
+  const distance = upcoming.startBeat - scrollPos
+  return Math.max(0, Math.min(1, 1 - distance / PROXIMITY_LOOKAHEAD_BEATS))
+}
