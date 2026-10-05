@@ -56,6 +56,33 @@ body {
   color: var(--color-accent-strong);
 }
 
+/* Themed scrollbars everywhere — the default OS scrollbar clashes with the
+   dark panel surfaces, especially on the horizontal chapter/tab scrollers. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 9999px;
+  border: 2px solid var(--color-bg);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-accent-soft);
+}
+
 /* Reduced motion is respected globally; components that add their own
    transforms still gate themselves individually where it matters. */
 @media (prefers-reduced-motion: reduce) {

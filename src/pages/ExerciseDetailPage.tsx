@@ -265,7 +265,7 @@ export default function ExerciseDetailPage() {
         )}
       </div>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="sync">
         {autoAdvancing && nextExercise ? (
           <motion.div
             key="auto-advancing"
